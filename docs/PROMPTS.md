@@ -187,8 +187,105 @@
 
 ---
 
+---
+
+## Prompt #11: Design §2 — Components (class hierarchy + per-mechanism PRDs)
+
+**Context**: After §1 architecture and the three-skill design were locked, brainstorming flow moved to §2 (components). Rubric §A13 requires every significant class to follow the building-block docstring shape (`Input:` / `Output:` / `Setup:`). HW1 was specifically flagged on extensibility — §2 must name concrete extension points.
+
+**Goal**: Lock the class hierarchy, mixin set, factory/registry patterns, and the 9 per-mechanism PRDs that will sit under `docs/`.
+
+**Prompt text**: Presented the full agent hierarchy (`BaseAgent` → `PartisanAgent` → `ProAgent`/`ConAgent`; `BaseAgent` → `JudgeAgent`), 4 orthogonal mixins (`LoggingMixin`, `LifecycleMixin`, `HeartbeatMixin`, `RetryMixin`), the `ApiGatekeeper` matching rubric §A4 signature verbatim, `LLMProvider` + `SearchProvider` plugin interfaces with factory registry, the 8-hook `LifecycleRegistry`, `DebateOrchestrator`, `Watchdog`, `DebateSDK`, and letter-keyed terminal menu. Plus a table of 9 per-mechanism PRDs (judge, pro, con, orchestrator, ipc_bus, gatekeeper, watchdog, skills, web_search_tool) with target line counts (~150-250 each).
+
+**Example output received**: User responded *"ok proceed"* — approval. Three open clarifying questions I had asked (whether RetryMixin lives outside Gatekeeper, `max_restarts=3` threshold, `simulate_keystroke()` naming) didn't get explicit answers, so I applied my own defaults: retry consolidated into Gatekeeper (dropped `RetryMixin`), `max_restarts=3` kept, `simulate_keystroke()` kept.
+
+**Iterative improvements**: My initial mixin list had `RetryMixin` — but that splits retry policy across two locations (Gatekeeper had its own retry logic). Consolidated: ONE retry policy lives in Gatekeeper, mixins shrink to 3 (Logging, Lifecycle, Heartbeat). Cleaner.
+
+**Best practice extracted**: When a user accepts a section with "ok" without answering the trailing open questions, default to the recommendations you flagged as preferred — and log the defaults explicitly here so the audit trail shows the calls were made consciously, not silently.
+
+---
+
+## Prompt #12: Design §3 — Data flow + JSON wire protocol
+
+**Context**: H2 mandates JSON wire format. Lec05 L1437-1444 quotes Dr. Segal: *"JSONs are templates"* — JSONs map directly to the lecturer's "LLM converts free text into TEMPLATES" thesis (Lec04 §8). The protocol must support the H18 setup_directive, H20 per-message drift check, H16 PC filter, H4 child→father→child routing, and H5 no-tie verdict.
+
+**Goal**: Lock the JSON wire schema, message roles, single-ping sequence diagram, two-phase boot timeline, and agent state machines.
+
+**Prompt text**: Presented the full schema file (`config/schemas/message-1.00.json` versioned, jsonschema-validated at every send/recv), 8 message roles (`setup_directive`, `ack`, `argument`, `counter`, `correction_request`, `intervention`, `status`, `verdict`), single-ping sequence diagram (Pro → Judge → validate → forward to Con), two-phase boot timeline (T+0 spawn → T+0.5 acks received → T+5min verdict), state machines for both Pro/Con and Judge, mutual-reference enforcement via `references_opponent` schema flag, transcript persistence.
+
+**Example output received**: User responded *"ok"* — approval.
+
+**Iterative improvements**: First draft of message roles had 6; added `ack` (for setup_directive confirmation, H18) and `intervention` (separate from `correction_request`, since the H16 PC filter is a distinct concern from H20 drift detection). The two should not be conflated — the action is different (intervention sanitizes content; correction_request requests a stance-faithful replay).
+
+**Best practice extracted**: When the lecturer's specific rules (H16, H18, H20) map to discrete checks, each gets its own message role — even if the schema then has 8 roles instead of 4. Conflating reduces clarity and makes the audit logs harder to grep for "which check fired."
+
+---
+
+## Prompt #13: Design §4 — Error handling + Watchdog
+
+**Context**: H21 explicitly graded. The chaos test from rubric §6.3 will deliberately `kill -9` a child mid-debate. H10 requires timeouts on every LLM call. The Gatekeeper must enforce budget caps with 75%/95% thresholds per rubric §A8.
+
+**Goal**: Catalog every failure mode, name detection mechanism + action, design the Watchdog with heartbeat contract + state replay on restart, lock the graceful shutdown cascade.
+
+**Prompt text**: Presented a 13-row failure-mode catalog (per layer: LLM provider, web search, IPC bus, child process, budget, user). Watchdog design with `poll_interval=2s`, `stuck_timeout=30s`, `max_restarts=3` with exponential backoff `[1, 2, 4]`. Heartbeat contract: each child fires `status` every 2s; missed heartbeats beyond timeout trigger `SIGKILL` + respawn with state replay (re-inject shared spend + skill_dir + most-recent `setup_directive`). Graceful shutdown cascade on SIGINT/SIGTERM. 10 chaos-test edge cases with explicit verification criteria.
+
+**Example output received**: User responded *"ok, but all of this we are showing right? the planning, we need to get points"* — reinforced the meta-instruction that the brainstorming is itself the deliverable. Triggered the current commit cycle.
+
+**Iterative improvements**: Initial draft had Watchdog detecting "hung" children purely via `is_alive()`. Refined: `is_alive()` only catches crashed processes; hung-but-alive processes need the heartbeat-timeout check. So the Watchdog has two parallel detectors (`Process.is_alive()` + `last_heartbeat_age > stuck_timeout`). Both must agree before SIGKILL to avoid false-positives.
+
+**Best practice extracted**: Failure detection that depends on a single signal (e.g. `is_alive()` alone) misses orthogonal failure classes (crashed vs hung). Two-signal detection (alive-check + heartbeat-staleness) covers the union without requiring either signal to be perfect.
+
+---
+
+## Prompt #14: Recurring user feedback — "the planning is graded, show it"
+
+**Context**: For the second time, the user pushed back that the brainstorming work needs to be visible in the repo, not only in conversation. The first push (Prompt #10) triggered the initial commit and the in-progress design doc + PROMPTS.md scaffold. After §3-§4 were presented purely in conversation, the user repeated: *"ok, but all of this we are showing right? the planning, we need to get points"*.
+
+**Goal**: Treat every approved section as a committable artifact. The pattern: approve in conversation → write to spec doc → log in PROMPTS.md → commit. Section completion is not just verbal approval, it's the file landing.
+
+**Prompt text**: The user's reminder — short, sharp, twice now.
+
+**Example output received**: This entry plus prompts #11-13 above, plus a §2-§4 expansion of the design doc, plus a commit.
+
+**Best practice extracted**: When the user has had to remind me twice that conversation alone isn't the deliverable, lock the rhythm: after EVERY section approval, run a quick capture cycle before moving forward. Don't let three sections pile up before committing again. Mid-section, the spec doc gains a "WIP" marker so it's always parseable.
+
+---
+
+## Decisions locked (updated running list)
+
+| # | Decision | Locked at | Source |
+|---|----------|-----------|--------|
+| 1 | LLM provider: Claude-only via login CLI | Prompt #3 | User |
+| 2 | Debate topic: *"Can AI agents create genuinely original art, or only remix human work?"* | Prompt #4 | User |
+| 3 | Pro = originality side; Con = remix-only side | Prompt #4 | Recommended |
+| 4 | Pings per side: 10 | Prompt #5 | User |
+| 5 | Web search: DuckDuckGo via `ddgs` (pluggable interface) | Prompt #6 | User |
+| 6 | IPC: `multiprocessing.Process` + `multiprocessing.Queue` | Prompt #7 | User |
+| 7 | Word cap per turn: 250 words | Lecture default | Lec05 default |
+| 8 | Drift threshold: 1 (per-message check + correct_and_replay) | Lecture default | Lec05 L1182-1184 |
+| 9 | Scoring: 5 axes × 20 = 100 (clarity, evidence, rebuttal, novelty, role-fidelity) | Lecture default | Lec05 L1576 |
+| 10 | Logging: FIFO 20 files × 500 lines structured JSON | Spec default | HW2 spec §8.6 |
+| 11 | Judge scoring criteria sourced via web-search pre-flight (N7) | Design choice | Lec05 L1519-1528 |
+| 12 | Skills: project-local under `.claude/skills/`, loaded statically as system prompts (ADR-002) | Design choice | H17 + Prompt #9 |
+| 13 | Pair: Salah Qadah + Andalus Kalash (group `uoh-sqak`) | Pre-confirmed | HW1 submission |
+| 14 | Class hierarchy: `BaseAgent` → `PartisanAgent` → `Pro/Con`; `BaseAgent` → `Judge` | Prompt #11 | Design |
+| 15 | 3 mixins (Logging, Lifecycle, Heartbeat) — retry consolidated into Gatekeeper | Prompt #11 | Design |
+| 16 | Plugin pattern: `LLMProvider` + `SearchProvider` abstract bases + factory registry | Prompt #11 | Extensibility fix |
+| 17 | 8 lifecycle hooks: before/after × round/verdict/llm_call/search | Prompt #11 | Rubric §A9 |
+| 18 | JSON wire schema versioned at 1.00, jsonschema-validated on both send and recv | Prompt #12 | H2 + R6 |
+| 19 | 8 message roles (setup_directive, ack, argument, counter, correction_request, intervention, status, verdict) | Prompt #12 | H4+H16+H18+H20 |
+| 20 | Mutual-reference enforcement via `references_opponent` schema flag + Judge re-verify regex | Prompt #12 | H7 |
+| 21 | Watchdog: 2s heartbeat, 30s stuck timeout, max_restarts=3, backoff [1,2,4] | Prompt #13 | H21 |
+| 22 | Watchdog detection uses BOTH `is_alive()` AND heartbeat-staleness (two-signal) | Prompt #13 | Design refinement |
+| 23 | Lying allowed; opponent fact-checks via web search; Judge does NOT verify facts | Prompt #13 | H17 + lec05 L1483-1491 |
+| 24 | Graceful shutdown: SIGINT → main → SIGTERM cascade → 10s drain → SIGKILL stragglers → flush transcript | Prompt #13 | Spec §8.6 |
+| 25 | Budget caps: warn at 75%, hard refuse + early verdict at 95% | Prompt #13 | Rubric §A8 |
+
+---
+
 ## To-be-resolved (will surface as new prompts)
 
 - Andalus's GitHub username (for repo collaborator invite — H14 audit blocker if mis-shared)
 - Whether to push the existing `CONTEXT-*.md` orchestrator scaffolding files to the public repo, gitignore them, or move them to `.workspace/`
 - Final repo URL — suggested `salah-dev-stu/uoh-sqak-ex02` per HW1 pattern, but partner may want a co-owned org
+- The `SUBMISSION_CHECKLIST.md` at root is still HW1-skinned (mentions LSTM/RNN/dataset mechanisms, notebook analysis); needs full rewrite for HW2 deliverables — schedule after PRD is approved
