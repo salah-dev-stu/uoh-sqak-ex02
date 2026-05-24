@@ -251,6 +251,46 @@
 
 ---
 
+---
+
+## Prompt #15: Design §5 — Testing strategy
+
+**Context**: HW1 was rated *strong* on Testing Quality — keep that bar. Rubric §6.1 has 7 enumerated TDD rules; H17 + rule 7 forbid live external services in tests; rubric §A8 demands budget-threshold tests; HW1's biggest *weak* spot was Quality Standards — a CI/pre-commit pipeline fixes that.
+
+**Goal**: Lock the test pyramid (unit / integration / e2e), enumerate ~124 unit tests across 13 files, ~9 integration scenarios with H-gate cross-references, ~3 E2E tests gated by `RUN_E2E=1`, CI workflow, pre-commit config, file-line enforcer script, and fixture surface.
+
+**Prompt text**: Presented test pyramid ASCII diagram; per-file unit-test counts with mocked LLM/search via `tests/conftest.py`; integration scenarios mapped explicitly to H1-H21 audit gates; E2E tests for the real-Claude path; `.github/workflows/ci.yml` minimal config; `.pre-commit-config.yaml` (HW1 missed this); `scripts/check_file_lines.py` enforcer that also flags `line > 100 chars + no comments` to catch whitespace games the lecturer's agent looks for; fixture set covering mock LLM, mock search, temp skill dir, shared spend Value/Lock, canned transcripts.
+
+**Example output received**: User responded *"ok"* — approval.
+
+**Iterative improvements**: First draft had `pytest-cov` running on all 136 tests in pre-commit — way too slow (~minutes). Refined: pre-commit only runs unit (`tests/unit -x -q`); CI runs unit + integration with coverage; E2E gated on env var. Three-tier gating matches the cost/speed of each layer.
+
+**Best practice extracted**: Test strategy must respect the developer feedback loop. Pre-commit = sub-second runs (unit only). CI = minutes (unit + integration). E2E = real-money calls, opt-in only. A pre-commit hook that runs slow tests teaches developers to `--no-verify`, which is worse than no hook.
+
+---
+
+## Prompt #16: Spec self-review pass
+
+**Context**: Brainstorming skill step 7: "look at the spec doc with fresh eyes" — placeholder scan, internal consistency, scope check, ambiguity check. Fix inline.
+
+**Goal**: Find and resolve gaps before the user reviews the spec, so the user-review gate has a clean artifact to evaluate.
+
+**Prompt text**: Internal pass — no user prompt. Applied four-axis review.
+
+**Example output received (findings + fixes)**:
+
+1. *Placeholder scan*: stance assignment was implicit in §2 but missing from §0 quick-reference table → added stance row. `LLMResponse` and `SearchHit` types referenced but never defined → added DTO cheatsheet in §7.5. Token budget mentioned without a number → added concrete config (`tokens_per_debate=200000`, warn at 75%, hard cap at 95%).
+
+2. *Internal consistency*: cross-referenced class hierarchy in §3 against state machines in §4 — match. Watchdog `max_restarts=3` consistent §4 ↔ §5. Lifecycle hooks named in §3 match the 8 listed elsewhere — match.
+
+3. *Scope*: large but coherent. Fits a single 4-day execution window — no decomposition required. Estimated artifacts: ~500-line PRD, ~800-line PLAN, 800-1000 task TODO, 9 per-mechanism PRDs of ~150-250 lines each, ~20-30 .py files at ≤150 lines, ~136 tests.
+
+4. *Ambiguity*: "claude -p exact flags" was open → added verbatim command in §7.5. DriftDetector mechanism ambiguous (regex vs LLM-based?) → locked to stance-keyword regex (deterministic, no extra LLM cost). Token budget numbers were qualitative → added rate_limits.json concrete values.
+
+**Best practice extracted**: The self-review pass is where you find the assumptions you didn't realize you were making. The most valuable finding here was the DriftDetector mechanism — I had been assuming "the agent will figure it out" without specifying. A stance-keyword regex is deterministic, cheap, debuggable, and the failure mode is obvious — exactly what an audit-graded system needs.
+
+---
+
 ## Decisions locked (updated running list)
 
 | # | Decision | Locked at | Source |
@@ -280,6 +320,12 @@
 | 23 | Lying allowed; opponent fact-checks via web search; Judge does NOT verify facts | Prompt #13 | H17 + lec05 L1483-1491 |
 | 24 | Graceful shutdown: SIGINT → main → SIGTERM cascade → 10s drain → SIGKILL stragglers → flush transcript | Prompt #13 | Spec §8.6 |
 | 25 | Budget caps: warn at 75%, hard refuse + early verdict at 95% | Prompt #13 | Rubric §A8 |
+| 26 | Test pyramid: ~124 unit + ~9 integration + ~3 e2e (`@pytest.mark.e2e` gate) | Prompt #15 | HW1 testing-quality bar |
+| 27 | Pre-commit runs unit only (fast); CI runs unit + integration with coverage; E2E opt-in | Prompt #15 | Dev feedback loop |
+| 28 | DriftDetector mechanism: stance-keyword regex (deterministic, no extra LLM call) | Prompt #16 | Self-review locked |
+| 29 | Token budget concrete: tokens_per_debate=200000, warn@75%, hard@95% | Prompt #16 | Self-review locked |
+| 30 | DTOs: `LLMResponse`, `SearchHit`, `SpendReport`, `HealthStatus` defined as frozen dataclasses | Prompt #16 | Self-review locked |
+| 31 | ClaudeLoginProvider invocation: `claude -p --append-system-prompt <skill> --output-format json --max-turns 1` | Prompt #16 | Self-review locked |
 
 ---
 

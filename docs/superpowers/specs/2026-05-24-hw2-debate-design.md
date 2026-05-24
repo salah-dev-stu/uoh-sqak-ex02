@@ -1,6 +1,6 @@
 # HW2 Multi-Agent Debate System — Design Spec
 
-**Status**: In progress (brainstorming session, 2026-05-24). §1 + Skills + §2 + §3 + §4 locked; §5 (testing) pending.
+**Status**: Brainstorming complete (2026-05-24 / 25). All sections locked. Ready for user review → writing-plans → formal PRD/PLAN/TODO.
 **Authoring agent**: Claude Opus 4.7 via brainstorming skill
 **Audit trail**: see `docs/PROMPTS.md`
 
@@ -11,6 +11,7 @@
 | Topic | Lock | Why |
 |---|---|---|
 | Debate topic | "Can AI agents create genuinely original art, or only remix human work?" | Meta — course-perfect; originality bonus |
+| Stance assignment | Pro = AI=ORIGINALITY; Con = AI=REMIX_ONLY | Stronger contradiction; Pro's burden of proof matches the affirmative |
 | LLM provider | Claude-only via login CLI bundle | Zero API spend; mitigates same-provider auto-agreement via differentiated Skills |
 | Pings per side | 10 | Meets H3 directly; no README footnote |
 | Web-search backend | DuckDuckGo (pluggable `SearchProvider` interface) | No API key for grader; Brave/Tavily pluggable |
@@ -385,7 +386,243 @@ FIFO 20 files × 500 lines, JSON-lines, no `print()`, no unstructured stderr. Ex
 
 ---
 
-## 6. Testing strategy (PENDING — §5 of brainstorming)
+## 6. Testing strategy
+
+### Test pyramid
+
+```
+                          ┌──────────────────────────┐
+                          │ E2E debate (real Claude) │  ~3 tests
+                          │ tests/e2e/               │  manual + 1-shot in CI
+                          └──────────────────────────┘
+                       ┌──────────────────────────────────┐
+                       │ Integration (mock LLM + search)  │  ~9 tests
+                       │ tests/integration/               │  spawn real processes
+                       └──────────────────────────────────┘
+                  ┌──────────────────────────────────────────┐
+                  │ Unit (per class, DI-mocked dependencies) │  ~124 tests
+                  │ tests/unit/                              │  ≥85% coverage
+                  └──────────────────────────────────────────┘
+```
+
+### Unit layer — `tests/unit/`
+
+Mirrors `src/` structure (rubric §6.1 rule 1). Every public method gets ≥1 happy + ≥1 error test (rule 3). Dependencies injected via `BaseAgent.step(message)`-style seams; LLM and search mocked via `MockLLMProvider` / `MockSearchProvider` in `tests/conftest.py`. **No live external calls in tests** (rule 7). Test files obey the 150-line rule (rule 6).
+
+| File | Tests |
+|---|---|
+| `test_base_agent.py` | JSON send/recv, SIGTERM handler, timeout — 8 |
+| `test_partisan_agent.py` | Skill load, opponent-reference regex, citation extract — 10 |
+| `test_pro_agent.py` / `test_con_agent.py` | Stance-regex match — 4 each |
+| `test_judge_agent.py` | DriftDetector, PCFilter, ScoringEngine, no-tie, setup_directive — 18 |
+| `test_orchestrator.py` | Spawn/teardown, hook order, shutdown — 12 |
+| `test_watchdog.py` | Heartbeat poll, stuck detect, restart+backoff, fail-fast — 14 |
+| `test_gatekeeper.py` | Rate limit, FIFO queue, backpressure, retry, budget thresholds — 16 |
+| `test_lifecycle_registry.py` | Register/fire order, errors in hooks — 6 |
+| `test_search_providers.py` | DDG happy, 0-results, rate-limit fallback — 6 |
+| `test_llm_providers.py` | Shell-out, malformed JSON, timeout — 8 |
+| `test_structured_logger.py` | FIFO rotation 500 lines, 20-file cap — 6 |
+| `test_message_schema.py` | jsonschema for all 8 roles + invalid shapes — 12 |
+
+Total: **~124 unit tests**. Coverage target: ≥85% (R10), aim ≥90%.
+
+### Integration layer — `tests/integration/`
+
+Spawns real `multiprocessing.Process` children, but with `MockLLMProvider` and `MockSearchProvider` injected via config override.
+
+| File | Scenario | H-gates verified |
+|---|---|---|
+| `test_full_debate_mocked.py` | 10-ping debate end-to-end with canned LLM | H1, H2, H3, H4, H5, H7, H18, H20 |
+| `test_drift_correction.py` | Stance-violating text → `correction_request` → re-emit | H20 |
+| `test_pc_intervention.py` | PC-violating text → `intervention` | H16 |
+| `test_chaos_child_kill.py` | `SIGKILL` mid-debate → Watchdog recovers | H21, chaos §6.3 |
+| `test_chaos_child_hang.py` | Infinite loop → heartbeat-stale → kill+restart | H21 |
+| `test_budget_exhausted.py` | 95% threshold → early verdict | rubric §A8 |
+| `test_graceful_shutdown.py` | SIGINT → clean exit + aborted-*.json | §6.3 |
+| `test_no_tie_enforcer.py` | Identical scores → Judge tiebreaks | H5 |
+| `test_setup_directive_ack.py` | Phase A — both children ack before debate loop | H18 |
+
+### E2E layer — `tests/e2e/`
+
+Real Claude CLI, real DDG. `@pytest.mark.e2e` + `RUN_E2E=1` env gate.
+
+| Test | Purpose |
+|---|---|
+| `test_real_debate_5_pings.py` | 5-ping debate at the real provider — sanity check |
+| `test_real_search_dual_purpose.py` | Pro cites; Con fact-checks via DDG; both `citations` arrays in transcript |
+| `test_real_pc_filter.py` | Vulgar prompt injected; Judge intercepts before re-broadcast |
+
+### CI — `.github/workflows/ci.yml`
+
+```yaml
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - run: uv sync
+      - run: uv run ruff check src tests
+      - run: uv run pytest tests/unit tests/integration --cov --cov-fail-under=85
+      - run: uv run python scripts/check_file_lines.py
+```
+
+E2E NOT in CI (cost). Grader can opt-in with `RUN_E2E=1 uv run pytest tests/e2e`.
+
+### Pre-commit (`.pre-commit-config.yaml`) — fixes HW1's Quality Standards weak spot
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - { id: ruff,             name: ruff,                entry: uv run ruff check, language: system, types: [python] }
+      - { id: file-line-limit,  name: 150-line check,      entry: uv run python scripts/check_file_lines.py, language: system, pass_filenames: false }
+      - { id: pytest-unit,      name: pytest (unit fast),  entry: uv run pytest tests/unit -x -q, language: system, pass_filenames: false }
+```
+
+### File-line enforcer — `scripts/check_file_lines.py`
+
+Walks `src/` + `tests/`, counts non-blank non-comment lines per `.py`, exits 1 if any > 150. Also flags `line > 100 chars + no comments` to catch the "whitespace games" Dr. Segal's agent looks for.
+
+### Fixtures — `tests/conftest.py`
+
+- `mock_llm_provider` — canned JSON keyed by `(role, ping_index)`
+- `mock_search_provider` — fixed `SearchHit` lists
+- `temp_skill_dir` — tmp_path with minimal SKILL.md
+- `shared_spend_fixture` — `multiprocessing.Value` + `Lock` pair
+- `transcript_fixture` — canned 4-message transcript for replay-tests
+
+Canned LLM responses: `tests/fixtures/llm_responses/<scenario>.json`, versioned alongside tests.
+
+---
+
+## 7. Spec self-review pass (rubric §6.4, brainstorming step 7)
+
+Run on 2026-05-25 after §6 locked. Four-axis check.
+
+### 7.1 Placeholder scan
+
+Findings (all resolved inline):
+- §0 table referenced "Pro = originality side; Con = remix-only side" but the topic table didn't repeat the stance assignment — added.
+- §3 referenced `LLMResponse` and `SearchHit` types without defining them — added DTO note (see §7.5 below).
+- "Token budget" mentioned without a concrete number — added concrete numbers (see §7.5).
+
+### 7.2 Internal consistency
+
+No contradictions found between sections. Cross-references verified:
+- Class hierarchy in §3 matches state machines in §4 (BaseAgent → all three concrete agents).
+- Watchdog's `max_restarts=3` consistent across §4 and §5.
+- Lifecycle hooks named in §3 match the 8 listed in the architecture diagram.
+
+### 7.3 Scope check
+
+Scope is large but coherent — single implementation plan can drive it. Estimated artifact sizes for the writing-plans output:
+- `docs/PRD.md` ~500 lines
+- `docs/PLAN.md` ~800 lines (incl. C4, UML, 7 ADRs, ISO/IEC 25010)
+- `docs/TODO.md` 800–1000 tasks
+- 9 per-mechanism PRDs ~150-250 lines each
+- ~20-30 `.py` source files × ≤150 lines
+- ~136 tests (124 unit + 9 integration + 3 e2e)
+
+Fits a single 4-day execution window. No decomposition needed.
+
+### 7.4 Ambiguity check
+
+Resolved inline:
+- "claude -p" exact flags — specified in §7.5 (DTO + commands note).
+- DriftDetector mechanism — stance-keyword regex (deterministic, no extra LLM call). Documented in §7.5.
+- Token budget concrete numbers — added in §7.5.
+
+### 7.5 DTO + Commands cheatsheet (added during self-review)
+
+**DTOs** (to be Pydantic models or dataclasses):
+
+```python
+@dataclass(frozen=True)
+class LLMResponse:
+    text: str
+    tokens_in: int
+    tokens_out: int
+    finish_reason: Literal["stop", "length", "timeout", "error"]
+    raw_json: dict  # for debugging
+
+@dataclass(frozen=True)
+class SearchHit:
+    url: str
+    snippet: str
+    rank: int
+
+@dataclass(frozen=True)
+class SpendReport:
+    total_input_tokens: int
+    total_output_tokens: int
+    estimated_cost_usd: Decimal       # zero in login-CLI mode
+    pct_of_budget_used: float
+    by_agent: dict[str, dict]         # per-agent breakdown
+
+@dataclass(frozen=True)
+class HealthStatus:
+    children_alive: dict[str, bool]   # {"pro": True, "con": True, "judge": True}
+    last_heartbeat_ages: dict[str, float]
+    pending_messages: dict[str, int]  # queue depths
+    restart_count: dict[str, int]
+```
+
+**ClaudeLoginProvider exact invocation**:
+
+```bash
+claude -p \
+  --append-system-prompt "$(cat .claude/skills/<role>_skill/SKILL.md)" \
+  --output-format json \
+  --max-turns 1 \
+  "<user prompt>"
+```
+
+`--output-format json` returns the structured response; `--max-turns 1` prevents Claude from running multi-turn agentic loops inside a single LLM call.
+
+**DriftDetector mechanism**:
+
+Stance-keyword regex per Skill (defined in `SKILL.md` body under `## Drift signal keywords`). For example, Pro's drift-trigger keywords are `{"actually you're right", "I concede", "fair point", "good argument", "I agree", "you've convinced me"}`. Con's are the same. The detector runs `re.search()` against the candidate text; on match → `correct_and_replay`. Deterministic, cheap, requires no extra LLM call.
+
+**Token budget concrete numbers** (`config/rate_limits.json`):
+
+```json
+{
+  "version": "1.00",
+  "services": {
+    "claude_login": {
+      "tokens_per_debate": 200000,
+      "tokens_per_day": 1000000,
+      "warn_at_percent": 75,
+      "hard_cap_percent": 95,
+      "requests_per_minute": 30,
+      "concurrent_max": 3,
+      "retry_after_seconds": 60,
+      "max_retries": 3
+    },
+    "ddg_search": {
+      "requests_per_minute": 10,
+      "requests_per_hour": 100,
+      "concurrent_max": 2
+    }
+  }
+}
+```
+
+In login-CLI mode, cost = $0 — but token tracking still happens for the rate/spend report. README documents this as "API-mode-ready: switch the LLMProvider config to `claude_api_key` and the same budget caps apply with dollar accounting."
+
+---
+
+## Next steps
+
+1. ✅ §1-§6 brainstorming sections locked
+2. ✅ Self-review pass complete; inline fixes applied
+3. ⏳ **User reviews this spec file** — last gate before writing-plans
+4. ⏳ Invoke `writing-plans` skill — produces formal `docs/PRD.md`, `docs/PLAN.md`, `docs/TODO.md` (800-1000 tasks) + 9 per-mechanism PRDs from this approved design
+5. ⏳ User approval gate #1 (PRD only) — rubric §2.5 step 1
+6. ⏳ User approval gate #2 (full docs package) — rubric §2.5 step 5
+7. ⏳ Begin execution (TDD red-green-refactor) per `docs/TODO.md`
 
 ---
 
