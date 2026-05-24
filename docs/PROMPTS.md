@@ -318,6 +318,29 @@ The user said *"use this, from the lectures"* — meaning the plan must follow t
 
 ---
 
+## Prompt #18: Phase 0 execution + orchestrator-update reconciliation
+
+**Context**: After approval gates 1 and 2 closed, switched to `superpowers:subagent-driven-development` for code execution. Dispatched the Phase 0 implementer subagent (Opus) with the full task text from `docs/superpowers/plans/2026-05-25-hw2-agent-debate-system.md` and scene-setting context (working dir, locked decisions, source-of-truth files). Implementer returned DONE_WITH_CONCERNS after 8 commits. Spec-compliance reviewer found one must-fix (`.python-version` not committed) + one accepted pragmatic adaptation (`tests/unit/test_smoke.py` added to keep the pre-commit pytest hook from blocking subsequent commits on empty test dirs).
+
+While Phase 0 was running, the orchestrator session injected six additional files into the working dir and sent a "substantial new context" update with 7 deltas (A–G). Cross-checked all deltas against my already-committed PRD / PLAN / PROMPTS / per-mechanism PRDs / ADRs / configs — **every delta was already honored** because the same authoritative files (CONTEXT-lecture-05.md, IDEA.md, RULES.md) were read at session start and informed every locked decision. The reconciliation was a pure no-op on design; only `IDEA-handwritten-notes-salah.md` was new (Salah's personal mental model; surfaced no fresh requirements).
+
+**Goal**: Close out Phase 0 cleanly — apply must-fix, document the smoke-test deviation, log the orchestrator-update reconciliation for the audit trail.
+
+**Prompt text / actions**:
+- Removed the `.python-version` exclusion from `.gitignore` and committed the file (commit `16f6745`) — the original Task 0.1 spec required this for fresh-machine reproducibility.
+- Documented the `tests/unit/test_smoke.py` rationale here (deviation flagged transparently).
+- Logged the orchestrator-update no-op outcome.
+
+**Example output received**: 9 Phase 0 commits visible on `main` (initial 8 from implementer + the .python-version fix). All acceptance checks pass: ruff clean, pytest collects, line enforcer green, configs valid, .pre-commit installed.
+
+**Iterative improvements**: The spec-compliance reviewer correctly caught the must-fix; the implementer's self-review missed it because the `.gitignore` exclusion of `.python-version` looked benign. **Lesson**: when a previous phase produced a `.gitignore` (initial scaffolding commit in this session), later phases inherit its exclusions silently — review the .gitignore against each phase's spec.
+
+**Smoke test discussion** (`tests/unit/test_smoke.py`): the pre-commit hook runs `pytest tests/unit -x -q` which exits 5 ("no tests collected") on an empty `tests/unit/`. Empty exit-5 blocks subsequent commits. The implementer added a one-test file asserting `__version__ == "1.00"` (R6 versioning sanity check). This is a legitimate pragmatic adaptation — it asserts something meaningful and will be naturally subsumed by Phase 1 unit tests for the constants/version modules. Keeping.
+
+**Best practice extracted**: When a downstream tool (pre-commit hook) has a strict expectation (must find ≥1 test), and the upstream spec doesn't yet provide that input (Phase 0 has no test files), bridge the gap with the smallest meaningful placeholder that asserts a real invariant — not a stub.
+
+---
+
 ## Decisions locked (updated running list)
 
 | # | Decision | Locked at | Source |
