@@ -1,0 +1,24 @@
+{
+  "version": "1.00",
+  "agents": {
+    "pro": {
+      "skill_name": "pro_skill",
+      "temperature": 0.85,
+      "llm_provider": "claude_login",
+      "max_words_per_turn": 250
+    },
+    "con": {
+      "skill_name": "con_skill",
+      "temperature": 0.85,
+      "llm_provider": "claude_login",
+      "max_words_per_turn": 250
+    },
+    "judge": {
+      "skill_name": "judge_skill",
+      "temperature": 0.30,
+      "llm_provider": "claude_login",
+      "max_words_per_turn": 400,
+      "topic_blind": true
+    }
+  }
+}

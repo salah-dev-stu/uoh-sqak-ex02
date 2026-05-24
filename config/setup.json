@@ -1,0 +1,10 @@
+{
+  "version": "1.00",
+  "project_name": "agent-debate",
+  "debate_topic": "Can AI agents create genuinely original art, or only remix human work?",
+  "pro_stance": "AI=ORIGINALITY",
+  "con_stance": "AI=REMIX_ONLY",
+  "transcript_dir": "./transcripts",
+  "log_dir": "./logs",
+  "skills_dir": "./.claude/skills"
+}

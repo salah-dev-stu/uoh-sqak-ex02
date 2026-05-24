@@ -1,0 +1,9 @@
+{
+  "version": "1.00",
+  "fifo_files": 20,
+  "max_lines_per_file": 500,
+  "rotation_policy": "size_or_count",
+  "output_dir": "./logs",
+  "structured": true,
+  "level": "INFO"
+}

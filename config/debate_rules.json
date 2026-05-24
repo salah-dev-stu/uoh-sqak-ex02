@@ -1,0 +1,11 @@
+{
+  "version": "1.00",
+  "pings_per_side": 10,
+  "max_words_per_turn": 250,
+  "drift_intervention_threshold": 1,
+  "drift_intervention_action": "correct_and_replay",
+  "scoring_axes": ["clarity", "evidence", "rebuttal", "novelty", "role_fidelity"],
+  "scoring_max_per_axis": 20,
+  "no_tie_allowed": true,
+  "search_default_provider": "duckduckgo"
+}
