@@ -21,7 +21,7 @@ build/
 
 # uv
 .venv/
-.python-version
+# NOTE: .python-version IS tracked (committed) — fresh-machine reproducibility
 
 # Logs (rubric §A14 — keep one sample under docs/ if useful)
 logs/*.jsonl
