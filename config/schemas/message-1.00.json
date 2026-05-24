@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Agent Debate Message v1.00",
+  "type": "object",
+  "required": ["msg_id", "schema_version", "from", "to", "role", "ping_index", "text", "timestamp"],
+  "properties": {
+    "msg_id": { "type": "string", "format": "uuid" },
+    "schema_version": { "type": "string", "const": "1.00" },
+    "from": { "enum": ["pro", "con", "judge", "main"] },
+    "to": { "enum": ["pro", "con", "judge", "main"] },
+    "role": {
+      "enum": ["setup_directive", "ack", "argument", "counter",
+               "correction_request", "intervention", "status", "verdict"]
+    },
+    "ping_index": { "type": "integer", "minimum": 0 },
+    "text": { "type": "string", "maxLength": 4000 },
+    "references_opponent": { "type": "boolean" },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["url", "snippet"],
+        "properties": {
+          "url": { "type": "string", "format": "uri" },
+          "snippet": { "type": "string", "maxLength": 500 }
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "properties": {
+        "clarity": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "evidence": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "rebuttal": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "novelty": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "role_fidelity": { "type": "integer", "minimum": 0, "maximum": 20 }
+      }
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "tokens_in": { "type": "integer", "minimum": 0 },
+    "tokens_out": { "type": "integer", "minimum": 0 }
+  }
+}
