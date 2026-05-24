@@ -1,0 +1,49 @@
+# Secrets — NEVER commit
+.env
+*.key
+*.pem
+credentials.json
+*.token
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# uv
+.venv/
+.python-version
+
+# Logs (rubric §A14 — keep one sample under docs/ if useful)
+logs/*.jsonl
+logs/*.log
+
+# Transcripts (keep one sample in docs/ for README; the rest are bulk)
+transcripts/*.json
+!transcripts/sample-session-1.json
+
+# Orchestrator scaffolding (worker-session internal notes, not deliverable)
+.workspace/
+IDEA-raw.txt
+
+# Plugins / dev tooling
+.blender-toolkit/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
