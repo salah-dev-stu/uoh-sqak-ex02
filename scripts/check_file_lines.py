@@ -35,7 +35,7 @@ def main() -> int:
     )
     violations: list[str] = []
     for path in targets:
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         n = count_logical_lines(text)
         if n > MAX_LINES:
             violations.append(f"{path}: {n} lines (limit {MAX_LINES})")
