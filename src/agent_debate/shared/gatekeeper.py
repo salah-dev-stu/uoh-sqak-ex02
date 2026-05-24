@@ -26,6 +26,10 @@ class RateLimitExceeded(Exception):  # noqa: N818
     """Rate-limit windowed budget hit; caller should back off."""
 
 
+class BackpressureExceeded(Exception):  # noqa: N818
+    """FIFO queue is full; producer must slow down (rubric §A5)."""
+
+
 @dataclass(frozen=True)
 class QueueStatus:
     depth: int
@@ -94,6 +98,16 @@ class ApiGatekeeper:
             capacity=self._capacity,
             in_flight=self._in_flight,
         )
+
+    def enqueue(self, item: object) -> None:
+        if len(self._queue) >= self._capacity:
+            raise BackpressureExceeded(
+                f"queue full ({len(self._queue)}/{self._capacity})"
+            )
+        self._queue.append(item)
+
+    def drain(self) -> None:
+        self._queue.clear()
 
     def _check_budget_hard_cap(self) -> None:
         cap = self.config["tokens_per_debate"]

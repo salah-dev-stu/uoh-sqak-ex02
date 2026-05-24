@@ -2,14 +2,17 @@
 
 Signature matches rubric §A4 verbatim.
 """
+import time
 from multiprocessing import Lock, Value
 
 import pytest
 
 from agent_debate.shared.gatekeeper import (
     ApiGatekeeper,
+    BackpressureExceeded,
     BudgetExhausted,
     QueueStatus,
+    RateLimitExceeded,
 )
 
 
@@ -88,3 +91,40 @@ def test_estimate_cost_zero_in_login_mode():
     from decimal import Decimal
     gk = _make_gatekeeper()
     assert gk.estimate_cost(n_debates=5) == Decimal("0.00")
+
+
+def test_backpressure_alerts_when_queue_full(capsys):
+    # Use a tiny capacity so we can fill it
+    spend = Value("i", 0)
+    lock = Lock()
+    cfg = _config()
+    gk = ApiGatekeeper(config=cfg, shared_spend=spend, lock=lock, queue_capacity=2)
+    # Fill the queue past the backpressure threshold
+    gk.enqueue("call1")
+    gk.enqueue("call2")
+    # Should now be at capacity; further enqueue raises QueueFull or logs backpressure
+    with pytest.raises(BackpressureExceeded):
+        gk.enqueue("call3")
+
+
+def test_drain_clears_processed_calls():
+    spend = Value("i", 0)
+    lock = Lock()
+    cfg = _config()
+    gk = ApiGatekeeper(config=cfg, shared_spend=spend, lock=lock, queue_capacity=10)
+    gk.enqueue("call1")
+    gk.enqueue("call2")
+    assert gk.get_queue_status().depth == 2
+    gk.drain()
+    assert gk.get_queue_status().depth == 0
+
+
+def test_rate_window_resets_after_60s(monkeypatch):
+    gk = _make_gatekeeper()
+    # Simulate 31 calls (above requests_per_minute=30) but spaced via fake clock
+    times = [100.0 + i * 0.1 for i in range(31)]
+    iterator = iter(times)
+    monkeypatch.setattr(time, "time", lambda: next(iterator))
+    with pytest.raises(RateLimitExceeded):
+        for _ in range(31):
+            gk.execute(lambda: None)
