@@ -291,6 +291,33 @@
 
 ---
 
+---
+
+## Prompt #17: Plan alignment to Dr. Segal's slide
+
+**Context**: While drafting `docs/superpowers/plans/2026-05-25-hw2-agent-debate-system.md`, the user sent a screenshot of Dr. Segal's lifecycle slide:
+
+> "Insert into plan mode / Your mission is to create the following PRD document base on the following description / Bullets A B C / prd.md / Plan.md / Todo.md (300-800) / Verify that all PRD demand implemented in the todo list. You must be very critical / Execute the todo list one by one and mark each task that was done / You must create a readme file / Run the project / push to github as public"
+
+The user said *"use this, from the lectures"* — meaning the plan must follow this exact sequence and use the verbatim prompts.
+
+**Goal**: Refactor the implementation plan so the execution order matches the slide (docs-first → execute → README → run → push public), and inject the lecturer's exact prompt phrasings at the corresponding tasks.
+
+**Prompt text**: User's instruction + the slide screenshot.
+
+**Example output received (changes applied to the plan)**:
+1. Added a "Canonical Vibe Coding Lifecycle (Dr. Segal's slide — follow verbatim)" section directly under the plan header, reproducing the slide text and mapping each step to the plan's phases/tasks.
+2. Task 11.2 (PRD) — now uses the verbatim prompt *"Your mission is to create the following PRD document based on the following description: [bullets]"* when invoking the PRD-writer.
+3. Task 11.4 (TODO) — now uses the verbatim verify prompt *"Verify that all PRD demand implemented in the todo list. You must be very critical."* — and documents in the TODO header why we picked 800 tasks (top of the slide's 300-800 range, bottom of CLAUDE.md's 800-1000 target).
+4. Task 11.1 (README) — marked explicitly as POST-execution per the slide order, with lec01 L1249-1250 quote ("you'll quickly forget what you did") as rationale.
+5. Task 12.4 (push) — now marked **PUBLIC** explicitly, with `gh repo create --public` command, incognito verification, and a quote from lec05 L1641-1652 about the auto-zero risk of inaccessible repos.
+
+**Iterative improvements**: First draft of the plan had docs in Phase 11 (after code). The slide explicitly puts docs FIRST. Restructuring the plan in-place via an "execution order overrides phase numbers" note in the lifecycle section is cleaner than renumbering every section header — the executor reads the lifecycle table first, then walks phases in lifecycle order.
+
+**Best practice extracted**: When the lecturer's workflow ordering conflicts with the natural dependency-DAG ordering of an engineering plan, lead with a "Lifecycle (this is the order)" section that maps lecturer steps to phase numbers. Don't fight the slide — restructure to honor it, and document the deliberate choice in the PROMPTS audit trail.
+
+---
+
 ## Decisions locked (updated running list)
 
 | # | Decision | Locked at | Source |
@@ -326,6 +353,11 @@
 | 29 | Token budget concrete: tokens_per_debate=200000, warn@75%, hard@95% | Prompt #16 | Self-review locked |
 | 30 | DTOs: `LLMResponse`, `SearchHit`, `SpendReport`, `HealthStatus` defined as frozen dataclasses | Prompt #16 | Self-review locked |
 | 31 | ClaudeLoginProvider invocation: `claude -p --append-system-prompt <skill> --output-format json --max-turns 1` | Prompt #16 | Self-review locked |
+| 32 | Plan execution order: docs FIRST per Dr. Segal's slide (PRD → PLAN → TODO → verify → execute → README → run → push public) | Prompt #17 | Lecturer slide |
+| 33 | TODO.md target size: 800 tasks (top of slide's 300-800, bottom of CLAUDE.md's 800-1000) | Prompt #17 | Reconciles slide + spoken lecture + project target |
+| 34 | Push to GitHub explicitly PUBLIC (`gh repo create --public`); incognito verify; lec05 L1641-1652 auto-zero risk | Prompt #17 | Lecturer slide |
+| 35 | README is POST-execution per slide order (lec01 L1249-1250: "you'll forget what you did") | Prompt #17 | Lecturer slide |
+| 36 | Use verbatim prompts: "Your mission is to create the following PRD document…" + "Verify that all PRD demand implemented in the todo list. You must be very critical." | Prompt #17 | Lecturer slide |
 
 ---
 

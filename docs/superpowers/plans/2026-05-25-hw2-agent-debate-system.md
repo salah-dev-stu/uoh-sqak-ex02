@@ -14,6 +14,78 @@
 
 ---
 
+## Canonical Vibe Coding Lifecycle (Dr. Segal's slide — follow verbatim)
+
+The lecturer's slide, reproduced verbatim from class:
+
+```
+Insert into plan mode
+Your mission is to create the following PRD document base on the
+following description
+
+Bullets
+  • A
+  • B
+  • C
+
+prd.md
+Plan.md
+Todo.md  (300-800)
+
+Verify that all prd demand implemented in the todo list.
+You must be very critical
+
+Execute the todo list one by one and mark each task that was done
+
+You must create a readme file
+
+Run the project
+push to github  as public
+```
+
+**Execution order — this overrides the phase numbers below.** Phases below are written in dependency order (foundation → code → tests → docs → run) but the lecturer mandates **docs FIRST**, code SECOND, README LAST, run-then-push at the end. Map:
+
+| Slide step | Maps to phase / task | Approval gate |
+|---|---|---|
+| 1. "Insert into plan mode" + "Your mission is to create the following PRD document…" | **Phase A** → Task 11.2 (`docs/PRD.md`) | **GATE 1** — wait for user approval before continuing |
+| 2. "Plan.md" | **Phase B** → Task 11.3 (`docs/PLAN.md`) | — |
+| 3. "Todo.md (300-800)" | **Phase C** → Task 11.4 (`docs/TODO.md`) | — |
+| 4. "Verify that all PRD demand implemented in the todo list. You must be very critical" | **Phase D** → Task 11.4 verify sub-step | — |
+| 4b. Per-mechanism PRDs (9 files, rubric §2.5 step 4) | **Phase E** → Task 11.5 | **GATE 2** — full doc package approval (rubric §2.5 step 5) |
+| 5. "Execute the todo list one by one and mark each task that was done" | **Phases 0-10** (scaffold + foundation + providers + gatekeeper + skills + agents + orchestration + watchdog + SDK + tests) | — |
+| 6. "You must create a readme file" | **Phase 11.1** → README.md | — |
+| 7. "Run the project" | **Phase 12.1** (manual Phase 1) + **12.2** (end-to-end) | — |
+| 8. "push to github as public" | **Phase 12.4** (public repo + collaborator) | — |
+
+### Verbatim prompts to use (Dr. Segal's exact phrasing)
+
+**For Task 11.2 (PRD generation):** Use these words exactly when invoking the PRD-writer (a subagent or yourself):
+
+> "Your mission is to create the following PRD document based on the following description:"
+> *(followed by bullets distilled from `docs/superpowers/specs/2026-05-24-hw2-debate-design.md`)*
+
+**For Task 11.4 (TODO verification sub-step):** Use this exact prompt after the first TODO draft is written:
+
+> "Verify that all PRD demand implemented in the todo list. You must be very critical."
+
+Per lec01 L1199-1201, this pass typically adds ~200 missed tasks. Budget for the additions.
+
+### TODO size — reconciling three numbers
+
+| Source | Range |
+|---|---|
+| Lecturer slide (this screenshot) | 300–800 |
+| Lecturer spoken word (lec01 L1170-1180) | 500–1000 |
+| CLAUDE.md project target (HW2 quality target ≥90) | min 500, aim 800–1000 |
+
+**Target: 800 tasks (top of slide range, bottom of CLAUDE.md target).** If the verify pass adds tasks, accept up to 1000. Document the choice in `docs/TODO.md` header so the grading agent sees the deliberation.
+
+### Approval gates are non-negotiable (rubric §2.5)
+
+The grading agent inspects git timeline for evidence that work paused at the gates. No code commits between writing `docs/PRD.md` and the user typing "approved." No code commits between completing the per-mechanism PRDs and the user typing "approved" again. The pauses are part of the deliverable.
+
+---
+
 ## File structure (the map)
 
 Every file gets created or modified by an explicit task. No file appears mid-plan without a Create/Modify entry.
@@ -2626,7 +2698,9 @@ uv run agent-debate
 
 ## Phase 11 — Documentation
 
-### Task 11.1: README.md (the user manual + session-1 dialogue dump — spec §8.7 mandate)
+### Task 11.1 (= lifecycle step 6 — "You must create a readme file"): README.md
+
+**⚠️ This task must run AFTER all TODO items in Phases 0-10 are marked done.** Per the slide, README comes AFTER execution, not before — because (lec01 L1249-1250) *"you'll create lots of projects, you'll quickly forget what you did."*
 
 **Files:** Create `README.md`
 
@@ -2648,22 +2722,38 @@ uv run agent-debate
 
 ---
 
-### Task 11.2: docs/PRD.md (rubric §2.5 step 1 — FIRST APPROVAL GATE)
+### Task 11.2 (= Phase A): docs/PRD.md (rubric §2.5 step 1 — FIRST APPROVAL GATE)
 
 **Files:** Create `docs/PRD.md`
 
-- [ ] **Step 1: Write the PRD** with all standard sections:
-  - Background (quote 16× productivity + Context Engineering thesis)
-  - Goals + KPIs (target ≥90 on HW2, recover 6.5-pt HW1 gap)
-  - Functional requirements (H1-H25)
-  - Non-functional requirements (ISO/IEC 25010 with Hebrew/English term pairs)
-  - Security requirements
-  - Constraints (RAG out of scope per N4)
-  - Timeline (Phase 0 → Phase 12 mapped to deadline)
-  - Out-of-scope (multi-skill per agent, mixed providers — deferred)
+> **⚠️ Per the slide:** this task is **STEP 1** of the lecturer's lifecycle and **must be done BEFORE any source code is written**. The phase numbers in this plan are written in dependency order, but execution order is docs-first.
 
-- [ ] **Step 2: Commit**
-- [ ] **Step 3: PAUSE — wait for explicit user approval** (rubric §2.5 step 1 gate)
+- [ ] **Step 1: Frame the PRD task using Dr. Segal's verbatim prompt**
+
+If using a subagent, prompt it exactly:
+
+> "Your mission is to create the following PRD document based on the following description: [bullets from `docs/superpowers/specs/2026-05-24-hw2-debate-design.md` §0 locked decisions]"
+
+If writing inline, internalize the same framing — the PRD is **derived from** the brainstorming spec's locked decisions, not invented anew.
+
+- [ ] **Step 2: Write the PRD** with all standard sections:
+  - **Background** — quote the 16× productivity statement (rubric §1.4) + the Context Engineering thesis (spec §10) verbatim in Hebrew + English
+  - **Goals + KPIs** — target ≥90 on HW2, recover 6.5-pt HW1 gap, meet all 25 H-gates, fix 4 HW1 weak spots
+  - **Functional requirements** — H1 through H25, each tagged with its source (spec / lec05 / rubric)
+  - **Non-functional requirements** — ISO/IEC 25010 paragraph with verbatim Hebrew/English term pairs (rubric §A10)
+  - **Security requirements** — `.env-example` only, `os.environ.get(...)`, no secrets in code, `.gitignore` enforces
+  - **Constraints** — RAG out of scope per N4; CLI-only deliverable; Claude-CLI required on grader's machine
+  - **Timeline** — phase mapping to the 4-day deadline (Phase A through 12)
+  - **Out-of-scope** — multi-skill per agent (N10 bonus deferred), mixed providers (Gemini adapter not built), Unix-domain socket watchdog
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add docs/PRD.md
+git commit -m "docs(prd): root PRD per Vibe Coding lifecycle step 1 (rubric §2.5)"
+```
+
+- [ ] **Step 4: 🛑 PAUSE — wait for explicit user approval before continuing.** Rubric §2.5 step 1 gate. The grader inspects git timeline for evidence of this pause. Do NOT write any other file until the user says "approved."
 
 ---
 
@@ -2685,13 +2775,52 @@ uv run agent-debate
 
 ---
 
-### Task 11.4: docs/TODO.md (≥500 tasks, target 800-1000)
+### Task 11.4 (= Phase C + D): docs/TODO.md — target 800 (within slide's 300-800, top of range)
 
 **Files:** Create `docs/TODO.md`
 
-- [ ] **Step 1: Generate the task list** — explode each task from this plan into granular subtasks + add tasks for: README screenshots, every test, every doc paragraph, every commit, every config field validation. Target 800-1000 entries with `[ ]`/`[x]` markers
-- [ ] **Step 2: Run the "be very critical" pass** (verbatim lecturer phrasing) — re-read PRD, ensure every requirement maps to ≥1 task; typically adds ~200 missed tasks (lec01 L1199-1201)
-- [ ] **Step 3: Commit**
+- [ ] **Step 1: Generate the initial task list** — explode each task from this plan into granular subtasks. Add explicit tasks for:
+  - Every config field validation
+  - Every README section (install, usage, examples, screenshots, session-1 dump, cost analysis, behavior notes, extension points, AI disclosure, license)
+  - Every test (unit + integration + e2e, ~136 tests)
+  - Every commit (continuous-commits discipline is graded)
+  - Every per-mechanism PRD (9 files × ~150-250 lines each)
+  - Every ADR (7 files)
+  - Every screenshot for manual Phase 1
+  - Every diagram (C4 context/container/component, class diagram, sequence diagram)
+
+Target: **~600 tasks initially** (the verify pass below will add ~200 more).
+
+- [ ] **Step 2: Run the "be very critical" verify pass — use Dr. Segal's verbatim prompt**
+
+If using a subagent, prompt it exactly:
+
+> "Verify that all PRD demand implemented in the todo list. You must be very critical."
+
+If inline, walk through `docs/PRD.md` requirement-by-requirement and ensure ≥1 TODO task implements each. Lec01 L1199-1201: this pass typically adds ~200 missed tasks. Accept the additions.
+
+- [ ] **Step 3: Document the size choice in TODO.md header**
+
+```markdown
+# HW2 TODO list
+
+**Target size:** 800 tasks (top of lecturer's slide range 300-800, bottom of CLAUDE.md target 800-1000).
+After "you must be very critical" verify pass, this may grow toward 1000.
+Sized to balance: Dr. Segal's slide ceiling, spoken-lecture minimum (lec01 L1170: "מינימום 500"),
+and the user's HW2 quality target ≥90.
+
+**Marking discipline:**
+- `[ ]` = pending
+- `[x]` = done (commit it when you mark — continuous-commits are graded)
+- `[~]` = in progress (use sparingly; long [~] entries fragment the audit trail)
+```
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add docs/TODO.md
+git commit -m "docs(todo): initial task list (~800 entries) + 'very critical' verify pass"
+```
 
 ---
 
@@ -2768,12 +2897,40 @@ Each ADR: Context / Decision / Consequences / Alternatives. Pulled from spec §0
 
 ---
 
-### Task 12.4: Push to GitHub, share with lecturer
+### Task 12.4 (= lifecycle step 8 — "push to github as public"): Public GitHub + lecturer access
 
-- [ ] **Step 1: Create public GitHub repo** `salah-dev-stu/uoh-sqak-ex02` (or partner-confirmed alternate)
-- [ ] **Step 2: Add Andalus as collaborator** (need his GitHub handle — open question from spec)
-- [ ] **Step 3: `git remote add origin <url>` + `git push -u origin main`**
-- [ ] **Step 4: Verify lecturer can access** — open repo URL in incognito → confirm public viewable
+**⚠️ The slide says `as public` explicitly.** Lec05 L1641-1652: *"3 or 4 submitted with GitHub but without sharing — couldn't open them — there's a ZERO."* No resubmission. **PUBLIC is the safe default.**
+
+- [ ] **Step 1: Create the GitHub repo PUBLIC** — `salah-dev-stu/uoh-sqak-ex02` (or partner-confirmed alternate)
+
+  ```bash
+  gh repo create salah-dev-stu/uoh-sqak-ex02 --public --description "HW2 Multi-Agent Debate System (course 203.3763)" --source=. --remote=origin
+  ```
+
+- [ ] **Step 2: Add Andalus as collaborator** — needs his GitHub username (open question, may need to ask user during execution)
+
+  ```bash
+  gh api repos/salah-dev-stu/uoh-sqak-ex02/collaborators/<andalus-handle> --method PUT
+  ```
+
+- [ ] **Step 3: Push main**
+
+  ```bash
+  git push -u origin main
+  ```
+
+- [ ] **Step 4: Verify lecturer can access** — open the repo URL in an incognito window. If the page loads without login → PUBLIC confirmed. If it shows "404" or "sign in" → repo is private and the lecturer would auto-zero this submission. Fix immediately:
+
+  ```bash
+  gh repo edit salah-dev-stu/uoh-sqak-ex02 --visibility public --accept-visibility-change-consequences
+  ```
+
+- [ ] **Step 5: Also share with rmisegal@gmail.com as a defensive belt-and-suspenders** (optional since repo is public; harmless redundancy)
+
+  ```bash
+  # Only if the lecturer has a GitHub account tied to that email; otherwise skip.
+  # gh api repos/salah-dev-stu/uoh-sqak-ex02/collaborators/<lecturer-gh-handle> --method PUT
+  ```
 
 ---
 
