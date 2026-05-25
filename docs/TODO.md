@@ -543,60 +543,60 @@ and the user's HW2 quality target ≥90.
 ## Phase 10 — Integration + E2E tests
 
 ### Task 10.1: test_full_debate_mocked.py (H1, H2, H3, H4, H5, H7, H18, H20)
-- [ ] 10.1.1-10.1.10: Spawn 3 real processes with MockLLMProvider via config override
-- [ ] 10.1.11-10.1.15: Assert all 20 turns logged
-- [ ] 10.1.16-10.1.18: Assert no direct Pro↔Con messages
-- [ ] 10.1.19-10.1.20: Assert JSON validity on every message
-- [ ] 10.1.21: Assert references_opponent=true on every argument/counter
-- [ ] 10.1.22: Assert verdict declared with differential scoring
-- [ ] 10.1.23: Commit "test(int): full debate end-to-end mocked"
+- [x] 10.1.1-10.1.10: Spawn 3 real processes with MockLLMProvider via config override
+- [x] 10.1.11-10.1.15: Assert all 20 turns logged
+- [x] 10.1.16-10.1.18: Assert no direct Pro↔Con messages
+- [x] 10.1.19-10.1.20: Assert JSON validity on every message
+- [x] 10.1.21: Assert references_opponent=true on every argument/counter
+- [x] 10.1.22: Assert verdict declared with differential scoring
+- [x] 10.1.23: Commit "test(int): full debate end-to-end mocked"
 
 ### Task 10.2: test_drift_correction.py (H20)
-- [ ] 10.2.1-10.2.5: Inject stance-violating canned response → assert correction_request fires → assert agent re-emits
-- [ ] 10.2.6: Commit
+- [x] 10.2.1-10.2.5: Inject stance-violating canned response → assert correction_request fires → assert agent re-emits
+- [x] 10.2.6: Commit
 
 ### Task 10.3: test_pc_intervention.py (H16)
-- [ ] 10.3.1-10.3.5: Inject vulgar canned response → assert intervention fires → assert sanitized re-emit
-- [ ] 10.3.6: Commit
+- [x] 10.3.1-10.3.5: Inject vulgar canned response → assert intervention fires → assert sanitized re-emit
+- [x] 10.3.6: Commit
 
 ### Task 10.4: test_chaos_child_kill.py (H21)
-- [ ] 10.4.1-10.4.5: Start debate; os.kill(child_pid, SIGKILL) mid-ping; assert Watchdog respawns within stuck_timeout; assert debate completes
-- [ ] 10.4.6: Commit
+- [x] 10.4.1-10.4.5: Start debate; os.kill(child_pid, SIGKILL) mid-ping; assert Watchdog respawns within stuck_timeout; assert debate completes
+- [x] 10.4.6: Commit
 
 ### Task 10.5: test_chaos_child_hang.py (H21)
-- [ ] 10.5.1-10.5.5: Mock LLM with `time.sleep(60)` (longer than stuck_timeout); assert Watchdog detects via heartbeat staleness; assert SIGKILL+respawn
-- [ ] 10.5.6: Commit
+- [x] 10.5.1-10.5.5: Mock LLM with `time.sleep(60)` (longer than stuck_timeout); assert Watchdog detects via heartbeat staleness; assert SIGKILL+respawn
+- [x] 10.5.6: Commit
 
 ### Task 10.6: test_budget_exhausted.py (rubric §A8)
-- [ ] 10.6.1-10.6.5: Pre-spend 190K tokens (95% of 200K); start debate; assert early verdict with `budget_exhausted` marker
-- [ ] 10.6.6: Commit
+- [x] 10.6.1-10.6.5: Pre-spend 190K tokens (95% of 200K); start debate; assert early verdict with `budget_exhausted` marker
+- [x] 10.6.6: Commit
 
 ### Task 10.7: test_graceful_shutdown.py
-- [ ] 10.7.1-10.7.5: Start debate; send SIGINT mid-debate; assert all 3 children exit cleanly; assert `aborted-*.json` partial transcript created
-- [ ] 10.7.6: Commit
+- [x] 10.7.1-10.7.5: Start debate; send SIGINT mid-debate; assert all 3 children exit cleanly; assert `aborted-*.json` partial transcript created
+- [x] 10.7.6: Commit
 
 ### Task 10.8: test_no_tie_enforcer.py (H5)
-- [ ] 10.8.1-10.8.5: Mock LLM returns identical Pro/Con scores; assert Judge tiebreaks by role_fidelity (or random) — never returns "tie"
-- [ ] 10.8.6: Commit
+- [x] 10.8.1-10.8.5: Mock LLM returns identical Pro/Con scores; assert Judge tiebreaks by role_fidelity (or random) — never returns "tie"
+- [x] 10.8.6: Commit
 
 ### Task 10.9: test_setup_directive_ack.py (H18)
-- [ ] 10.9.1-10.9.5: Spawn 3 children; assert Phase A messages (2× setup_directive + 2× ack) precede Phase B (first argument)
-- [ ] 10.9.6: Commit
+- [x] 10.9.1-10.9.5: Spawn 3 children; assert Phase A messages (2× setup_directive + 2× ack) precede Phase B (first argument)
+- [x] 10.9.6: Commit
 
 ### Task 10.10: E2E — test_real_debate_5_pings.py
-- [ ] 10.10.1: @pytest.mark.e2e
-- [ ] 10.10.2: Run real 5-ping debate against actual Claude CLI + DDG
-- [ ] 10.10.3: Assert transcript persisted, verdict declared
-- [ ] 10.10.4: Commit "test(e2e): real-Claude 5-ping debate sanity check"
+- [x] 10.10.1: @pytest.mark.e2e
+- [x] 10.10.2: Run real 5-ping debate against actual Claude CLI + DDG
+- [x] 10.10.3: Assert transcript persisted, verdict declared
+- [x] 10.10.4: Commit "test(e2e): real-Claude 5-ping debate sanity check"
 
 ### Task 10.11: E2E — test_real_search_dual.py (H24)
-- [ ] 10.11.1: Pro emits citation; Con's next turn fact-checks via DDG
-- [ ] 10.11.2: Assert both `citations` arrays populated in transcript
-- [ ] 10.11.3: Commit
+- [x] 10.11.1: Pro emits citation; Con's next turn fact-checks via DDG
+- [x] 10.11.2: Assert both `citations` arrays populated in transcript
+- [x] 10.11.3: Commit
 
 ### Task 10.12: E2E — test_real_pc_filter.py
-- [ ] 10.12.1: Inject vulgar text through a custom prompt; assert Judge intercepts before re-broadcast
-- [ ] 10.12.2: Commit
+- [x] 10.12.1: Inject vulgar text through a custom prompt; assert Judge intercepts before re-broadcast
+- [x] 10.12.2: Commit
 
 ---
 
