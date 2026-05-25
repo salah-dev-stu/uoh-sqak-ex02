@@ -9,10 +9,11 @@ run_debate on top via orchestrator_runtime helpers (keeps each file
 from __future__ import annotations
 
 import json
+import multiprocessing as _mp
 import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime
-from multiprocessing import Lock, Process, Queue, Value
+from multiprocessing import Process, Queue
 from pathlib import Path
 
 from agent_debate.agents.judge_agent import JudgeAgent
@@ -27,6 +28,10 @@ from agent_debate.orchestration.orchestrator_runtime import (
 from agent_debate.orchestration.process_flow import run_ping_loop, run_setup_phase
 from agent_debate.orchestration.process_verdict import finalize_verdict
 from agent_debate.orchestration.transcript import Transcript
+
+# macOS Python 3.13 spawn-start breaks mp.Queue with daemon=True children;
+# fork avoids the named-semaphore FileNotFoundError. ADR documented in PROMPTS.
+_CTX = _mp.get_context("fork")
 
 __all__ = ["DebateOrchestrator", "Transcript"]
 
@@ -56,8 +61,8 @@ class DebateOrchestrator:
         self._children: list[Process] = []
         self._child_map: dict[str, Process] = {}
         self._queues: dict[str, Queue] = {}
-        self._shared_spend = Value("i", 0)
-        self._lock = Lock()
+        self._shared_spend = _CTX.Value("i", 0)
+        self._lock = _CTX.Lock()
         self._shutdown_requested = False
 
     def make_setup_directive(self, to_role: str, stance: str) -> dict:
@@ -66,8 +71,7 @@ class DebateOrchestrator:
             "msg_id": str(uuid.uuid4()), "schema_version": SCHEMA_VERSION,
             "from": AgentRole.JUDGE.value, "to": to_role,
             "role": MessageRole.SETUP_DIRECTIVE.value, "ping_index": 0,
-            "text": f"Your stance: {stance}.",
-            "timestamp": datetime.now(tz=UTC).isoformat(),
+            "text": f"Your stance: {stance}.", "timestamp": datetime.now(tz=UTC).isoformat(),
         }
 
     def persist_transcript(self, transcript: Transcript) -> Path:
@@ -81,12 +85,13 @@ class DebateOrchestrator:
         return path
 
     def shutdown_gracefully(self) -> None:
-        """Cascade SIGTERM to children with 10s drain; SIGKILL stragglers."""
+        """Cascade SIGTERM to started children with 10s drain; SIGKILL stragglers."""
         self._shutdown_requested = True
-        for child in self._children:
+        started = [c for c in self._children if getattr(c, "_popen", None) is not None]
+        for child in started:
             if child.is_alive():
                 child.terminate()
-        for child in self._children:
+        for child in started:
             child.join(timeout=10)
             if child.is_alive():
                 child.kill()

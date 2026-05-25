@@ -106,7 +106,8 @@ def test_spawn_children_creates_three_processes(tmp_path: Path) -> None:
     children = orch.spawn_children(topic="ai-originality", skill_dir=str(tmp_path))
     assert set(children.keys()) == {"pro", "con", "judge"}
     for proc in children.values():
-        assert isinstance(proc, mp.Process)
+        # Fork-context BaseProcess is still a BaseProcess subclass.
+        assert isinstance(proc, mp.process.BaseProcess)
         assert not proc.is_alive()  # not started yet
 
 

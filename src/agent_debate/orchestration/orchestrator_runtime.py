@@ -1,12 +1,17 @@
-"""Runtime helpers for DebateOrchestrator — spawn_children + run_child_loop +
-real-process IPC flow primitives (Phase 10).
+"""Runtime helpers for DebateOrchestrator — spawn_children + run_child_loop.
 
 Split out of orchestrator.py to keep each module ≤150 logical lines.
 The Process target (`run_child_loop`) is a module-level function so it
 remains picklable across the fork/spawn boundary.
+
+NOTE: Uses the `fork` start method explicitly. macOS Python 3.13 defaults
+to `spawn`, which trips a known named-semaphore FileNotFoundError when
+mp.Queue + mp.Lock primitives are passed across the pickling boundary
+with daemon=True children. `fork` sidesteps the issue.
 """
 from __future__ import annotations
 
+import multiprocessing as _mp
 import time
 from collections.abc import Callable
 from multiprocessing import Process, Queue
@@ -15,31 +20,19 @@ from multiprocessing.synchronize import Lock
 
 from agent_debate.constants import AgentRole
 
+_CTX = _mp.get_context("fork")
 _ROLE_CLASSES = ("pro", "con", "judge")
 _HEARTBEAT_PERIOD = 2.0
 _POLL_TIMEOUT = 1.0
-ACK_TIMEOUT_S = 30.0
-TURN_TIMEOUT_S = 90.0
-MAX_REPLAYS_PER_TURN = 1
 
 
 def build_queue_topology() -> dict[str, Queue]:
-    """Create the 4 queues used by the 3 processes.
-
-    Returns:
-      heartbeat   — child→main, shared by all 3 children
-      judge_in    — Pro/Con → Judge (both write here)
-      pro_in      — Judge → Pro
-      con_in      — Judge → Con
-
-    Pro out_queue == judge_in; Con out_queue == judge_in;
-    Judge "out" is per-recipient — handled by router, not a single queue.
-    """
+    """Create the 4 queues used by the 3 processes (fork-context)."""
     return {
-        "heartbeat": Queue(),
-        "judge_in": Queue(),
-        "pro_in": Queue(),
-        "con_in": Queue(),
+        "heartbeat": _CTX.Queue(),
+        "judge_in": _CTX.Queue(),
+        "pro_in": _CTX.Queue(),
+        "con_in": _CTX.Queue(),
     }
 
 
@@ -51,22 +44,16 @@ def build_child_processes(
     skill_dir: str,
     llm_provider_factory: Callable,
 ) -> dict[str, Process]:
-    """Construct (but do not start) the 3 child Processes.
-
-    Each child gets ONE in_queue + ONE out_queue + the shared heartbeat queue.
-    """
+    """Construct (but do not start) the 3 child Processes (fork-context)."""
     procs: dict[str, Process] = {}
     role_queues = {
         "pro": (queues["pro_in"], queues["judge_in"]),
         "con": (queues["con_in"], queues["judge_in"]),
         "judge": (queues["judge_in"], queues["pro_in"]),
-        # NOTE: judge "out" routes per-recipient; pro_in is just the default
-        # write target. Real routing happens in run_debate which inspects
-        # the message `to` field and pushes to the right queue.
     }
     for role in _ROLE_CLASSES:
         in_q, out_q = role_queues[role]
-        procs[role] = Process(
+        procs[role] = _CTX.Process(
             target=target,
             kwargs={
                 "role": role,
