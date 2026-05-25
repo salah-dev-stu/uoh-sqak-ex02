@@ -1,0 +1,14 @@
+{
+  "msg_id": "00000000-0000-0000-0000-00000000d001",
+  "schema_version": "1.00",
+  "from": "judge",
+  "to": "main",
+  "role": "verdict",
+  "ping_index": 11,
+  "text": "After ten pings per side, the affirmative side prevails. The affirmative case sustained higher rebuttal density across pings 2 through 10, with consistent engagement with the negative's specific claims (Stochastic Parrots, Chinese Room, Getty watermarks). The negative side had strong opening evidence but slipped into citation repetition by ping 7. Tiebreak chain not invoked: the aggregate margin was 4 points across the five-axis scoring. No drift phrases triggered; no PC filter interventions; protocol adherence was clean on both sides.",
+  "scoring": {
+    "pro": {"clarity": 17, "evidence": 18, "rebuttal": 17, "novelty": 15, "role_fidelity": 19},
+    "con": {"clarity": 17, "evidence": 17, "rebuttal": 14, "novelty": 13, "role_fidelity": 18}
+  },
+  "timestamp": "2026-05-25T13:00:00+00:00"
+}

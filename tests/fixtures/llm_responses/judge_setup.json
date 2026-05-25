@@ -1,0 +1,22 @@
+[
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000c001",
+    "schema_version": "1.00",
+    "from": "judge",
+    "to": "pro",
+    "role": "setup_directive",
+    "ping_index": 0,
+    "text": "You are the affirmative side of this debate. Defend your assigned stance over at least ten pings. Output a single JSON object per ping, validating against the message schema. Cite at least one source per ping in the citations array. From ping_index 2 onward, set references_opponent to true and engage with a specific claim from the opposing side's previous ping. Stay on your assigned stance; concessions are scored as drift and force a replay. Five scoring axes apply, each 0-20: clarity, evidence, rebuttal, novelty, role_fidelity. The debate ends when both sides have completed ten pings; I will then issue a verdict.",
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000c002",
+    "schema_version": "1.00",
+    "from": "judge",
+    "to": "con",
+    "role": "setup_directive",
+    "ping_index": 0,
+    "text": "You are the negative side of this debate. Defend your assigned stance over at least ten pings. Output a single JSON object per ping, validating against the message schema. Cite at least one source per ping in the citations array. From ping_index 2 onward, set references_opponent to true and engage with a specific claim from the opposing side's previous ping. Stay on your assigned stance; concessions are scored as drift and force a replay. Five scoring axes apply, each 0-20: clarity, evidence, rebuttal, novelty, role_fidelity. The debate ends when both sides have completed ten pings; I will then issue a verdict.",
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  }
+]

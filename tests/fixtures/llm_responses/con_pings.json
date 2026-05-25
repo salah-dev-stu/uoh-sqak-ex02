@@ -1,0 +1,172 @@
+[
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b001",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "argument",
+    "ping_index": 1,
+    "text": "The negative case opens with Stochastic Parrots (Bender, Gebru, McMillan-Major, Mitchell, FAccT 2021): generative models produce outputs that look novel because the training data is vast and the recombination opaque, but the mechanism is statistical interpolation over memorized patterns, not originality. The output is a derivative of the training data, no more, no less.",
+    "references_opponent": false,
+    "citations": [
+      {
+        "url": "https://dl.acm.org/doi/10.1145/3442188.3445922",
+        "snippet": "Bender, Gebru, McMillan-Major, Mitchell: 'On the Dangers of Stochastic Parrots' (FAccT 2021); large models interpolate over memorized statistical patterns."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b002",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 2,
+    "text": "Pro's Edmond de Belamy citation proves my case. Christie's marketed novelty; the market priced novelty; but the output itself was a statistical remix of WikiArt portrait training data, recognizable as 'portrait' precisely because the training data was portraits. The $432,500 sale price reflects sociology and hype, not aesthetic originality. The training data did the work.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://www.gettyimages.com/company/newsroom/getty-images-statement",
+        "snippet": "Getty v Stability AI (UK High Court, Jan 2023); twelve million Getty-watermarked images allegedly used to train Stable Diffusion without license."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b003",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 3,
+    "text": "Pro invokes Klingemann and Ridler as proof of originality. But both artists FRAME their machine collaborations as authorship: Ridler shot the tulip photographs, labeled them, curated the output; Klingemann directs the feedback loop. The originality belongs to the artists, not the model. The artists are doing the curatorial work that the training data alone cannot do.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Chinese_room",
+        "snippet": "Searle's Chinese Room: symbol manipulation produces correct outputs without comprehension; the operator's curation does not transfer agency to the symbol-shuffling machine."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b004",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 4,
+    "text": "Pro cites transformative-use doctrine. But transformative use REQUIRES intentional reframing for new expressive purpose — exactly what the model lacks. Campbell v Acuff-Rose required the rapper to demonstrate parodic intent. The generative model has no intent; it interpolates. Pro borrows a doctrine that presupposes the agency the model categorically lacks. The borrowing is the giveaway.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Intentionality",
+        "snippet": "Phenomenological account of intentionality as the 'aboutness' that distinguishes mental states from mere causal sequences; absent in stochastic interpolation."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b005",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 5,
+    "text": "Pro dismisses the Chinese Room as 'forty years old.' Age is not refutation. The argument's force is unanswered: a system that interpolates training data without semantic grounding produces syntactically valid but semantically empty outputs. Stable Diffusion's mangled Getty watermarks are dispositive evidence the training data is being recovered, not transcended — exactly the Chinese Room dynamic at scale.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://www.courtlistener.com/docket/68117049/the-new-york-times-company-v-microsoft-corporation/",
+        "snippet": "NYT v Microsoft and OpenAI (S.D.N.Y. 1:23-cv-11195, Dec 27 2023); side-by-side reproductions of GPT-4 output and NYT articles establishing memorization."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b006",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 6,
+    "text": "Pro calls Getty-watermark recovery 'orthogonal.' It is dispositive. If the training data is RECOVERABLE from the output, the output is a derivative of the training data. The watermark is a fingerprint the generative process failed to erase, proving the output is statistical recall, not novel generation. Pro's 'orthogonal' framing is a deflection from a fingerprint they cannot wash away.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://www.gettyimages.com/company/newsroom/getty-images-statement",
+        "snippet": "Getty Images statement on training-data recovery: Stable Diffusion outputs contained mangled but identifiable Getty watermarks, evidence of memorization not transformation."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b007",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 7,
+    "text": "Pro claims Marcus's brittleness argument addresses 'only reasoning, not generation.' False. Marcus has documented compositional generation failures (horse-rides-astronaut inversions, count-mismatch errors) showing the model cannot leave the training distribution. A system that cannot leave the training distribution is a system whose outputs ARE the training data — statistically blurred. Generation and reasoning failures share a root cause.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://garymarcus.substack.com/p/horse-rides-astronaut",
+        "snippet": "Gary Marcus on AI's persistent failures in compositional generation; out-of-distribution combinations expose the training-data dependency at the heart of generative output."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b008",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 8,
+    "text": "Pro accuses my 'permutation' criterion of proving too much (deletes jazz improv, hip-hop sampling). Wrong. Jazz musicians and samplers add intentional reframing: the rhythmic placement, the live audience interaction, the curatorial selection. Those agents possess intentionality the generative model lacks. The criterion does not delete remix culture; it distinguishes remix-with-agency from remix-without-agency. The model is the latter.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Intentionality",
+        "snippet": "Intentionality as the criterion separating agent-driven recombination from mechanical permutation; the philosophical literature consistently identifies the former with originality."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b009",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 9,
+    "text": "Pro retreats to 'intentionality has no operational test.' But the operational test exists: can the agent be held morally responsible for the work? Can it sign it, defend it, disavow a forgery of it? The generative model fails all three tests. Cage signed his chance operations; the model cannot sign anything. The operational test reveals the model as a derivative recombiner, not an agent.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Chinese_room",
+        "snippet": "Searle's operational test for understanding: an entity that cannot defend its output as its own is performing symbol manipulation, not generating meaning."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  },
+  {
+    "msg_id": "00000000-0000-0000-0000-00000000b010",
+    "schema_version": "1.00",
+    "from": "con",
+    "to": "judge",
+    "role": "counter",
+    "ping_index": 10,
+    "text": "Closing: Pro's case rests on auction prices, latent-space mysticism, and borrowed doctrines (transformative use) that presuppose the agency the model categorically lacks. The negative case is grounded in litigation (NYT, Getty), philosophy (Searle, Marcus), and engineering reality (training-data dependency, watermark recovery). The output is statistical remix of training data. The negative case prevails.",
+    "references_opponent": true,
+    "citations": [
+      {
+        "url": "https://dl.acm.org/doi/10.1145/3442188.3445922",
+        "snippet": "Bender et al. (FAccT 2021); the closing authority for the negative case — stochastic interpolation over training data, not generative originality."
+      }
+    ],
+    "timestamp": "2026-05-25T12:00:00+00:00"
+  }
+]
