@@ -333,38 +333,38 @@ and the user's HW2 quality target ≥90.
 ## Phase 6 — Judge + sub-components
 
 ### Task 6.1: JudgeAgent
-- [ ] 6.1.1: Write failing tests `tests/unit/test_judge_agent.py` — 18 tests (setup_directive issuance, routing pro→con, drift→correction_request, PC→intervention, scoring, no-tie enforcement, topic-blind prompt assembly)
-- [ ] 6.1.2: Run, expect fail
-- [ ] 6.1.3: Implement `agents/judge_agent.py` skeleton (topic_blind=True, composes DriftDetector/PCFilter/ScoringEngine)
-- [ ] 6.1.4: Implement `issue_setup_directives()` (sends 2 messages, awaits 2 acks)
-- [ ] 6.1.5: Implement `route(msg)` (Pro msg → Con's in_queue, Con msg → Pro's in_queue)
-- [ ] 6.1.6: Wire DriftDetector check (call before forwarding; on drift → correction_request)
-- [ ] 6.1.7: Wire PCFilter check (call before forwarding; on violation → intervention)
-- [ ] 6.1.8: Implement `declare_winner(scorecards)` with no-tie enforcement (H5)
-- [ ] 6.1.9: Assert topic_blind: system prompt assembly excludes topic words
-- [ ] 6.1.10: Run tests, expect 18 pass
-- [ ] 6.1.11: Commit "feat(agents): JudgeAgent with routing + drift + PC + scoring + no-tie"
+- [x] 6.1.1: Write failing tests `tests/unit/test_judge_agent.py` — 18 tests (setup_directive issuance, routing pro→con, drift→correction_request, PC→intervention, scoring, no-tie enforcement, topic-blind prompt assembly)
+- [x] 6.1.2: Run, expect fail
+- [x] 6.1.3: Implement `agents/judge_agent.py` skeleton (topic_blind=True, composes DriftDetector/PCFilter/ScoringEngine)
+- [x] 6.1.4: Implement `issue_setup_directives()` (sends 2 messages, awaits 2 acks)
+- [x] 6.1.5: Implement `route(msg)` (Pro msg → Con's in_queue, Con msg → Pro's in_queue)
+- [x] 6.1.6: Wire DriftDetector check (call before forwarding; on drift → correction_request)
+- [x] 6.1.7: Wire PCFilter check (call before forwarding; on violation → intervention)
+- [x] 6.1.8: Implement `declare_winner(scorecards)` with no-tie enforcement (H5)
+- [x] 6.1.9: Assert topic_blind: system prompt assembly excludes topic words
+- [x] 6.1.10: Run tests, expect 18 pass
+- [x] 6.1.11: Commit "feat(agents): JudgeAgent with routing + drift + PC + scoring + no-tie"
 
 ### Task 6.2: DriftDetector
-- [ ] 6.2.1: Write failing tests `tests/unit/test_drift_detector.py` (detects concession, passes normal, case-insensitive)
-- [ ] 6.2.2: Implement `agents/drift_detector.py` (case-insensitive alternation regex from keyword set)
-- [ ] 6.2.3: Run, expect pass
-- [ ] 6.2.4: Commit "feat(agents): DriftDetector stance-keyword regex (no extra LLM)"
+- [x] 6.2.1: Write failing tests `tests/unit/test_drift_detector.py` (detects concession, passes normal, case-insensitive)
+- [x] 6.2.2: Implement `agents/drift_detector.py` (case-insensitive alternation regex from keyword set)
+- [x] 6.2.3: Run, expect pass
+- [x] 6.2.4: Commit "feat(agents): DriftDetector stance-keyword regex (no extra LLM)"
 
 ### Task 6.3: PCFilter
-- [ ] 6.3.1: Write failing tests `tests/unit/test_pc_filter.py` (detects vulgar, returns sanitized, passes clean)
-- [ ] 6.3.2: Implement `agents/pc_filter.py` with vulgar keyword set + sanitize-with-asterisks
-- [ ] 6.3.3: Run, expect pass
-- [ ] 6.3.4: Commit "feat(agents): PCFilter for H16 vulgar-language gate"
+- [x] 6.3.1: Write failing tests `tests/unit/test_pc_filter.py` (detects vulgar, returns sanitized, passes clean)
+- [x] 6.3.2: Implement `agents/pc_filter.py` with vulgar keyword set + sanitize-with-asterisks
+- [x] 6.3.3: Run, expect pass
+- [x] 6.3.4: Commit "feat(agents): PCFilter for H16 vulgar-language gate"
 
 ### Task 6.4: ScoringEngine
-- [ ] 6.4.1: Write failing tests `tests/unit/test_scoring_engine.py` (5-axis × 20 = 100 max, differential no-tie, tiebreak by role_fidelity then random)
-- [ ] 6.4.2: Implement `Scorecard` dataclass (per-axis scores, total property)
-- [ ] 6.4.3: Implement `score_axis_set(axes) -> Scorecard`
-- [ ] 6.4.4: Implement `declare_winner(pro_score, con_score) -> str` with tiebreak chain
-- [ ] 6.4.5: Run, expect pass
-- [ ] 6.4.6: Write `.claude/skills/judge_skill/scripts/compute_scores.py` (CLI helper that the judge skill can shell-out to)
-- [ ] 6.4.7: Commit "feat(agents): ScoringEngine 5-axis + no-tie enforcer"
+- [x] 6.4.1: Write failing tests `tests/unit/test_scoring_engine.py` (5-axis × 20 = 100 max, differential no-tie, tiebreak by role_fidelity then random)
+- [x] 6.4.2: Implement `Scorecard` dataclass (per-axis scores, total property)
+- [x] 6.4.3: Implement `score_axis_set(axes) -> Scorecard`
+- [x] 6.4.4: Implement `declare_winner(pro_score, con_score) -> str` with tiebreak chain
+- [x] 6.4.5: Run, expect pass
+- [x] 6.4.6: Write `.claude/skills/judge_skill/scripts/compute_scores.py` (CLI helper that the judge skill can shell-out to)
+- [x] 6.4.7: Commit "feat(agents): ScoringEngine 5-axis + no-tie enforcer"
 
 ---
 
