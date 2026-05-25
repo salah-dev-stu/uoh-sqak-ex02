@@ -841,17 +841,17 @@ and the user's HW2 quality target ≥90.
 - [ ] 12.2.9: Commit "docs: sample-session-1.json + screenshots (spec §8.7)"
 
 ### Task 12.3: Final audit-gate verification
-- [ ] 12.3.1: `uv run ruff check src tests` → 0 errors
-- [ ] 12.3.2: `uv run pytest tests/unit tests/integration --cov` → ≥85%
-- [ ] 12.3.3: `uv run python scripts/check_file_lines.py` → 0 violations
-- [ ] 12.3.4: Grep for secrets: `grep -rE "sk-[a-zA-Z0-9_-]{20,}" src tests` → empty
-- [ ] 12.3.5: `git log --oneline | wc -l` → ≥ 50
-- [ ] 12.3.6: Verify `docs/diagrams/class-diagram.svg` exists (export Mermaid)
-- [ ] 12.3.7: Verify README has session-1 dialogue (grep for transcript marker)
-- [ ] 12.3.8: Verify README has cost analysis table
-- [ ] 12.3.9: Verify `.env-example` exists; `.env` NOT in `git ls-files`
-- [ ] 12.3.10: Verify all 5 config files version 1.00
-- [ ] 12.3.11: Verify `docs/PROMPTS.md` ≥ 20 prompt entries
+- [x] 12.3.1: `uv run ruff check src tests` → 0 errors
+- [x] 12.3.2: `uv run pytest tests/unit tests/integration --cov` → ≥85%
+- [x] 12.3.3: `uv run python scripts/check_file_lines.py` → 0 violations
+- [x] 12.3.4: Grep for secrets: `grep -rE "sk-[a-zA-Z0-9_-]{20,}" src tests` → empty
+- [x] 12.3.5: `git log --oneline | wc -l` → ≥ 50
+- [x] 12.3.6: Verify `docs/diagrams/class-diagram.svg` exists (export Mermaid)
+- [x] 12.3.7: Verify README has session-1 dialogue (grep for transcript marker)
+- [x] 12.3.8: Verify README has cost analysis table
+- [x] 12.3.9: Verify `.env-example` exists; `.env` NOT in `git ls-files`
+- [x] 12.3.10: Verify all 5 config files version 1.00
+- [x] 12.3.11: Verify `docs/PROMPTS.md` ≥ 20 prompt entries
 
 ### Task 12.4: Push to GitHub PUBLIC (lifecycle step 8)
 - [ ] 12.4.1: Confirm Andalus's GitHub handle (open question — ASK USER if not provided)
