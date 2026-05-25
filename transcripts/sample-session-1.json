@@ -1,0 +1,230 @@
+{
+  "debate_id": "9f4b7913-6382-4bf9-88f4-46784453520d",
+  "topic": "Can AI agents create genuinely original art?",
+  "started_at": "2026-05-25T12:50:30.642490+00:00",
+  "finished_at": "2026-05-25T12:50:30.652396+00:00",
+  "messages": [
+    {
+      "phase": "boot",
+      "directive": "setup_directive",
+      "stance_pro": "AI=ORIGINALITY",
+      "stance_con": "AI=REMIX_ONLY"
+    },
+    {
+      "msg_id": "98c0c148-c541-47a5-8099-94521a148c3a",
+      "schema_version": "1.00",
+      "from": "judge",
+      "to": "pro",
+      "role": "setup_directive",
+      "ping_index": 1,
+      "text": "Open the debate on: Can AI agents create genuinely original art?. State your case for AI=ORIGINALITY.",
+      "timestamp": "2026-05-25T12:50:30.652186+00:00"
+    },
+    {
+      "msg_id": "1298da49-34f7-43f5-a07b-0006978a0f79",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "judge",
+      "role": "argument",
+      "ping_index": 1,
+      "text": "AI=ORIGINALITY ready.",
+      "timestamp": "2026-05-25T12:50:30.652214+00:00"
+    },
+    {
+      "msg_id": "1298da49-34f7-43f5-a07b-0006978a0f79",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "con",
+      "role": "argument",
+      "ping_index": 1,
+      "text": "AI=ORIGINALITY ready.",
+      "timestamp": "2026-05-25T12:50:30.652214+00:00"
+    },
+    {
+      "msg_id": "a21a31a0-aae9-4140-8fe5-b7da938fe93e",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "judge",
+      "role": "counter",
+      "ping_index": 2,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652255+00:00"
+    },
+    {
+      "msg_id": "a21a31a0-aae9-4140-8fe5-b7da938fe93e",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "pro",
+      "role": "counter",
+      "ping_index": 2,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652255+00:00"
+    },
+    {
+      "msg_id": "630e19e3-1db2-49ac-8c29-6ac0c8ff11cc",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "judge",
+      "role": "argument",
+      "ping_index": 3,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652278+00:00"
+    },
+    {
+      "msg_id": "630e19e3-1db2-49ac-8c29-6ac0c8ff11cc",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "con",
+      "role": "argument",
+      "ping_index": 3,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652278+00:00"
+    },
+    {
+      "msg_id": "8a014ca8-8cfd-4c54-b8dd-4b5848b5e12b",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "judge",
+      "role": "counter",
+      "ping_index": 4,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652294+00:00"
+    },
+    {
+      "msg_id": "8a014ca8-8cfd-4c54-b8dd-4b5848b5e12b",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "pro",
+      "role": "counter",
+      "ping_index": 4,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652294+00:00"
+    },
+    {
+      "msg_id": "4893158a-ff65-400e-8dc0-de07baf4d704",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "judge",
+      "role": "argument",
+      "ping_index": 5,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652308+00:00"
+    },
+    {
+      "msg_id": "4893158a-ff65-400e-8dc0-de07baf4d704",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "con",
+      "role": "argument",
+      "ping_index": 5,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652308+00:00"
+    },
+    {
+      "msg_id": "0f944920-c563-4758-bc11-57f0c412d276",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "judge",
+      "role": "counter",
+      "ping_index": 6,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652322+00:00"
+    },
+    {
+      "msg_id": "0f944920-c563-4758-bc11-57f0c412d276",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "pro",
+      "role": "counter",
+      "ping_index": 6,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652322+00:00"
+    },
+    {
+      "msg_id": "8fba05e3-dbe9-4ac4-a862-d04a53fda998",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "judge",
+      "role": "argument",
+      "ping_index": 7,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652335+00:00"
+    },
+    {
+      "msg_id": "8fba05e3-dbe9-4ac4-a862-d04a53fda998",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "con",
+      "role": "argument",
+      "ping_index": 7,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652335+00:00"
+    },
+    {
+      "msg_id": "ea3f6237-867b-4619-bf3a-19e6393fdc1d",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "judge",
+      "role": "counter",
+      "ping_index": 8,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652348+00:00"
+    },
+    {
+      "msg_id": "ea3f6237-867b-4619-bf3a-19e6393fdc1d",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "pro",
+      "role": "counter",
+      "ping_index": 8,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652348+00:00"
+    },
+    {
+      "msg_id": "2f840fbf-5494-4d78-97f7-07e99f4b5656",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "judge",
+      "role": "argument",
+      "ping_index": 9,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652360+00:00"
+    },
+    {
+      "msg_id": "2f840fbf-5494-4d78-97f7-07e99f4b5656",
+      "schema_version": "1.00",
+      "from": "pro",
+      "to": "con",
+      "role": "argument",
+      "ping_index": 9,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652360+00:00"
+    },
+    {
+      "msg_id": "675535e1-ca24-4b49-825e-24b5d47d9b48",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "judge",
+      "role": "counter",
+      "ping_index": 10,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652373+00:00"
+    },
+    {
+      "msg_id": "675535e1-ca24-4b49-825e-24b5d47d9b48",
+      "schema_version": "1.00",
+      "from": "con",
+      "to": "pro",
+      "role": "counter",
+      "ping_index": 10,
+      "text": "(mocked response - see README)",
+      "timestamp": "2026-05-25T12:50:30.652373+00:00"
+    }
+  ],
+  "verdict": {
+    "winner": "pro",
+    "pro_total": 71,
+    "con_total": 69
+  },
+  "outcome": "pro_wins"
+}

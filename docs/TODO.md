@@ -751,67 +751,67 @@ and the user's HW2 quality target ≥90.
 ## Phase 11.1 (post-execution) — README.md
 
 ### Task 11.1.1: Title + intro (quote 16× thesis + Context Engineering thesis verbatim)
-- [ ] 11.1.1.1: H1 title + one-paragraph elevator pitch
-- [ ] 11.1.1.2: Quote rubric §A2 + §A24 verbatim Hebrew + English
+- [x] 11.1.1.1: H1 title + one-paragraph elevator pitch
+- [x] 11.1.1.2: Quote rubric §A2 + §A24 verbatim Hebrew + English
 
 ### Task 11.1.2: Installation
-- [ ] 11.1.2.1: Prerequisites (Python 3.13, uv, Claude CLI logged in, git)
-- [ ] 11.1.2.2: Step-by-step setup commands
-- [ ] 11.1.2.3: Troubleshooting common issues (claude not found, DDG rate limit, etc.)
+- [x] 11.1.2.1: Prerequisites (Python 3.13, uv, Claude CLI logged in, git)
+- [x] 11.1.2.2: Step-by-step setup commands
+- [x] 11.1.2.3: Troubleshooting common issues (claude not found, DDG rate limit, etc.)
 
 ### Task 11.1.3: Usage
-- [ ] 11.1.3.1: How to launch the menu (`uv run agent-debate`)
-- [ ] 11.1.3.2: Menu legend (A/B/C/D/E/X)
-- [ ] 11.1.3.3: How to swap LLM provider (config-only change)
-- [ ] 11.1.3.4: How to plug in a new search backend (Brave/Tavily example)
+- [x] 11.1.3.1: How to launch the menu (`uv run agent-debate`)
+- [x] 11.1.3.2: Menu legend (A/B/C/D/E/X)
+- [x] 11.1.3.3: How to swap LLM provider (config-only change)
+- [x] 11.1.3.4: How to plug in a new search backend (Brave/Tavily example)
 
 ### Task 11.1.4: Architecture
-- [ ] 11.1.4.1: Embed class diagram (Mermaid block from PLAN.md §4)
-- [ ] 11.1.4.2: Embed C2 container diagram
-- [ ] 11.1.4.3: Embed UML sequence diagram
-- [ ] 11.1.4.4: Brief seven-layer recap
+- [x] 11.1.4.1: Embed class diagram (Mermaid block from PLAN.md §4)
+- [x] 11.1.4.2: Embed C2 container diagram
+- [x] 11.1.4.3: Embed UML sequence diagram
+- [x] 11.1.4.4: Brief seven-layer recap
 
 ### Task 11.1.5: Configuration guide
-- [ ] 11.1.5.1: Document every field in `setup.json`
-- [ ] 11.1.5.2: Document every field in `agents.json`
-- [ ] 11.1.5.3: Document every field in `debate_rules.json`
-- [ ] 11.1.5.4: Document every field in `rate_limits.json`
-- [ ] 11.1.5.5: Document every field in `logging_config.json`
+- [x] 11.1.5.1: Document every field in `setup.json`
+- [x] 11.1.5.2: Document every field in `agents.json`
+- [x] 11.1.5.3: Document every field in `debate_rules.json`
+- [x] 11.1.5.4: Document every field in `rate_limits.json`
+- [x] 11.1.5.5: Document every field in `logging_config.json`
 
 ### Task 11.1.6: Session-1 full dialogue dump (spec §8.7 MANDATE)
-- [ ] 11.1.6.1: Copy `transcripts/sample-session-1.json` into a fenced code block in README
-- [ ] 11.1.6.2: Add a "Sample debate" narrative wrapper
+- [x] 11.1.6.1: Copy `transcripts/sample-session-1.json` into a fenced code block in README
+- [x] 11.1.6.2: Add a "Sample debate" narrative wrapper
 
 ### Task 11.1.7: Manual Phase 1 evidence (H22)
-- [ ] 11.1.7.1: Embed `assets/manual-phase1-*.png` screenshots
-- [ ] 11.1.7.2: Add a "Manual exploration" narrative section
+- [x] 11.1.7.1: Embed `assets/manual-phase1-*.png` screenshots
+- [x] 11.1.7.2: Add a "Manual exploration" narrative section
 
 ### Task 11.1.8: Cost analysis (rubric §11)
-- [ ] 11.1.8.1: Token cost table (input/output, total per debate)
-- [ ] 11.1.8.2: Optimization strategies subsection (token reduction, cache-friendly prompts)
-- [ ] 11.1.8.3: Note: cost = $0 in login mode; numbers shown for the API-key alternative
+- [x] 11.1.8.1: Token cost table (input/output, total per debate)
+- [x] 11.1.8.2: Optimization strategies subsection (token reduction, cache-friendly prompts)
+- [x] 11.1.8.3: Note: cost = $0 in login mode; numbers shown for the API-key alternative
 
 ### Task 11.1.9: Behavior notes (N5)
-- [ ] 11.1.9.1: Section: "Outcomes are deliberately non-reproducible"
-- [ ] 11.1.9.2: Quote lec05 L1581-1597
+- [x] 11.1.9.1: Section: "Outcomes are deliberately non-reproducible"
+- [x] 11.1.9.2: Quote lec05 L1581-1597
 
 ### Task 11.1.10: Extension points (rubric §A9)
-- [ ] 11.1.10.1: List 8 lifecycle hooks with example usage
-- [ ] 11.1.10.2: Document LLMProvider + SearchProvider plugin pattern
+- [x] 11.1.10.1: List 8 lifecycle hooks with example usage
+- [x] 11.1.10.2: Document LLMProvider + SearchProvider plugin pattern
 
 ### Task 11.1.11: AI usage disclosure (verbatim syllabus)
-- [ ] 11.1.11.1: Quote syllabus paragraph verbatim Hebrew + English
-- [ ] 11.1.11.2: Pointer to `docs/PROMPTS.md` audit trail
+- [x] 11.1.11.1: Quote syllabus paragraph verbatim Hebrew + English
+- [x] 11.1.11.2: Pointer to `docs/PROMPTS.md` audit trail
 
 ### Task 11.1.12: License + credits
-- [ ] 11.1.12.1: MIT license reference
-- [ ] 11.1.12.2: Author credits (Salah + Andalus + AI agent acknowledgement)
+- [x] 11.1.12.1: MIT license reference
+- [x] 11.1.12.2: Author credits (Salah + Andalus + AI agent acknowledgement)
 
 ### Task 11.1.13: README quality checks
-- [ ] 11.1.13.1: `wc -l README.md` — verify ≥ 200 lines
-- [ ] 11.1.13.2: Verify every Mermaid block renders on GitHub (open repo in browser)
-- [ ] 11.1.13.3: Verify session-1 dialogue is the FULL debate, not a truncated excerpt
-- [ ] 11.1.13.4: Commit "docs: README.md (full user manual + session-1 dialogue)"
+- [x] 11.1.13.1: `wc -l README.md` — verify ≥ 200 lines
+- [x] 11.1.13.2: Verify every Mermaid block renders on GitHub (open repo in browser)
+- [x] 11.1.13.3: Verify session-1 dialogue is the FULL debate, not a truncated excerpt
+- [x] 11.1.13.4: Commit "docs: README.md (full user manual + session-1 dialogue)"
 
 ---
 
