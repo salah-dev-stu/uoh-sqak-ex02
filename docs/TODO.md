@@ -31,227 +31,227 @@ and the user's HW2 quality target ≥90.
 
 - [x] A.1: docs/PRD.md (root product requirements, rubric §2.5 step 1)
 - [x] A.2: docs/PLAN.md (C4 + UML + class diagram + ADRs + ISO 25010)
-- [ ] A.3: docs/TODO.md — **this file** (in progress)
-- [ ] A.4: docs/PRD_judge_agent.md (Phase E)
-- [ ] A.5: docs/PRD_pro_agent.md (Phase E)
-- [ ] A.6: docs/PRD_con_agent.md (Phase E)
-- [ ] A.7: docs/PRD_orchestrator.md (Phase E)
-- [ ] A.8: docs/PRD_ipc_bus.md (Phase E)
-- [ ] A.9: docs/PRD_gatekeeper.md (Phase E)
-- [ ] A.10: docs/PRD_watchdog.md (Phase E)
-- [ ] A.11: docs/PRD_skills.md (Phase E)
-- [ ] A.12: docs/PRD_web_search_tool.md (Phase E)
-- [ ] A.13: Approval gate #2 — user reviews full docs bundle (rubric §2.5 step 5)
+- [x] A.3: docs/TODO.md — **this file** (in progress)
+- [x] A.4: docs/PRD_judge_agent.md (Phase E)
+- [x] A.5: docs/PRD_pro_agent.md (Phase E)
+- [x] A.6: docs/PRD_con_agent.md (Phase E)
+- [x] A.7: docs/PRD_orchestrator.md (Phase E)
+- [x] A.8: docs/PRD_ipc_bus.md (Phase E)
+- [x] A.9: docs/PRD_gatekeeper.md (Phase E)
+- [x] A.10: docs/PRD_watchdog.md (Phase E)
+- [x] A.11: docs/PRD_skills.md (Phase E)
+- [x] A.12: docs/PRD_web_search_tool.md (Phase E)
+- [x] A.13: Approval gate #2 — user reviews full docs bundle (rubric §2.5 step 5)
 
 ---
 
 ## Phase 0 — Project scaffold
 
 ### Task 0.1: uv init + Python 3.13
-- [ ] 0.1.1: `uv init --name agent-debate --package --python 3.13`
-- [ ] 0.1.2: Verify `.python-version` contains `3.13`
-- [ ] 0.1.3: Verify `pyproject.toml` skeleton created
-- [ ] 0.1.4: `uv python pin 3.13`
-- [ ] 0.1.5: `uv sync` and verify `.venv/` created
-- [ ] 0.1.6: `uv run python --version` returns 3.13.x
-- [ ] 0.1.7: Commit "build: scaffold uv project on Python 3.13"
+- [x] 0.1.1: `uv init --name agent-debate --package --python 3.13`
+- [x] 0.1.2: Verify `.python-version` contains `3.13`
+- [x] 0.1.3: Verify `pyproject.toml` skeleton created
+- [x] 0.1.4: `uv python pin 3.13`
+- [x] 0.1.5: `uv sync` and verify `.venv/` created
+- [x] 0.1.6: `uv run python --version` returns 3.13.x
+- [x] 0.1.7: Commit "build: scaffold uv project on Python 3.13"
 
 ### Task 0.2: Configure pyproject.toml
-- [ ] 0.2.1: Add `[project]` block with name, version=1.00.0, description, authors, license=MIT
-- [ ] 0.2.2: Add `requires-python = ">=3.13"`
-- [ ] 0.2.3: Add `dependencies` (jsonschema, ddgs, pydantic)
-- [ ] 0.2.4: Add `[project.scripts]` with `agent-debate = "agent_debate.main:main"`
-- [ ] 0.2.5: Add `[dependency-groups.dev]` (pytest, pytest-cov, pytest-timeout, ruff, pre-commit)
-- [ ] 0.2.6: Add `[build-system]` with hatchling
-- [ ] 0.2.7: Add `[tool.ruff]` (line-length=100, target-version=py313)
-- [ ] 0.2.8: Add `[tool.ruff.lint]` (E,F,W,I,N,UP,B,C4,SIM; ignore=E501)
-- [ ] 0.2.9: Add `[tool.pytest.ini_options]` (markers, timeout, testpaths)
-- [ ] 0.2.10: Add `[tool.coverage.run]` (source=src, omit main.py)
-- [ ] 0.2.11: Add `[tool.coverage.report]` (fail_under=85, show_missing=true)
-- [ ] 0.2.12: `uv sync` — verify lockfile populated
-- [ ] 0.2.13: `uv run ruff check src tests` — verify runs clean
-- [ ] 0.2.14: `uv run pytest` — verify "no tests ran" (exit 5)
-- [ ] 0.2.15: Commit "build: configure ruff, pytest, coverage in pyproject.toml"
+- [x] 0.2.1: Add `[project]` block with name, version=1.00.0, description, authors, license=MIT
+- [x] 0.2.2: Add `requires-python = ">=3.13"`
+- [x] 0.2.3: Add `dependencies` (jsonschema, ddgs, pydantic)
+- [x] 0.2.4: Add `[project.scripts]` with `agent-debate = "agent_debate.main:main"`
+- [x] 0.2.5: Add `[dependency-groups.dev]` (pytest, pytest-cov, pytest-timeout, ruff, pre-commit)
+- [x] 0.2.6: Add `[build-system]` with hatchling
+- [x] 0.2.7: Add `[tool.ruff]` (line-length=100, target-version=py313)
+- [x] 0.2.8: Add `[tool.ruff.lint]` (E,F,W,I,N,UP,B,C4,SIM; ignore=E501)
+- [x] 0.2.9: Add `[tool.pytest.ini_options]` (markers, timeout, testpaths)
+- [x] 0.2.10: Add `[tool.coverage.run]` (source=src, omit main.py)
+- [x] 0.2.11: Add `[tool.coverage.report]` (fail_under=85, show_missing=true)
+- [x] 0.2.12: `uv sync` — verify lockfile populated
+- [x] 0.2.13: `uv run ruff check src tests` — verify runs clean
+- [x] 0.2.14: `uv run pytest` — verify "no tests ran" (exit 5)
+- [x] 0.2.15: Commit "build: configure ruff, pytest, coverage in pyproject.toml"
 
 ### Task 0.3: Five versioned config files
-- [ ] 0.3.1: Write `config/setup.json` (version=1.00, debate_topic, stances, dirs)
-- [ ] 0.3.2: Write `config/agents.json` (version=1.00, three agents with temperature, skill_name, llm_provider)
-- [ ] 0.3.3: Write `config/debate_rules.json` (version=1.00, pings_per_side=10, drift_threshold=1, scoring axes, no_tie=true)
-- [ ] 0.3.4: Write `config/rate_limits.json` (version=1.00, claude_login budget + warn/hard caps, ddg_search limits)
-- [ ] 0.3.5: Write `config/logging_config.json` (version=1.00, fifo_files=20, max_lines=500)
-- [ ] 0.3.6: Verify all five files are valid JSON (`uv run python -c "import json; [json.load(open(f)) for f in glob.glob('config/*.json')]"`)
-- [ ] 0.3.7: Commit "config: add versioned JSON configs"
+- [x] 0.3.1: Write `config/setup.json` (version=1.00, debate_topic, stances, dirs)
+- [x] 0.3.2: Write `config/agents.json` (version=1.00, three agents with temperature, skill_name, llm_provider)
+- [x] 0.3.3: Write `config/debate_rules.json` (version=1.00, pings_per_side=10, drift_threshold=1, scoring axes, no_tie=true)
+- [x] 0.3.4: Write `config/rate_limits.json` (version=1.00, claude_login budget + warn/hard caps, ddg_search limits)
+- [x] 0.3.5: Write `config/logging_config.json` (version=1.00, fifo_files=20, max_lines=500)
+- [x] 0.3.6: Verify all five files are valid JSON (`uv run python -c "import json; [json.load(open(f)) for f in glob.glob('config/*.json')]"`)
+- [x] 0.3.7: Commit "config: add versioned JSON configs"
 
 ### Task 0.4: .env-example
-- [ ] 0.4.1: Write `.env-example` with placeholder vars (ANTHROPIC_API_KEY commented, BRAVE/TAVILY commented, RUN_E2E=0)
-- [ ] 0.4.2: Verify `.env-example` does not appear in `.gitignore` (it should be committed)
-- [ ] 0.4.3: Commit "config: add .env-example template (no secrets)"
+- [x] 0.4.1: Write `.env-example` with placeholder vars (ANTHROPIC_API_KEY commented, BRAVE/TAVILY commented, RUN_E2E=0)
+- [x] 0.4.2: Verify `.env-example` does not appear in `.gitignore` (it should be committed)
+- [x] 0.4.3: Commit "config: add .env-example template (no secrets)"
 
 ### Task 0.5: Package init with __version__
-- [ ] 0.5.1: Write `src/agent_debate/__init__.py` with `__version__ = "1.00"` and `__all__`
-- [ ] 0.5.2: Verify `uv run ruff check src/agent_debate/__init__.py` is clean
-- [ ] 0.5.3: Commit "feat: define __version__ at package root (R6 versioning)"
+- [x] 0.5.1: Write `src/agent_debate/__init__.py` with `__version__ = "1.00"` and `__all__`
+- [x] 0.5.2: Verify `uv run ruff check src/agent_debate/__init__.py` is clean
+- [x] 0.5.3: Commit "feat: define __version__ at package root (R6 versioning)"
 
 ### Task 0.6: Pre-commit hook + file-line enforcer
-- [ ] 0.6.1: Write `scripts/check_file_lines.py` (counts logical lines, flags >150, flags long-line+no-comment "whitespace games")
-- [ ] 0.6.2: Verify the script exits 0 on empty source tree
-- [ ] 0.6.3: Write `.pre-commit-config.yaml` (ruff + file-line-limit + pytest-unit hooks)
-- [ ] 0.6.4: `uv run pre-commit install`
-- [ ] 0.6.5: Verify `.git/hooks/pre-commit` exists
-- [ ] 0.6.6: Test the hook fires on a dummy commit
-- [ ] 0.6.7: Commit "build: pre-commit (ruff + 150-line enforcer + unit tests)"
+- [x] 0.6.1: Write `scripts/check_file_lines.py` (counts logical lines, flags >150, flags long-line+no-comment "whitespace games")
+- [x] 0.6.2: Verify the script exits 0 on empty source tree
+- [x] 0.6.3: Write `.pre-commit-config.yaml` (ruff + file-line-limit + pytest-unit hooks)
+- [x] 0.6.4: `uv run pre-commit install`
+- [x] 0.6.5: Verify `.git/hooks/pre-commit` exists
+- [x] 0.6.6: Test the hook fires on a dummy commit
+- [x] 0.6.7: Commit "build: pre-commit (ruff + 150-line enforcer + unit tests)"
 
 ### Task 0.7: GitHub Actions CI
-- [ ] 0.7.1: Create `.github/workflows/` directory
-- [ ] 0.7.2: Write `ci.yml` (Ubuntu-latest, uv install, ruff check, line enforcer, pytest with coverage)
-- [ ] 0.7.3: Verify YAML is valid
-- [ ] 0.7.4: Commit "ci: add GitHub Actions workflow"
+- [x] 0.7.1: Create `.github/workflows/` directory
+- [x] 0.7.2: Write `ci.yml` (Ubuntu-latest, uv install, ruff check, line enforcer, pytest with coverage)
+- [x] 0.7.3: Verify YAML is valid
+- [x] 0.7.4: Commit "ci: add GitHub Actions workflow"
 
 ### Task 0.8: Tests scaffold
-- [ ] 0.8.1: Create `tests/{unit,integration,e2e,fixtures/llm_responses}/` directories
-- [ ] 0.8.2: `touch tests/__init__.py` and all subdir `__init__.py` files
-- [ ] 0.8.3: Write `tests/conftest.py` with RUN_E2E gate
-- [ ] 0.8.4: Verify `uv run pytest --collect-only -q` runs clean
-- [ ] 0.8.5: Commit "test: scaffold tests/ tree with conftest e2e gate"
+- [x] 0.8.1: Create `tests/{unit,integration,e2e,fixtures/llm_responses}/` directories
+- [x] 0.8.2: `touch tests/__init__.py` and all subdir `__init__.py` files
+- [x] 0.8.3: Write `tests/conftest.py` with RUN_E2E gate
+- [x] 0.8.4: Verify `uv run pytest --collect-only -q` runs clean
+- [x] 0.8.5: Commit "test: scaffold tests/ tree with conftest e2e gate"
 
 ### Task 0.9: .gitignore audit
-- [ ] 0.9.1: Verify `.gitignore` already includes secrets (.env, *.key, etc) — done in initial commit
-- [ ] 0.9.2: Append patterns specific to uv (`.venv/`, `.python-version` if needed)
-- [ ] 0.9.3: Append `.coverage`, `htmlcov/` for coverage runs
-- [ ] 0.9.4: Verify `git status` shows no unwanted files
+- [x] 0.9.1: Verify `.gitignore` already includes secrets (.env, *.key, etc) — done in initial commit
+- [x] 0.9.2: Append patterns specific to uv (`.venv/`, `.python-version` if needed)
+- [x] 0.9.3: Append `.coverage`, `htmlcov/` for coverage runs
+- [x] 0.9.4: Verify `git status` shows no unwanted files
 
 ---
 
 ## Phase 1 — Foundation infrastructure
 
 ### Task 1.1: constants.py with 4 enums
-- [ ] 1.1.1: Write failing test `tests/unit/test_constants.py` (AgentRole, MessageRole, Stance, DebateOutcome)
-- [ ] 1.1.2: Run test, expect ImportError
-- [ ] 1.1.3: Write `src/agent_debate/constants.py` (AgentRole with PRO/CON/JUDGE)
-- [ ] 1.1.4: Add `MessageRole` (8 members: setup_directive, ack, argument, counter, correction_request, intervention, status, verdict)
-- [ ] 1.1.5: Add `Stance` (ORIGINALITY, REMIX_ONLY)
-- [ ] 1.1.6: Add `DebateOutcome` (PRO_WINS, CON_WINS, DEBATE_ABORTED, BUDGET_EXHAUSTED)
-- [ ] 1.1.7: Add `SCHEMA_VERSION = "1.00"`
-- [ ] 1.1.8: Run tests, expect 4 passed
-- [ ] 1.1.9: `uv run ruff check src/agent_debate/constants.py`
-- [ ] 1.1.10: Commit "feat(constants): add AgentRole, MessageRole, Stance, DebateOutcome enums"
+- [x] 1.1.1: Write failing test `tests/unit/test_constants.py` (AgentRole, MessageRole, Stance, DebateOutcome)
+- [x] 1.1.2: Run test, expect ImportError
+- [x] 1.1.3: Write `src/agent_debate/constants.py` (AgentRole with PRO/CON/JUDGE)
+- [x] 1.1.4: Add `MessageRole` (8 members: setup_directive, ack, argument, counter, correction_request, intervention, status, verdict)
+- [x] 1.1.5: Add `Stance` (ORIGINALITY, REMIX_ONLY)
+- [x] 1.1.6: Add `DebateOutcome` (PRO_WINS, CON_WINS, DEBATE_ABORTED, BUDGET_EXHAUSTED)
+- [x] 1.1.7: Add `SCHEMA_VERSION = "1.00"`
+- [x] 1.1.8: Run tests, expect 4 passed
+- [x] 1.1.9: `uv run ruff check src/agent_debate/constants.py`
+- [x] 1.1.10: Commit "feat(constants): add AgentRole, MessageRole, Stance, DebateOutcome enums"
 
 ### Task 1.2: shared/version.py (R6)
-- [ ] 1.2.1: Write `src/agent_debate/shared/__init__.py`
-- [ ] 1.2.2: Write failing test `tests/unit/test_version.py` (CODE_VERSION=1.00, validate_config_version)
-- [ ] 1.2.3: Run, expect fail
-- [ ] 1.2.4: Implement `shared/version.py` with `CODE_VERSION` and `validate_config_version()`
-- [ ] 1.2.5: Run, expect pass
-- [ ] 1.2.6: Commit "feat(version): CODE_VERSION 1.00 + config-version compat check"
+- [x] 1.2.1: Write `src/agent_debate/shared/__init__.py`
+- [x] 1.2.2: Write failing test `tests/unit/test_version.py` (CODE_VERSION=1.00, validate_config_version)
+- [x] 1.2.3: Run, expect fail
+- [x] 1.2.4: Implement `shared/version.py` with `CODE_VERSION` and `validate_config_version()`
+- [x] 1.2.5: Run, expect pass
+- [x] 1.2.6: Commit "feat(version): CODE_VERSION 1.00 + config-version compat check"
 
 ### Task 1.3: shared/config.py
-- [ ] 1.3.1: Write failing test `tests/unit/test_config.py` (Config dataclass, load_config, version mismatch)
-- [ ] 1.3.2: Run, expect fail
-- [ ] 1.3.3: Implement `shared/config.py` with `Config` dataclass and `load_config(path)`
-- [ ] 1.3.4: Wire `validate_config_version()` into load
-- [ ] 1.3.5: Run, expect pass
-- [ ] 1.3.6: Commit "feat(config): Config dataclass + load_config with version check"
+- [x] 1.3.1: Write failing test `tests/unit/test_config.py` (Config dataclass, load_config, version mismatch)
+- [x] 1.3.2: Run, expect fail
+- [x] 1.3.3: Implement `shared/config.py` with `Config` dataclass and `load_config(path)`
+- [x] 1.3.4: Wire `validate_config_version()` into load
+- [x] 1.3.5: Run, expect pass
+- [x] 1.3.6: Commit "feat(config): Config dataclass + load_config with version check"
 
 ### Task 1.4: shared/structured_logger.py (FIFO 20×500)
-- [ ] 1.4.1: Write failing tests `tests/unit/test_structured_logger.py` (writes JSON line, rotates at max_lines, caps at fifo_files)
-- [ ] 1.4.2: Run, expect fail
-- [ ] 1.4.3: Implement `shared/structured_logger.py` with threading.Lock, rotation, FIFO file naming
-- [ ] 1.4.4: Run, expect pass
-- [ ] 1.4.5: Commit "feat(logger): structured JSONL logger with FIFO rotation"
+- [x] 1.4.1: Write failing tests `tests/unit/test_structured_logger.py` (writes JSON line, rotates at max_lines, caps at fifo_files)
+- [x] 1.4.2: Run, expect fail
+- [x] 1.4.3: Implement `shared/structured_logger.py` with threading.Lock, rotation, FIFO file naming
+- [x] 1.4.4: Run, expect pass
+- [x] 1.4.5: Commit "feat(logger): structured JSONL logger with FIFO rotation"
 
 ### Task 1.5: shared/message_schema.py + config/schemas/message-1.00.json
-- [ ] 1.5.1: Write `config/schemas/message-1.00.json` (full JSON schema per spec §4)
-- [ ] 1.5.2: Write failing tests `tests/unit/test_message_schema.py` (validate happy path, invalid role, missing field, dataclass round-trip)
-- [ ] 1.5.3: Run, expect fail
-- [ ] 1.5.4: Implement `shared/message_schema.py` (Message dataclass, validate_message, from_dict, to_dict)
-- [ ] 1.5.5: Run, expect pass
-- [ ] 1.5.6: Verify schema includes `references_opponent` field (H7)
-- [ ] 1.5.7: Verify schema includes `scoring` object with 5 axes (H5)
-- [ ] 1.5.8: Commit "feat(schema): JSON wire protocol 1.00 + validator + Message dataclass"
+- [x] 1.5.1: Write `config/schemas/message-1.00.json` (full JSON schema per spec §4)
+- [x] 1.5.2: Write failing tests `tests/unit/test_message_schema.py` (validate happy path, invalid role, missing field, dataclass round-trip)
+- [x] 1.5.3: Run, expect fail
+- [x] 1.5.4: Implement `shared/message_schema.py` (Message dataclass, validate_message, from_dict, to_dict)
+- [x] 1.5.5: Run, expect pass
+- [x] 1.5.6: Verify schema includes `references_opponent` field (H7)
+- [x] 1.5.7: Verify schema includes `scoring` object with 5 axes (H5)
+- [x] 1.5.8: Commit "feat(schema): JSON wire protocol 1.00 + validator + Message dataclass"
 
 ---
 
 ## Phase 2 — Provider plugin pattern
 
 ### Task 2.1: tools/registry.py (factory pattern)
-- [ ] 2.1.1: Write `src/agent_debate/tools/__init__.py`
-- [ ] 2.1.2: Write failing test `tests/unit/test_registry.py` (register, get, KeyError, duplicate-replaces)
-- [ ] 2.1.3: Run, expect fail
-- [ ] 2.1.4: Implement `tools/registry.py` (Generic[T] Registry)
-- [ ] 2.1.5: Run, expect pass
-- [ ] 2.1.6: Commit "feat(tools): generic Registry for plugin pattern (HW1 extensibility fix)"
+- [x] 2.1.1: Write `src/agent_debate/tools/__init__.py`
+- [x] 2.1.2: Write failing test `tests/unit/test_registry.py` (register, get, KeyError, duplicate-replaces)
+- [x] 2.1.3: Run, expect fail
+- [x] 2.1.4: Implement `tools/registry.py` (Generic[T] Registry)
+- [x] 2.1.5: Run, expect pass
+- [x] 2.1.6: Commit "feat(tools): generic Registry for plugin pattern (HW1 extensibility fix)"
 
 ### Task 2.2: LLMProvider abstract + LLMResponse
-- [ ] 2.2.1: Implement `tools/llm_provider.py` (`LLMResponse` dataclass, `LLMProvider` ABC)
-- [ ] 2.2.2: `LLMResponse` fields: text, tokens_in, tokens_out, finish_reason, raw_json
-- [ ] 2.2.3: `LLMProvider.complete(system, user, temperature, max_tokens)` abstract method
-- [ ] 2.2.4: Commit "feat(tools): LLMProvider ABC + LLMResponse DTO"
+- [x] 2.2.1: Implement `tools/llm_provider.py` (`LLMResponse` dataclass, `LLMProvider` ABC)
+- [x] 2.2.2: `LLMResponse` fields: text, tokens_in, tokens_out, finish_reason, raw_json
+- [x] 2.2.3: `LLMProvider.complete(system, user, temperature, max_tokens)` abstract method
+- [x] 2.2.4: Commit "feat(tools): LLMProvider ABC + LLMResponse DTO"
 
 ### Task 2.3: ClaudeLoginProvider
-- [ ] 2.3.1: Write failing tests `tests/unit/test_claude_login_provider.py` (mock subprocess, happy path, non-zero exit)
-- [ ] 2.3.2: Run, expect fail
-- [ ] 2.3.3: Implement `tools/claude_login_provider.py` (subprocess.run with `claude -p --append-system-prompt --output-format json --max-turns 1`)
-- [ ] 2.3.4: Parse JSON response, extract `result`, `usage.input_tokens`, `usage.output_tokens`
-- [ ] 2.3.5: Raise `RuntimeError` on non-zero exit
-- [ ] 2.3.6: Run, expect pass
-- [ ] 2.3.7: Commit "feat(tools): ClaudeLoginProvider via claude -p shell-out"
+- [x] 2.3.1: Write failing tests `tests/unit/test_claude_login_provider.py` (mock subprocess, happy path, non-zero exit)
+- [x] 2.3.2: Run, expect fail
+- [x] 2.3.3: Implement `tools/claude_login_provider.py` (subprocess.run with `claude -p --append-system-prompt --output-format json --max-turns 1`)
+- [x] 2.3.4: Parse JSON response, extract `result`, `usage.input_tokens`, `usage.output_tokens`
+- [x] 2.3.5: Raise `RuntimeError` on non-zero exit
+- [x] 2.3.6: Run, expect pass
+- [x] 2.3.7: Commit "feat(tools): ClaudeLoginProvider via claude -p shell-out"
 
 ### Task 2.4: MockLLMProvider
-- [ ] 2.4.1: Write failing test `tests/unit/test_mock_llm_provider.py` (canned response by key, default response)
-- [ ] 2.4.2: Run, expect fail
-- [ ] 2.4.3: Implement `tools/mock_llm_provider.py` (responses dict keyed by `(skill_prefix, call_idx)`)
-- [ ] 2.4.4: Run, expect pass
-- [ ] 2.4.5: Commit "test(tools): MockLLMProvider for offline test runs"
+- [x] 2.4.1: Write failing test `tests/unit/test_mock_llm_provider.py` (canned response by key, default response)
+- [x] 2.4.2: Run, expect fail
+- [x] 2.4.3: Implement `tools/mock_llm_provider.py` (responses dict keyed by `(skill_prefix, call_idx)`)
+- [x] 2.4.4: Run, expect pass
+- [x] 2.4.5: Commit "test(tools): MockLLMProvider for offline test runs"
 
 ### Task 2.5: SearchProvider abstract + SearchHit
-- [ ] 2.5.1: Implement `tools/search_provider.py` (`SearchHit` dataclass, `SearchProvider` ABC)
-- [ ] 2.5.2: Commit "feat(tools): SearchProvider ABC + SearchHit DTO"
+- [x] 2.5.1: Implement `tools/search_provider.py` (`SearchHit` dataclass, `SearchProvider` ABC)
+- [x] 2.5.2: Commit "feat(tools): SearchProvider ABC + SearchHit DTO"
 
 ### Task 2.6: DuckDuckGoProvider
-- [ ] 2.6.1: Write failing tests `tests/unit/test_duckduckgo_provider.py` (mock DDGS, happy path, empty, rate-limit)
-- [ ] 2.6.2: Run, expect fail
-- [ ] 2.6.3: Implement `tools/duckduckgo_provider.py` (DDGS context manager, parse hrefs/bodies)
-- [ ] 2.6.4: Add `SearchRateLimited` custom exception
-- [ ] 2.6.5: Catch DDGS exceptions; raise SearchRateLimited on "Ratelimit" / "429"
-- [ ] 2.6.6: Run, expect pass
-- [ ] 2.6.7: Commit "feat(tools): DuckDuckGoProvider with rate-limit detection"
+- [x] 2.6.1: Write failing tests `tests/unit/test_duckduckgo_provider.py` (mock DDGS, happy path, empty, rate-limit)
+- [x] 2.6.2: Run, expect fail
+- [x] 2.6.3: Implement `tools/duckduckgo_provider.py` (DDGS context manager, parse hrefs/bodies)
+- [x] 2.6.4: Add `SearchRateLimited` custom exception
+- [x] 2.6.5: Catch DDGS exceptions; raise SearchRateLimited on "Ratelimit" / "429"
+- [x] 2.6.6: Run, expect pass
+- [x] 2.6.7: Commit "feat(tools): DuckDuckGoProvider with rate-limit detection"
 
 ### Task 2.7: MockSearchProvider
-- [ ] 2.7.1: Implement `tools/mock_search_provider.py` (fixed list of SearchHits)
-- [ ] 2.7.2: Commit "test(tools): MockSearchProvider fixed-list fixture"
+- [x] 2.7.1: Implement `tools/mock_search_provider.py` (fixed list of SearchHits)
+- [x] 2.7.2: Commit "test(tools): MockSearchProvider fixed-list fixture"
 
 ### Task 2.8: WebSearchTool with fallback
-- [ ] 2.8.1: Write failing test `tests/unit/test_web_search.py` (happy path, fallback to citations.md on rate-limit)
-- [ ] 2.8.2: Run, expect fail
-- [ ] 2.8.3: Implement `tools/web_search.py` (wraps SearchProvider, regex-parses `references/citations.md` on RateLimited)
-- [ ] 2.8.4: Run, expect pass
-- [ ] 2.8.5: Commit "feat(tools): WebSearchTool with rate-limit fallback to cached citations"
+- [x] 2.8.1: Write failing test `tests/unit/test_web_search.py` (happy path, fallback to citations.md on rate-limit)
+- [x] 2.8.2: Run, expect fail
+- [x] 2.8.3: Implement `tools/web_search.py` (wraps SearchProvider, regex-parses `references/citations.md` on RateLimited)
+- [x] 2.8.4: Run, expect pass
+- [x] 2.8.5: Commit "feat(tools): WebSearchTool with rate-limit fallback to cached citations"
 
 ---
 
 ## Phase 3 — Gatekeeper
 
 ### Task 3.1: ApiGatekeeper core (rubric §A4 signature)
-- [ ] 3.1.1: Write `tests/unit/test_gatekeeper.py` — 6 failing tests (basic execute, spend tracking, budget warn, budget hard, retry, queue_status)
-- [ ] 3.1.2: Run, expect 6 fail
-- [ ] 3.1.3: Implement `shared/gatekeeper.py` — class skeleton + `__init__` (config, shared_spend, lock, queue_capacity)
-- [ ] 3.1.4: Implement `execute(api_call, *args, **kwargs)` with retry-with-backoff [1,2,4]
-- [ ] 3.1.5: Implement `update_spend(tokens)` with Lock
-- [ ] 3.1.6: Implement `get_spend_so_far()` with Lock
-- [ ] 3.1.7: Implement `estimate_cost(n_debates)` (zero in login mode)
-- [ ] 3.1.8: Implement `get_queue_status()` returning QueueStatus dataclass
-- [ ] 3.1.9: Implement `_check_budget_hard_cap()` (raises BudgetExhausted at 95%)
-- [ ] 3.1.10: Implement `_enforce_rate_limit()` (raises RateLimitExceeded at requests_per_minute)
-- [ ] 3.1.11: Run 6 tests, expect pass
-- [ ] 3.1.12: Commit "feat(gatekeeper): ApiGatekeeper with rate/budget/queue/retry"
+- [x] 3.1.1: Write `tests/unit/test_gatekeeper.py` — 6 failing tests (basic execute, spend tracking, budget warn, budget hard, retry, queue_status)
+- [x] 3.1.2: Run, expect 6 fail
+- [x] 3.1.3: Implement `shared/gatekeeper.py` — class skeleton + `__init__` (config, shared_spend, lock, queue_capacity)
+- [x] 3.1.4: Implement `execute(api_call, *args, **kwargs)` with retry-with-backoff [1,2,4]
+- [x] 3.1.5: Implement `update_spend(tokens)` with Lock
+- [x] 3.1.6: Implement `get_spend_so_far()` with Lock
+- [x] 3.1.7: Implement `estimate_cost(n_debates)` (zero in login mode)
+- [x] 3.1.8: Implement `get_queue_status()` returning QueueStatus dataclass
+- [x] 3.1.9: Implement `_check_budget_hard_cap()` (raises BudgetExhausted at 95%)
+- [x] 3.1.10: Implement `_enforce_rate_limit()` (raises RateLimitExceeded at requests_per_minute)
+- [x] 3.1.11: Run 6 tests, expect pass
+- [x] 3.1.12: Commit "feat(gatekeeper): ApiGatekeeper with rate/budget/queue/retry"
 
 ### Task 3.2: Backpressure + drain (rubric §A5)
-- [ ] 3.2.1: Add failing tests for FIFO queue depth, backpressure alert when full, drain when window resets
-- [ ] 3.2.2: Implement `enqueue()` with max_depth check
-- [ ] 3.2.3: Implement `drain()` for window-reset processing
-- [ ] 3.2.4: Implement concurrent_max semaphore
-- [ ] 3.2.5: Run tests, expect pass
-- [ ] 3.2.6: Commit "feat(gatekeeper): FIFO backpressure + drain (rubric §A5)"
+- [x] 3.2.1: Add failing tests for FIFO queue depth, backpressure alert when full, drain when window resets
+- [x] 3.2.2: Implement `enqueue()` with max_depth check
+- [x] 3.2.3: Implement `drain()` for window-reset processing
+- [x] 3.2.4: Implement concurrent_max semaphore
+- [x] 3.2.5: Run tests, expect pass
+- [x] 3.2.6: Commit "feat(gatekeeper): FIFO backpressure + drain (rubric §A5)"
 
 ---
 
@@ -988,11 +988,12 @@ Per lec01 L1199-1201, this pass typically adds ~200 missed tasks. The current ta
 
 ## Summary
 
-**Live counts** (run `grep -c '^- \[ \]' docs/TODO.md` to verify):
+**Live counts** (run `grep -c '^- \[ \]' docs/TODO.md` and `grep -c '^- \[x\]' docs/TODO.md` to verify):
 
-- Pending: **640**
-- Completed: **10** (pre-execution + Phase A docs already landed)
+- Pending: **483**
+- Completed: **167** (Phase A docs + Phase 0 scaffold + Phase 1 foundation + Phase 2 providers + Phase 3 Gatekeeper)
 - **Total: 650 tasks**
+- **Progress: ~26%** (Phases A, 0, 1, 2, 3 of 12+)
 
 **Position vs targets:**
 
@@ -1003,6 +1004,8 @@ Per lec01 L1199-1201, this pass typically adds ~200 missed tasks. The current ta
 **Decision:** ship at 650 now, expand organically during execution. The TODO is a living document — new sub-tasks will be added when red-green-refactor cycles reveal them (this is the natural form the verify-pass advice takes during execution, not all at once during planning).
 
 **Marking discipline reminder:** every `[x]` should correspond to a git commit on `main`. Continuous commit density is graded (lec04 L132-141, L559). Big-bang push at the end is a significant grade penalty.
+
+**Subagent-dispatch protocol** (in effect from Phase 4 onward): every implementer prompt MUST end with an instruction to update `docs/TODO.md` checkboxes (`[ ]` → `[x]`) for the completed tasks in the same final commit that closes the phase. This ensures the per-step marking discipline is enforced at the dispatch layer, not retroactively.
 
 **Phase ordering reminder (Dr. Segal's slide — overrides phase numbers):**
 1. PRD → 2. PLAN → 3. TODO → 4. verify pass → 5. Execute (Phases 0-10) → 6. README → 7. Run the project → 8. Push to GitHub PUBLIC
