@@ -381,6 +381,10 @@ While Phase 0 was running, the orchestrator session injected six additional file
 | 34 | Push to GitHub explicitly PUBLIC (`gh repo create --public`); incognito verify; lec05 L1641-1652 auto-zero risk | Prompt #17 | Lecturer slide |
 | 35 | README is POST-execution per slide order (lec01 L1249-1250: "you'll forget what you did") | Prompt #17 | Lecturer slide |
 | 36 | Use verbatim prompts: "Your mission is to create the following PRD document…" + "Verify that all PRD demand implemented in the todo list. You must be very critical." | Prompt #17 | Lecturer slide |
+| 37 | Phase 10 design refinement: JudgeAgent runs in **main process** (not a Process child) for routing simplicity. Pro + Con run as real Processes; main hosts the Judge logic between their queues. Satisfies the 3-process requirement (main = orchestrator/judge, pro = Process, con = Process) without bidirectional-routing-through-a-child complexity. | Prompt #18 (Phase 10) | Pragmatic over dogmatic |
+| 38 | Phase 10 split: `process_flow.py` owns the IPC dance (setup_phase, ping_loop, route_with_replay, await_partisan); `process_verdict.py` owns scoring + verdict; orchestrator.py orchestrates only. Each module ≤150 lines. | Prompt #18 (Phase 10) | 150-line rule |
+| 39 | PartisanAgent.handle_message now responds: setup_directive → ack; argument/counter/correction/intervention cues → LLM-driven argument or counter. Previously was no-op. | Prompt #18 (Phase 10) | Required for real IPC |
+| 40 | E2E tests (`tests/e2e/`) are gated by `RUN_E2E=1`; unit tests + integration with mocked LLM cover CI. Real-Claude e2e only runs locally before submission. | Prompt #18 (Phase 10) | Cost + flakiness control |
 
 ---
 

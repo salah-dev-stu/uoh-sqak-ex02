@@ -5,14 +5,17 @@ Shared logic:
   * Enforces opponent-reference rule (H7): each turn must reuse ≥2 content words
     from the previous opponent message
   * Extracts URL citations with surrounding text snippet
+  * `handle_message` produces ack on setup_directive, argument/counter on cues
 """
 from __future__ import annotations
 
 import re
+import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 
 from agent_debate.agents.base_agent import BaseAgent
-from agent_debate.constants import Stance
+from agent_debate.constants import SCHEMA_VERSION, AgentRole, MessageRole, Stance
 from agent_debate.tools.web_search import WebSearchTool
 
 _FRONTMATTER_RE = re.compile(r"^---\n.*?\n---\n(.*)", re.DOTALL)
@@ -84,6 +87,54 @@ class PartisanAgent(BaseAgent):
             out.append({"url": raw_url, "snippet": snippet})
         return out
 
+    def _envelope(self, to_role: str, role: str, text: str, ping_index: int) -> dict:
+        """Build a schema-valid wire message originating from this agent."""
+        return {
+            "msg_id": str(uuid.uuid4()),
+            "schema_version": SCHEMA_VERSION,
+            "from": self.role.value if hasattr(self.role, "value") else str(self.role),
+            "to": to_role,
+            "role": role,
+            "ping_index": ping_index,
+            "text": text,
+            "timestamp": datetime.now(tz=UTC).isoformat(),
+        }
+
+    def _llm_text(self, msg: dict) -> str:
+        """Drive one LLM call shaped by this agent's stance + the inbound cue."""
+        system = f"{self.SKILL_NAME} stance={self.STANCE.value}"
+        user = msg.get("text", "")
+        response = self.llm_provider.complete(
+            system=system, user=user, temperature=self.temperature, max_tokens=400,
+        )
+        return response.text
+
     def handle_message(self, msg: dict) -> dict | None:
-        """Default = no-op; concrete subclasses or integration tests override."""
+        """Produce ack on setup_directive; argument/counter for cues from Judge."""
+        role_in = msg.get("role")
+        ping_index = int(msg.get("ping_index", 0) or 0)
+        if role_in == MessageRole.SETUP_DIRECTIVE.value:
+            return self._envelope(
+                to_role=AgentRole.JUDGE.value,
+                role=MessageRole.ACK.value,
+                text=f"{self.STANCE.value} ready.",
+                ping_index=ping_index,
+            )
+        if role_in in (
+            MessageRole.ARGUMENT.value,
+            MessageRole.COUNTER.value,
+            MessageRole.CORRECTION_REQUEST.value,
+            MessageRole.INTERVENTION.value,
+        ):
+            text = self._llm_text(msg)
+            out_role = (
+                MessageRole.ARGUMENT.value if ping_index <= 1
+                else MessageRole.COUNTER.value
+            )
+            return self._envelope(
+                to_role=AgentRole.JUDGE.value,
+                role=out_role,
+                text=text,
+                ping_index=ping_index,
+            )
         return None

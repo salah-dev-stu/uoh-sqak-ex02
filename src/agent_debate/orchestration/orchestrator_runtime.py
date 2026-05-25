@@ -1,4 +1,5 @@
-"""Runtime helpers for DebateOrchestrator — spawn_children + run_child_loop.
+"""Runtime helpers for DebateOrchestrator — spawn_children + run_child_loop +
+real-process IPC flow primitives (Phase 10).
 
 Split out of orchestrator.py to keep each module ≤150 logical lines.
 The Process target (`run_child_loop`) is a module-level function so it
@@ -17,6 +18,9 @@ from agent_debate.constants import AgentRole
 _ROLE_CLASSES = ("pro", "con", "judge")
 _HEARTBEAT_PERIOD = 2.0
 _POLL_TIMEOUT = 1.0
+ACK_TIMEOUT_S = 30.0
+TURN_TIMEOUT_S = 90.0
+MAX_REPLAYS_PER_TURN = 1
 
 
 def build_queue_topology() -> dict[str, Queue]:

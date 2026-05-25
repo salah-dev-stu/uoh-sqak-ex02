@@ -15,13 +15,8 @@ from datetime import UTC, datetime
 from multiprocessing import Lock, Process, Queue, Value
 from pathlib import Path
 
-from agent_debate.constants import (
-    SCHEMA_VERSION,
-    AgentRole,
-    DebateOutcome,
-    MessageRole,
-    Stance,
-)
+from agent_debate.agents.judge_agent import JudgeAgent
+from agent_debate.constants import SCHEMA_VERSION, AgentRole, DebateOutcome, MessageRole
 from agent_debate.orchestration.debate_loop import run_debate_dry_run
 from agent_debate.orchestration.lifecycle_registry import LifecycleRegistry
 from agent_debate.orchestration.orchestrator_runtime import (
@@ -29,6 +24,8 @@ from agent_debate.orchestration.orchestrator_runtime import (
     build_queue_topology,
     run_child_loop,
 )
+from agent_debate.orchestration.process_flow import run_ping_loop, run_setup_phase
+from agent_debate.orchestration.process_verdict import finalize_verdict
 from agent_debate.orchestration.transcript import Transcript
 
 __all__ = ["DebateOrchestrator", "Transcript"]
@@ -66,12 +63,9 @@ class DebateOrchestrator:
     def make_setup_directive(self, to_role: str, stance: str) -> dict:
         """Build a Phase A setup_directive message (H18)."""
         return {
-            "msg_id": str(uuid.uuid4()),
-            "schema_version": SCHEMA_VERSION,
-            "from": AgentRole.JUDGE.value,
-            "to": to_role,
-            "role": MessageRole.SETUP_DIRECTIVE.value,
-            "ping_index": 0,
+            "msg_id": str(uuid.uuid4()), "schema_version": SCHEMA_VERSION,
+            "from": AgentRole.JUDGE.value, "to": to_role,
+            "role": MessageRole.SETUP_DIRECTIVE.value, "ping_index": 0,
             "text": f"Your stance: {stance}.",
             "timestamp": datetime.now(tz=UTC).isoformat(),
         }
@@ -96,9 +90,6 @@ class DebateOrchestrator:
             child.join(timeout=10)
             if child.is_alive():
                 child.kill()
-
-    def _signal_handler(self, *_: object) -> None:
-        self.shutdown_gracefully()
 
     def spawn_children(
         self, topic: str, skill_dir: str = "./.claude/skills"
@@ -131,22 +122,42 @@ class DebateOrchestrator:
                 lifecycle=self.lifecycle, skill_dir=skill_dir, n_pings=n_pings,
             )
         else:
-            self._run_with_processes(transcript, skill_dir=skill_dir)
+            self._run_with_processes(transcript, skill_dir=skill_dir, n_pings=n_pings)
         self.persist_transcript(transcript)
         return transcript
 
-    def _run_with_processes(self, transcript: Transcript, skill_dir: str) -> None:
-        """Real-process path: spawn, start, boot, shutdown (Phase 10 expands)."""
+    def _run_with_processes(
+        self, transcript: Transcript, skill_dir: str, n_pings: int = 10,
+    ) -> None:
+        """Real-process path (H4 + H18). JudgeAgent hosted in main process;
+        Pro and Con are spawned as real Processes. Two-phase boot, then
+        2*n_pings ping loop, then scoring + verdict + graceful shutdown."""
         self.spawn_children(topic=transcript.topic, skill_dir=skill_dir)
-        for child in self._children:
-            child.start()
-        self._queues["pro_in"].put(
-            self.make_setup_directive("pro", Stance.ORIGINALITY.value)
-        )
-        self._queues["con_in"].put(
-            self.make_setup_directive("con", Stance.REMIX_ONLY.value)
-        )
+        # Only Pro + Con run as real Processes; Judge logic lives in main.
+        for role in ("pro", "con"):
+            self._child_map[role].start()
+        self.lifecycle.fire("before_round", {"transcript": transcript})
+        judge = self._build_judge(skill_dir)
+        if not run_setup_phase(self._queues, transcript):
+            transcript.outcome = DebateOutcome.DEBATE_ABORTED
+            transcript.verdict = {"reason": "setup_phase_timeout"}
+            self.shutdown_gracefully()
+            transcript.finished_at = datetime.now(tz=UTC).isoformat()
+            return
+        run_ping_loop(self._queues, judge, transcript, n_pings=n_pings)
+        self.lifecycle.fire("after_round", {"transcript": transcript})
+        self.lifecycle.fire("before_verdict", {"transcript": transcript})
+        finalize_verdict(judge, transcript)
+        self.lifecycle.fire("after_verdict", {"transcript": transcript})
         self.shutdown_gracefully()
         transcript.finished_at = datetime.now(tz=UTC).isoformat()
-        transcript.outcome = DebateOutcome.PRO_WINS
-        transcript.verdict = {"winner": "pro", "note": "real-process path stub"}
+
+    def _build_judge(self, skill_dir: str) -> JudgeAgent:
+        """Construct an in-main-process JudgeAgent for routing logic."""
+        return JudgeAgent(
+            role=AgentRole.JUDGE, in_queue=self._queues["judge_in"],
+            out_queue=self._queues["pro_in"],
+            heartbeat_queue=self._queues["heartbeat"],
+            shared_spend=self._shared_spend, lock=self._lock,
+            skill_dir=skill_dir, llm_provider=self.llm_provider_factory(),
+        )
