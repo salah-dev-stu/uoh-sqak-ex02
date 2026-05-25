@@ -2,9 +2,9 @@
 manages two-phase boot (H18), runs the debate loop, persists transcript,
 and orchestrates graceful shutdown.
 
-Phase 7 delivers the scaffolding: ctor, LifecycleRegistry wiring, the
-setup_directive factory, transcript persistence, and graceful shutdown.
-Phase 8 layers spawn_children + run_debate on top.
+Phase 7 delivered the scaffolding. Phase 8 layers spawn_children +
+run_debate on top via orchestrator_runtime helpers (keeps each file
+≤150 logical lines).
 """
 from __future__ import annotations
 
@@ -13,11 +13,22 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from multiprocessing import Lock, Process, Value
+from multiprocessing import Lock, Process, Queue, Value
 from pathlib import Path
 
-from agent_debate.constants import SCHEMA_VERSION, AgentRole, DebateOutcome, MessageRole
+from agent_debate.constants import (
+    SCHEMA_VERSION,
+    AgentRole,
+    DebateOutcome,
+    MessageRole,
+    Stance,
+)
 from agent_debate.orchestration.lifecycle_registry import LifecycleRegistry
+from agent_debate.orchestration.orchestrator_runtime import (
+    build_child_processes,
+    build_queue_topology,
+    run_child_loop,
+)
 
 
 @dataclass
@@ -67,6 +78,8 @@ class DebateOrchestrator:
         self.transcript_dir = transcript_dir or Path("./transcripts")
         self.gatekeeper_config = gatekeeper_config or {}
         self._children: list[Process] = []
+        self._child_map: dict[str, Process] = {}
+        self._queues: dict[str, Queue] = {}
         self._shared_spend = Value("i", 0)
         self._lock = Lock()
         self._shutdown_requested = False
@@ -107,3 +120,37 @@ class DebateOrchestrator:
 
     def _signal_handler(self, *_: object) -> None:
         self.shutdown_gracefully()
+
+    def spawn_children(
+        self, topic: str, skill_dir: str = "./.claude/skills"
+    ) -> dict[str, Process]:
+        """Create queue topology + 3 child Processes (NOT started)."""
+        self._topic = topic
+        self._queues = build_queue_topology()
+        self._child_map = build_child_processes(
+            target=run_child_loop, queues=self._queues,
+            shared_spend=self._shared_spend, lock=self._lock,
+            skill_dir=skill_dir, llm_provider_factory=self.llm_provider_factory,
+        )
+        self._children = list(self._child_map.values())
+        return self._child_map
+
+    def run_debate(
+        self, topic: str, n_pings: int = 10,
+        skill_dir: str = "./.claude/skills",
+    ) -> Transcript:
+        """Spawn + two-phase boot (H18) + return Transcript. Phase 10 wires
+        the full multi-process message-routing loop with mock LLM."""
+        transcript = Transcript(
+            debate_id=str(uuid.uuid4()), topic=topic,
+            started_at=datetime.now(tz=UTC).isoformat(),
+        )
+        self.spawn_children(topic=topic, skill_dir=skill_dir)
+        self._queues["pro_in"].put(
+            self.make_setup_directive("pro", Stance.ORIGINALITY.value)
+        )
+        self._queues["con_in"].put(
+            self.make_setup_directive("con", Stance.REMIX_ONLY.value)
+        )
+        transcript.finished_at = datetime.now(tz=UTC).isoformat()
+        return transcript

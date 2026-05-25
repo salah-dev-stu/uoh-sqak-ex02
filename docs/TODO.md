@@ -433,48 +433,48 @@ and the user's HW2 quality target ≥90.
 ## Phase 8 — Watchdog
 
 ### Task 8.1: Watchdog — heartbeat polling
-- [ ] 8.1.1: Write failing test — Watchdog reads from heartbeat_queue
-- [ ] 8.1.2: Write failing test — updates `last_heartbeat[pid]` on each ping
-- [ ] 8.1.3: Write failing test — polling interval = 2s (config-driven)
-- [ ] 8.1.4: Implement `Watchdog.__init__` with poll_interval, stuck_timeout, max_restarts
-- [ ] 8.1.5: Implement `monitor()` loop reading heartbeat_queue non-blocking
-- [ ] 8.1.6: Run tests, expect 3 pass
-- [ ] 8.1.7: Commit "feat(watchdog): heartbeat polling loop"
+- [x] 8.1.1: Write failing test — Watchdog reads from heartbeat_queue
+- [x] 8.1.2: Write failing test — updates `last_heartbeat[pid]` on each ping
+- [x] 8.1.3: Write failing test — polling interval = 2s (config-driven)
+- [x] 8.1.4: Implement `Watchdog.__init__` with poll_interval, stuck_timeout, max_restarts
+- [x] 8.1.5: Implement `monitor()` loop reading heartbeat_queue non-blocking
+- [x] 8.1.6: Run tests, expect 3 pass
+- [x] 8.1.7: Commit "feat(watchdog): heartbeat polling loop"
 
 ### Task 8.1.b: Two-signal stuck detection
-- [ ] 8.1.8: Write failing test — `_is_stuck(child)` returns True if `is_alive() == False`
-- [ ] 8.1.9: Write failing test — `_is_stuck(child)` returns True if heartbeat age > stuck_timeout
-- [ ] 8.1.10: Write failing test — `_is_stuck(child)` returns False if both signals are healthy
-- [ ] 8.1.11: Implement two-signal `_is_stuck()`
-- [ ] 8.1.12: Run tests, expect 3 pass
-- [ ] 8.1.13: Commit "feat(watchdog): two-signal stuck detection (alive + heartbeat-staleness)"
+- [x] 8.1.8: Write failing test — `_is_stuck(child)` returns True if `is_alive() == False`
+- [x] 8.1.9: Write failing test — `_is_stuck(child)` returns True if heartbeat age > stuck_timeout
+- [x] 8.1.10: Write failing test — `_is_stuck(child)` returns False if both signals are healthy
+- [x] 8.1.11: Implement two-signal `_is_stuck()`
+- [x] 8.1.12: Run tests, expect 3 pass
+- [x] 8.1.13: Commit "feat(watchdog): two-signal stuck detection (alive + heartbeat-staleness)"
 
 ### Task 8.1.c: Restart with backoff
-- [ ] 8.1.14: Write failing test — first restart waits 1s
-- [ ] 8.1.15: Write failing test — second restart waits 2s
-- [ ] 8.1.16: Write failing test — third restart waits 4s
-- [ ] 8.1.17: Write failing test — `_restart()` calls SIGKILL on stuck child first
-- [ ] 8.1.18: Implement `_restart(child, restart_idx)` with backoff array `[1, 2, 4]`
-- [ ] 8.1.19: Implement child SIGKILL + Queue drain + Process recreation
-- [ ] 8.1.20: Run tests, expect 4 pass
-- [ ] 8.1.21: Commit "feat(watchdog): restart with exponential backoff"
+- [x] 8.1.14: Write failing test — first restart waits 1s
+- [x] 8.1.15: Write failing test — second restart waits 2s
+- [x] 8.1.16: Write failing test — third restart waits 4s
+- [x] 8.1.17: Write failing test — `_restart()` calls SIGKILL on stuck child first
+- [x] 8.1.18: Implement `_restart(child, restart_idx)` with backoff array `[1, 2, 4]`
+- [x] 8.1.19: Implement child SIGKILL + Queue drain + Process recreation
+- [x] 8.1.20: Run tests, expect 4 pass
+- [x] 8.1.21: Commit "feat(watchdog): restart with exponential backoff"
 
 ### Task 8.1.d: State replay on restart
-- [ ] 8.1.22: Write failing test — respawned child receives the same shared_spend Value
-- [ ] 8.1.23: Write failing test — respawned child receives the same skill_dir
-- [ ] 8.1.24: Write failing test — respawned child receives the most-recent setup_directive
-- [ ] 8.1.25: Implement state replay — read last setup_directive from in-memory transcript
-- [ ] 8.1.26: Implement state injection on respawn
-- [ ] 8.1.27: Run tests, expect 3 pass
-- [ ] 8.1.28: Commit "feat(watchdog): state replay on restart"
+- [x] 8.1.22: Write failing test — respawned child receives the same shared_spend Value
+- [x] 8.1.23: Write failing test — respawned child receives the same skill_dir
+- [x] 8.1.24: Write failing test — respawned child receives the most-recent setup_directive
+- [x] 8.1.25: Implement state replay — read last setup_directive from in-memory transcript
+- [x] 8.1.26: Implement state injection on respawn
+- [x] 8.1.27: Run tests, expect 3 pass
+- [x] 8.1.28: Commit "feat(watchdog): state replay on restart"
 
 ### Task 8.1.e: Max-restarts fail-fast
-- [ ] 8.1.29: Write failing test — after 3 restarts, `_on_unrecoverable` fires
-- [ ] 8.1.30: Write failing test — `_on_unrecoverable` emits `debate_aborted` verdict
-- [ ] 8.1.31: Write failing test — `_on_unrecoverable` signals main to exit
-- [ ] 8.1.32: Implement `_on_unrecoverable(child)` with verdict emission
-- [ ] 8.1.33: Run tests, expect 3 pass
-- [ ] 8.1.34: Commit "feat(watchdog): fail-fast after max_restarts"
+- [x] 8.1.29: Write failing test — after 3 restarts, `_on_unrecoverable` fires
+- [x] 8.1.30: Write failing test — `_on_unrecoverable` emits `debate_aborted` verdict
+- [x] 8.1.31: Write failing test — `_on_unrecoverable` signals main to exit
+- [x] 8.1.32: Implement `_on_unrecoverable(child)` with verdict emission
+- [x] 8.1.33: Run tests, expect 3 pass
+- [x] 8.1.34: Commit "feat(watchdog): fail-fast after max_restarts"
 
 ---
 
