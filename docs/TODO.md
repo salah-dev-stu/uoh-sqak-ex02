@@ -258,40 +258,40 @@ and the user's HW2 quality target ≥90.
 ## Phase 4 — Skills + pre-flight script
 
 ### Task 4.1: pro_skill/
-- [ ] 4.1.1: Create `.claude/skills/pro_skill/` directory
-- [ ] 4.1.2: Write `pro_skill/SKILL.md` frontmatter (name=pro-ai-originality-debater, third-person description, "pushy" triggers)
-- [ ] 4.1.3: Write ## Scope section (stance fixed, never concedes)
-- [ ] 4.1.4: Write ## Testing expectations (JSON output, opponent-reference quote, citation requirement)
-- [ ] 4.1.5: Write ## Tactics section (Klingemann, Edmond de Belamy, transformative-use doctrine, emergence)
-- [ ] 4.1.6: Write ## Drift signal keywords block (the regex inputs for DriftDetector)
-- [ ] 4.1.7: Write ## Output format section (JSON shape required)
-- [ ] 4.1.8: Verify total body ≥ 1500 words (per Anthropic best practice)
-- [ ] 4.1.9: Write `pro_skill/references/citations.md` (6 pre-seeded citations: Christie's, Klingemann, Ridler, transformative-use, distill.pub, Verge article)
-- [ ] 4.1.10: Commit "feat(skills): pro_skill SKILL.md + pre-seeded citation fallback"
+- [x] 4.1.1: Create `.claude/skills/pro_skill/` directory
+- [x] 4.1.2: Write `pro_skill/SKILL.md` frontmatter (name=pro-ai-originality-debater, third-person description, "pushy" triggers)
+- [x] 4.1.3: Write ## Scope section (stance fixed, never concedes)
+- [x] 4.1.4: Write ## Testing expectations (JSON output, opponent-reference quote, citation requirement)
+- [x] 4.1.5: Write ## Tactics section (Klingemann, Edmond de Belamy, transformative-use doctrine, emergence)
+- [x] 4.1.6: Write ## Drift signal keywords block (the regex inputs for DriftDetector)
+- [x] 4.1.7: Write ## Output format section (JSON shape required)
+- [x] 4.1.8: Verify total body ≥ 1500 words (per Anthropic best practice)
+- [x] 4.1.9: Write `pro_skill/references/citations.md` (6 pre-seeded citations: Christie's, Klingemann, Ridler, transformative-use, distill.pub, Verge article)
+- [x] 4.1.10: Commit "feat(skills): pro_skill SKILL.md + pre-seeded citation fallback"
 
 ### Task 4.2: con_skill/ (mirror)
-- [ ] 4.2.1-4.2.10: Mirror of 4.1 for Con stance (Stochastic Parrots, NYT v OpenAI, Getty v Stability, Chinese Room)
-- [ ] 4.2.11: Commit "feat(skills): con_skill SKILL.md + pre-seeded citation fallback"
+- [x] 4.2.1-4.2.10: Mirror of 4.1 for Con stance (Stochastic Parrots, NYT v OpenAI, Getty v Stability, Chinese Room)
+- [x] 4.2.11: Commit "feat(skills): con_skill SKILL.md + pre-seeded citation fallback"
 
 ### Task 4.3: judge_skill/
-- [ ] 4.3.1-4.3.10: Frontmatter + Scope (topic-blind) + Testing expectations + 5-axis scoring + PC filter rules + drift trigger keywords + reference to debate_criteria.md
-- [ ] 4.3.11: Commit "feat(skills): judge_skill SKILL.md (topic-blind, 5-axis)"
+- [x] 4.3.1-4.3.10: Frontmatter + Scope (topic-blind) + Testing expectations + 5-axis scoring + PC filter rules + drift trigger keywords + reference to debate_criteria.md
+- [x] 4.3.11: Commit "feat(skills): judge_skill SKILL.md (topic-blind, 5-axis)"
 
 ### Task 4.4: Canned LLM response fixtures
-- [ ] 4.4.1: Write `tests/fixtures/llm_responses/pro_pings.json` (10 canned pro arguments, JSON-valid)
-- [ ] 4.4.2: Write `tests/fixtures/llm_responses/con_pings.json` (10 canned con counters)
-- [ ] 4.4.3: Write `tests/fixtures/llm_responses/judge_setup.json` (2 setup_directive messages)
-- [ ] 4.4.4: Write `tests/fixtures/llm_responses/judge_verdict.json` (verdict with 5-axis scoring)
-- [ ] 4.4.5: Verify all JSON valid + schema-valid
-- [ ] 4.4.6: Commit "test(fixtures): canned LLM responses for integration tests"
+- [x] 4.4.1: Write `tests/fixtures/llm_responses/pro_pings.json` (10 canned pro arguments, JSON-valid)
+- [x] 4.4.2: Write `tests/fixtures/llm_responses/con_pings.json` (10 canned con counters)
+- [x] 4.4.3: Write `tests/fixtures/llm_responses/judge_setup.json` (2 setup_directive messages)
+- [x] 4.4.4: Write `tests/fixtures/llm_responses/judge_verdict.json` (verdict with 5-axis scoring)
+- [x] 4.4.5: Verify all JSON valid + schema-valid
+- [x] 4.4.6: Commit "test(fixtures): canned LLM responses for integration tests"
 
 ### Task 4.5: scripts/build_judge_criteria.py (N7 originality)
-- [ ] 4.5.1: Implement `scripts/build_judge_criteria.py` (cache check, DDG search for parliamentary/LD/Robert's Rules)
-- [ ] 4.5.2: Synthesize results into markdown body
-- [ ] 4.5.3: Write to `.claude/skills/judge_skill/references/debate_criteria.md`
-- [ ] 4.5.4: Run once: `uv run python scripts/build_judge_criteria.py`
-- [ ] 4.5.5: Verify file created and non-empty
-- [ ] 4.5.6: Commit "feat(skills): pre-flight script builds Judge criteria from web (N7)"
+- [x] 4.5.1: Implement `scripts/build_judge_criteria.py` (cache check, DDG search for parliamentary/LD/Robert's Rules)
+- [x] 4.5.2: Synthesize results into markdown body
+- [x] 4.5.3: Write to `.claude/skills/judge_skill/references/debate_criteria.md`
+- [x] 4.5.4: Run once: `uv run python scripts/build_judge_criteria.py`
+- [x] 4.5.5: Verify file created and non-empty
+- [x] 4.5.6: Commit "feat(skills): pre-flight script builds Judge criteria from web (N7)"
 
 ---
 
