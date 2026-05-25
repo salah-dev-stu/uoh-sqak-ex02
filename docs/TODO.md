@@ -298,35 +298,35 @@ and the user's HW2 quality target ≥90.
 ## Phase 5 — Agents (Base + Partisan + Pro + Con)
 
 ### Task 5.1: BaseAgent abstract
-- [ ] 5.1.1: Write `src/agent_debate/agents/__init__.py`
-- [ ] 5.1.2: Write failing test `tests/unit/test_base_agent.py` (init with role, emit_heartbeat, step delegates to handle_message, SIGTERM sets _shutdown)
-- [ ] 5.1.3: Run, expect fail
-- [ ] 5.1.4: Implement `agents/base_agent.py` — abstract class with role, queues, shared_spend, lock, skill_dir, llm_provider
-- [ ] 5.1.5: Implement `emit_heartbeat()` putting `{role, ts}` on heartbeat_queue
-- [ ] 5.1.6: Implement `step(msg)` delegating to `handle_message(msg)` (test seam)
-- [ ] 5.1.7: Implement `_on_sigterm()` setting `self._shutdown = True`
-- [ ] 5.1.8: Register `signal.SIGTERM` handler in `__init__`
-- [ ] 5.1.9: Run tests, expect pass
-- [ ] 5.1.10: Commit "feat(agents): BaseAgent abstract with step() test seam"
+- [x] 5.1.1: Write `src/agent_debate/agents/__init__.py`
+- [x] 5.1.2: Write failing test `tests/unit/test_base_agent.py` (init with role, emit_heartbeat, step delegates to handle_message, SIGTERM sets _shutdown)
+- [x] 5.1.3: Run, expect fail
+- [x] 5.1.4: Implement `agents/base_agent.py` — abstract class with role, queues, shared_spend, lock, skill_dir, llm_provider
+- [x] 5.1.5: Implement `emit_heartbeat()` putting `{role, ts}` on heartbeat_queue
+- [x] 5.1.6: Implement `step(msg)` delegating to `handle_message(msg)` (test seam)
+- [x] 5.1.7: Implement `_on_sigterm()` setting `self._shutdown = True`
+- [x] 5.1.8: Register `signal.SIGTERM` handler in `__init__`
+- [x] 5.1.9: Run tests, expect pass
+- [x] 5.1.10: Commit "feat(agents): BaseAgent abstract with step() test seam"
 
 ### Task 5.2: PartisanAgent (shared Pro/Con logic)
-- [ ] 5.2.1: Write failing tests `tests/unit/test_partisan_agent.py` (load_skill_body strips frontmatter, opponent-reference regex, citation extractor)
-- [ ] 5.2.2: Implement `load_skill_body()` reading `<skill_dir>/SKILL.md`, stripping YAML frontmatter via regex
-- [ ] 5.2.3: Implement `enforce_opponent_reference(text, prev_opponent_text) -> bool` using regex/substring match
-- [ ] 5.2.4: Implement `extract_citations(text) -> list[Citation]` parsing URL patterns
-- [ ] 5.2.5: Implement `handle_message(msg)` orchestrating: validate → load skill → call LLM via Gatekeeper → set references_opponent → emit
-- [ ] 5.2.6: Run tests, expect pass
-- [ ] 5.2.7: Commit "feat(agents): PartisanAgent with skill loader + opponent-reference + citation extractor"
+- [x] 5.2.1: Write failing tests `tests/unit/test_partisan_agent.py` (load_skill_body strips frontmatter, opponent-reference regex, citation extractor)
+- [x] 5.2.2: Implement `load_skill_body()` reading `<skill_dir>/SKILL.md`, stripping YAML frontmatter via regex
+- [x] 5.2.3: Implement `enforce_opponent_reference(text, prev_opponent_text) -> bool` using regex/substring match
+- [x] 5.2.4: Implement `extract_citations(text) -> list[Citation]` parsing URL patterns
+- [x] 5.2.5: Implement `handle_message(msg)` orchestrating: validate → load skill → call LLM via Gatekeeper → set references_opponent → emit
+- [x] 5.2.6: Run tests, expect pass
+- [x] 5.2.7: Commit "feat(agents): PartisanAgent with skill loader + opponent-reference + citation extractor"
 
 ### Task 5.3: ProAgent
-- [ ] 5.3.1: Write failing test `tests/unit/test_pro_agent.py` (STANCE = ORIGINALITY, SKILL_NAME = pro_skill)
-- [ ] 5.3.2: Implement `agents/pro_agent.py` (thin subclass of PartisanAgent)
-- [ ] 5.3.3: Run, expect pass
-- [ ] 5.3.4: Commit "feat(agents): ProAgent — AI=ORIGINALITY stance"
+- [x] 5.3.1: Write failing test `tests/unit/test_pro_agent.py` (STANCE = ORIGINALITY, SKILL_NAME = pro_skill)
+- [x] 5.3.2: Implement `agents/pro_agent.py` (thin subclass of PartisanAgent)
+- [x] 5.3.3: Run, expect pass
+- [x] 5.3.4: Commit "feat(agents): ProAgent — AI=ORIGINALITY stance"
 
 ### Task 5.4: ConAgent
-- [ ] 5.4.1-5.4.4: Mirror of 5.3 for Con stance
-- [ ] 5.4.5: Commit "feat(agents): ConAgent — AI=REMIX_ONLY stance"
+- [x] 5.4.1-5.4.4: Mirror of 5.3 for Con stance
+- [x] 5.4.5: Commit "feat(agents): ConAgent — AI=REMIX_ONLY stance"
 
 ---
 
