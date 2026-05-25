@@ -481,62 +481,62 @@ and the user's HW2 quality target ≥90.
 ## Phase 9 — SDK + Menu + main
 
 ### Task 9.1.a: DebateSDK.run_debate
-- [ ] 9.1.1: Write `src/agent_debate/sdk/__init__.py`
-- [ ] 9.1.2: Write failing test — `run_debate(topic, n_pings)` returns Transcript
-- [ ] 9.1.3: Write failing test — `run_debate` raises on invalid n_pings (<1 or >100)
-- [ ] 9.1.4: Implement `DebateSDK.__init__` taking Config + Orchestrator
-- [ ] 9.1.5: Implement `run_debate(topic, n_pings=10)` delegating to Orchestrator
-- [ ] 9.1.6: Run tests, expect pass
-- [ ] 9.1.7: Commit "feat(sdk): run_debate entry"
+- [x] 9.1.1: Write `src/agent_debate/sdk/__init__.py`
+- [x] 9.1.2: Write failing test — `run_debate(topic, n_pings)` returns Transcript
+- [x] 9.1.3: Write failing test — `run_debate` raises on invalid n_pings (<1 or >100)
+- [x] 9.1.4: Implement `DebateSDK.__init__` taking Config + Orchestrator
+- [x] 9.1.5: Implement `run_debate(topic, n_pings=10)` delegating to Orchestrator
+- [x] 9.1.6: Run tests, expect pass
+- [x] 9.1.7: Commit "feat(sdk): run_debate entry"
 
 ### Task 9.1.b: get_transcript + list_debates
-- [ ] 9.1.8: Write failing test — `get_transcript(debate_id)` loads JSON from transcripts/
-- [ ] 9.1.9: Write failing test — `get_transcript` raises FileNotFoundError on unknown id
-- [ ] 9.1.10: Write failing test — `list_debates()` returns chronologically-sorted DebateMetadata
-- [ ] 9.1.11: Implement `get_transcript` + `list_debates`
-- [ ] 9.1.12: Run tests, expect pass
-- [ ] 9.1.13: Commit "feat(sdk): get_transcript + list_debates"
+- [x] 9.1.8: Write failing test — `get_transcript(debate_id)` loads JSON from transcripts/
+- [x] 9.1.9: Write failing test — `get_transcript` raises FileNotFoundError on unknown id
+- [x] 9.1.10: Write failing test — `list_debates()` returns chronologically-sorted DebateMetadata
+- [x] 9.1.11: Implement `get_transcript` + `list_debates`
+- [x] 9.1.12: Run tests, expect pass
+- [x] 9.1.13: Commit "feat(sdk): get_transcript + list_debates"
 
 ### Task 9.1.c: get_spend_report (rubric §A8)
-- [ ] 9.1.14: Write `SpendReport` frozen dataclass in `sdk/dtos.py` (total_input_tokens, total_output_tokens, estimated_cost_usd, pct_of_budget_used, by_agent)
-- [ ] 9.1.15: Write failing test — `get_spend_report()` returns SpendReport with correct totals
-- [ ] 9.1.16: Write failing test — `by_agent` keyed by AgentRole values
-- [ ] 9.1.17: Write failing test — `estimated_cost_usd` is Decimal("0.00") in login mode
-- [ ] 9.1.18: Implement `get_spend_report()` reading from shared spend Value
-- [ ] 9.1.19: Run tests, expect pass
-- [ ] 9.1.20: Commit "feat(sdk): get_spend_report DTO"
+- [x] 9.1.14: Write `SpendReport` frozen dataclass in `sdk/dtos.py` (total_input_tokens, total_output_tokens, estimated_cost_usd, pct_of_budget_used, by_agent)
+- [x] 9.1.15: Write failing test — `get_spend_report()` returns SpendReport with correct totals
+- [x] 9.1.16: Write failing test — `by_agent` keyed by AgentRole values
+- [x] 9.1.17: Write failing test — `estimated_cost_usd` is Decimal("0.00") in login mode
+- [x] 9.1.18: Implement `get_spend_report()` reading from shared spend Value
+- [x] 9.1.19: Run tests, expect pass
+- [x] 9.1.20: Commit "feat(sdk): get_spend_report DTO"
 
 ### Task 9.1.d: simulate_keystroke (N8 self-test)
-- [ ] 9.1.21: Write failing test — `simulate_keystroke('A')` invokes run_debate
-- [ ] 9.1.22: Write failing test — `simulate_keystroke('X')` returns exit MenuResponse
-- [ ] 9.1.23: Write failing test — `simulate_keystroke('Z')` returns error MenuResponse
-- [ ] 9.1.24: Implement `simulate_keystroke(key)` dispatching to menu logic
-- [ ] 9.1.25: Run tests, expect pass
-- [ ] 9.1.26: Commit "feat(sdk): simulate_keystroke for N8 self-test"
+- [x] 9.1.21: Write failing test — `simulate_keystroke('A')` invokes run_debate
+- [x] 9.1.22: Write failing test — `simulate_keystroke('X')` returns exit MenuResponse
+- [x] 9.1.23: Write failing test — `simulate_keystroke('Z')` returns error MenuResponse
+- [x] 9.1.24: Implement `simulate_keystroke(key)` dispatching to menu logic
+- [x] 9.1.25: Run tests, expect pass
+- [x] 9.1.26: Commit "feat(sdk): simulate_keystroke for N8 self-test"
 
 ### Task 9.1.e: get_health_status
-- [ ] 9.1.27: Write `HealthStatus` frozen dataclass (children_alive, last_heartbeat_ages, pending_messages, restart_count)
-- [ ] 9.1.28: Write failing test — `get_health_status()` returns HealthStatus with current state
-- [ ] 9.1.29: Implement `get_health_status()` reading from Watchdog
-- [ ] 9.1.30: Run tests, expect pass
-- [ ] 9.1.31: Commit "feat(sdk): get_health_status + HealthStatus DTO"
+- [x] 9.1.27: Write `HealthStatus` frozen dataclass (children_alive, last_heartbeat_ages, pending_messages, restart_count)
+- [x] 9.1.28: Write failing test — `get_health_status()` returns HealthStatus with current state
+- [x] 9.1.29: Implement `get_health_status()` reading from Watchdog
+- [x] 9.1.30: Run tests, expect pass
+- [x] 9.1.31: Commit "feat(sdk): get_health_status + HealthStatus DTO"
 
 ### Task 9.2: DTOs (SpendReport, HealthStatus)
-- [ ] 9.2.1: Add `SpendReport` frozen dataclass to `sdk/debate_sdk.py` (total_input_tokens, total_output_tokens, estimated_cost_usd, pct_of_budget_used, by_agent)
-- [ ] 9.2.2: Add `HealthStatus` frozen dataclass (children_alive, last_heartbeat_ages, pending_messages, restart_count)
-- [ ] 9.2.3: Commit (folded into 9.1.25)
+- [x] 9.2.1: Add `SpendReport` frozen dataclass to `sdk/debate_sdk.py` (total_input_tokens, total_output_tokens, estimated_cost_usd, pct_of_budget_used, by_agent)
+- [x] 9.2.2: Add `HealthStatus` frozen dataclass (children_alive, last_heartbeat_ages, pending_messages, restart_count)
+- [x] 9.2.3: Commit (folded into 9.1.25)
 
 ### Task 9.3: TerminalMenu
-- [ ] 9.3.1-9.3.5: Tests + impl for letter-keyed dispatch (A/B/C/D/E/X)
-- [ ] 9.3.6-9.3.10: render() returns multiline string with menu options
-- [ ] 9.3.11-9.3.13: dispatch(key) calls correct SDK method, returns MenuResponse
-- [ ] 9.3.14: Commit "feat(menu): letter-keyed terminal UI (H11 + N8)"
+- [x] 9.3.1-9.3.5: Tests + impl for letter-keyed dispatch (A/B/C/D/E/X)
+- [x] 9.3.6-9.3.10: render() returns multiline string with menu options
+- [x] 9.3.11-9.3.13: dispatch(key) calls correct SDK method, returns MenuResponse
+- [x] 9.3.14: Commit "feat(menu): letter-keyed terminal UI (H11 + N8)"
 
 ### Task 9.4: main.py entry point
-- [ ] 9.4.1: Implement `src/agent_debate/main.py` (load_config → DebateSDK → TerminalMenu.run)
-- [ ] 9.4.2: Verify `uv run agent-debate` launches menu
-- [ ] 9.4.3: Press X to exit, verify clean shutdown
-- [ ] 9.4.4: Commit "feat: main.py CLI entry point"
+- [x] 9.4.1: Implement `src/agent_debate/main.py` (load_config → DebateSDK → TerminalMenu.run)
+- [x] 9.4.2: Verify `uv run agent-debate` launches menu
+- [x] 9.4.3: Press X to exit, verify clean shutdown
+- [x] 9.4.4: Commit "feat: main.py CLI entry point"
 
 ---
 
