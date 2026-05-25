@@ -371,62 +371,62 @@ and the user's HW2 quality target ≥90.
 ## Phase 7 — Orchestration
 
 ### Task 7.1: LifecycleRegistry (8 hooks)
-- [ ] 7.1.1: Write `src/agent_debate/orchestration/__init__.py`
-- [ ] 7.1.2: Write failing tests `tests/unit/test_lifecycle_registry.py` (register+fire in order, unknown hook silently passes, exception in one hook doesn't break chain)
-- [ ] 7.1.3: Implement `orchestration/lifecycle_registry.py` (dict of hook_name → list[callable])
-- [ ] 7.1.4: Implement `register(name, fn)` + `fire(name, context)` with try/except per hook
-- [ ] 7.1.5: Run, expect pass
-- [ ] 7.1.6: Commit "feat(orchestration): LifecycleRegistry with 8 hooks (rubric §A9)"
+- [x] 7.1.1: Write `src/agent_debate/orchestration/__init__.py`
+- [x] 7.1.2: Write failing tests `tests/unit/test_lifecycle_registry.py` (register+fire in order, unknown hook silently passes, exception in one hook doesn't break chain)
+- [x] 7.1.3: Implement `orchestration/lifecycle_registry.py` (dict of hook_name → list[callable])
+- [x] 7.1.4: Implement `register(name, fn)` + `fire(name, context)` with try/except per hook
+- [x] 7.1.5: Run, expect pass
+- [x] 7.1.6: Commit "feat(orchestration): LifecycleRegistry with 8 hooks (rubric §A9)"
 
 ### Task 7.2: DebateOrchestrator — spawn_children
-- [ ] 7.2.1: Write failing test — `spawn_children()` returns 3 Process objects
-- [ ] 7.2.2: Write failing test — `spawn_children()` creates 6 mp.Queue (in/out per child)
-- [ ] 7.2.3: Write failing test — `spawn_children()` creates 1 heartbeat_queue (shared)
-- [ ] 7.2.4: Write failing test — shared spend Value + Lock injected into each child
-- [ ] 7.2.5: Write failing test — each child receives correct role + skill_dir
-- [ ] 7.2.6: Implement `spawn_children()` returning `tuple[Process, Process, Process]`
-- [ ] 7.2.7: Implement Queue creation
-- [ ] 7.2.8: Implement shared spend + Lock injection via Process kwargs
-- [ ] 7.2.9: Implement role+skill_dir assignment per child
-- [ ] 7.2.10: Run tests, expect 5 pass
-- [ ] 7.2.11: Commit "feat(orchestration): spawn_children with Queues + shared spend"
+- [x] 7.2.1: Write failing test — `spawn_children()` returns 3 Process objects
+- [x] 7.2.2: Write failing test — `spawn_children()` creates 6 mp.Queue (in/out per child)
+- [x] 7.2.3: Write failing test — `spawn_children()` creates 1 heartbeat_queue (shared)
+- [x] 7.2.4: Write failing test — shared spend Value + Lock injected into each child
+- [x] 7.2.5: Write failing test — each child receives correct role + skill_dir
+- [x] 7.2.6: Implement `spawn_children()` returning `tuple[Process, Process, Process]`
+- [x] 7.2.7: Implement Queue creation
+- [x] 7.2.8: Implement shared spend + Lock injection via Process kwargs
+- [x] 7.2.9: Implement role+skill_dir assignment per child
+- [x] 7.2.10: Run tests, expect 5 pass
+- [x] 7.2.11: Commit "feat(orchestration): spawn_children with Queues + shared spend"
 
 ### Task 7.2.b: Two-phase boot
-- [ ] 7.2.12: Write failing test — Judge sends 2 setup_directive messages on boot
-- [ ] 7.2.13: Write failing test — Pro and Con both send ack before debate loop opens
-- [ ] 7.2.14: Write failing test — debate loop blocks if ack missing (timeout 10s → abort)
-- [ ] 7.2.15: Implement Phase A logic in `run_debate()` — issue setup_directives, await acks
-- [ ] 7.2.16: Run tests, expect 3 pass
-- [ ] 7.2.17: Commit "feat(orchestration): two-phase boot (H18 setup_directive + ack)"
+- [x] 7.2.12: Write failing test — Judge sends 2 setup_directive messages on boot
+- [x] 7.2.13: Write failing test — Pro and Con both send ack before debate loop opens
+- [x] 7.2.14: Write failing test — debate loop blocks if ack missing (timeout 10s → abort)
+- [x] 7.2.15: Implement Phase A logic in `run_debate()` — issue setup_directives, await acks
+- [x] 7.2.16: Run tests, expect 3 pass
+- [x] 7.2.17: Commit "feat(orchestration): two-phase boot (H18 setup_directive + ack)"
 
 ### Task 7.2.c: Debate loop with lifecycle hooks
-- [ ] 7.2.18: Write failing test — `before_round` hook fires before each ping
-- [ ] 7.2.19: Write failing test — `after_round` hook fires after each ping
-- [ ] 7.2.20: Write failing test — `before_verdict` and `after_verdict` fire on verdict
-- [ ] 7.2.21: Implement debate loop iterating 2× n_pings turns
-- [ ] 7.2.22: Wire lifecycle hook firings at boundaries
-- [ ] 7.2.23: Implement message routing from child to Judge to opponent
-- [ ] 7.2.24: Run tests, expect 3 pass
-- [ ] 7.2.25: Commit "feat(orchestration): debate loop with 8 lifecycle hooks (rubric §A9)"
+- [x] 7.2.18: Write failing test — `before_round` hook fires before each ping
+- [x] 7.2.19: Write failing test — `after_round` hook fires after each ping
+- [x] 7.2.20: Write failing test — `before_verdict` and `after_verdict` fire on verdict
+- [x] 7.2.21: Implement debate loop iterating 2× n_pings turns
+- [x] 7.2.22: Wire lifecycle hook firings at boundaries
+- [x] 7.2.23: Implement message routing from child to Judge to opponent
+- [x] 7.2.24: Run tests, expect 3 pass
+- [x] 7.2.25: Commit "feat(orchestration): debate loop with 8 lifecycle hooks (rubric §A9)"
 
 ### Task 7.2.d: Transcript assembly + persistence
-- [ ] 7.2.26: Write failing test — Transcript dataclass captures all messages in order
-- [ ] 7.2.27: Write failing test — `persist_transcript()` writes JSON to transcripts/
-- [ ] 7.2.28: Implement `Transcript` dataclass (msgs, verdict, started_at, finished_at)
-- [ ] 7.2.29: Implement `persist_transcript()` with filename `<YYYY-MM-DD-HHMM>-<topic-slug>.json`
-- [ ] 7.2.30: Run tests, expect 2 pass
-- [ ] 7.2.31: Commit "feat(orchestration): Transcript dataclass + JSON persistence"
+- [x] 7.2.26: Write failing test — Transcript dataclass captures all messages in order
+- [x] 7.2.27: Write failing test — `persist_transcript()` writes JSON to transcripts/
+- [x] 7.2.28: Implement `Transcript` dataclass (msgs, verdict, started_at, finished_at)
+- [x] 7.2.29: Implement `persist_transcript()` with filename `<YYYY-MM-DD-HHMM>-<topic-slug>.json`
+- [x] 7.2.30: Run tests, expect 2 pass
+- [x] 7.2.31: Commit "feat(orchestration): Transcript dataclass + JSON persistence"
 
 ### Task 7.2.e: Graceful shutdown
-- [ ] 7.2.32: Write failing test — `shutdown_gracefully()` sends SIGTERM to each child
-- [ ] 7.2.33: Write failing test — main waits up to 10s for children to drain
-- [ ] 7.2.34: Write failing test — stragglers get SIGKILL after 10s
-- [ ] 7.2.35: Write failing test — partial transcript saved as `aborted-*.json`
-- [ ] 7.2.36: Implement SIGINT/SIGTERM handler in main
-- [ ] 7.2.37: Implement cascade with 10s drain
-- [ ] 7.2.38: Implement aborted-transcript fallback
-- [ ] 7.2.39: Run tests, expect 4 pass
-- [ ] 7.2.40: Commit "feat(orchestration): graceful shutdown cascade"
+- [x] 7.2.32: Write failing test — `shutdown_gracefully()` sends SIGTERM to each child
+- [x] 7.2.33: Write failing test — main waits up to 10s for children to drain
+- [x] 7.2.34: Write failing test — stragglers get SIGKILL after 10s
+- [x] 7.2.35: Write failing test — partial transcript saved as `aborted-*.json`
+- [x] 7.2.36: Implement SIGINT/SIGTERM handler in main
+- [x] 7.2.37: Implement cascade with 10s drain
+- [x] 7.2.38: Implement aborted-transcript fallback
+- [x] 7.2.39: Run tests, expect 4 pass
+- [x] 7.2.40: Commit "feat(orchestration): graceful shutdown cascade"
 
 ---
 
