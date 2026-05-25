@@ -148,3 +148,34 @@ def test_topic_is_recorded_in_transcript() -> None:
     )
     assert t.topic == "ai-vs-art"
     assert t.to_dict()["topic"] == "ai-vs-art"
+
+
+# -- Phase 9.1: dry-run debate loop -------------------------------------------
+
+def test_run_debate_dry_run_builds_transcript_with_messages(tmp_path: Path) -> None:
+    orch = DebateOrchestrator(llm_provider_factory=_factory, transcript_dir=tmp_path)
+    transcript = orch.run_debate(topic="ai-art", n_pings=3, dry_run=True)
+    assert transcript.topic == "ai-art"
+    assert transcript.outcome in (DebateOutcome.PRO_WINS, DebateOutcome.CON_WINS)
+    assert transcript.finished_at is not None
+    assert len(transcript.messages) >= 2 + 2 * 3 * 2 - 1
+
+
+def test_run_debate_dry_run_calls_lifecycle_hooks(tmp_path: Path) -> None:
+    fired: list[str] = []
+    lifecycle = LifecycleRegistry()
+    for name in ("before_round", "after_round", "before_verdict", "after_verdict"):
+        lifecycle.register(name, lambda _ctx, n=name: fired.append(n))
+    orch = DebateOrchestrator(
+        llm_provider_factory=_factory, lifecycle=lifecycle, transcript_dir=tmp_path,
+    )
+    orch.run_debate(topic="x", n_pings=2, dry_run=True)
+    assert fired == ["before_round", "after_round", "before_verdict", "after_verdict"]
+
+
+def test_run_debate_outcome_is_decided(tmp_path: Path) -> None:
+    orch = DebateOrchestrator(llm_provider_factory=_factory, transcript_dir=tmp_path)
+    transcript = orch.run_debate(topic="z", n_pings=2, dry_run=True)
+    assert transcript.outcome != DebateOutcome.DEBATE_ABORTED
+    assert transcript.outcome in (DebateOutcome.PRO_WINS, DebateOutcome.CON_WINS)
+    assert transcript.verdict["winner"] in ("pro", "con")

@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from multiprocessing import Lock, Process, Queue, Value
 from pathlib import Path
@@ -23,36 +22,16 @@ from agent_debate.constants import (
     MessageRole,
     Stance,
 )
+from agent_debate.orchestration.debate_loop import run_debate_dry_run
 from agent_debate.orchestration.lifecycle_registry import LifecycleRegistry
 from agent_debate.orchestration.orchestrator_runtime import (
     build_child_processes,
     build_queue_topology,
     run_child_loop,
 )
+from agent_debate.orchestration.transcript import Transcript
 
-
-@dataclass
-class Transcript:
-    """Full record of a debate run, written to transcripts/<slug>-<date>.json."""
-
-    debate_id: str
-    topic: str
-    started_at: str
-    finished_at: str | None = None
-    messages: list[dict] = field(default_factory=list)
-    verdict: dict | None = None
-    outcome: DebateOutcome | None = None
-
-    def to_dict(self) -> dict:
-        return {
-            "debate_id": self.debate_id,
-            "topic": self.topic,
-            "started_at": self.started_at,
-            "finished_at": self.finished_at,
-            "messages": self.messages,
-            "verdict": self.verdict,
-            "outcome": self.outcome.value if self.outcome else None,
-        }
+__all__ = ["DebateOrchestrator", "Transcript"]
 
 
 class DebateOrchestrator:
@@ -137,20 +116,37 @@ class DebateOrchestrator:
 
     def run_debate(
         self, topic: str, n_pings: int = 10,
-        skill_dir: str = "./.claude/skills",
+        skill_dir: str = "./.claude/skills", dry_run: bool = False,
     ) -> Transcript:
-        """Spawn + two-phase boot (H18) + return Transcript. Phase 10 wires
-        the full multi-process message-routing loop with mock LLM."""
+        """Full debate loop. `dry_run=True` drives synchronously for tests.
+        Phase 10 hardens the real-process branch with full IPC routing."""
         transcript = Transcript(
             debate_id=str(uuid.uuid4()), topic=topic,
             started_at=datetime.now(tz=UTC).isoformat(),
         )
-        self.spawn_children(topic=topic, skill_dir=skill_dir)
+        if dry_run:
+            run_debate_dry_run(
+                transcript=transcript,
+                llm_provider_factory=self.llm_provider_factory,
+                lifecycle=self.lifecycle, skill_dir=skill_dir, n_pings=n_pings,
+            )
+        else:
+            self._run_with_processes(transcript, skill_dir=skill_dir)
+        self.persist_transcript(transcript)
+        return transcript
+
+    def _run_with_processes(self, transcript: Transcript, skill_dir: str) -> None:
+        """Real-process path: spawn, start, boot, shutdown (Phase 10 expands)."""
+        self.spawn_children(topic=transcript.topic, skill_dir=skill_dir)
+        for child in self._children:
+            child.start()
         self._queues["pro_in"].put(
             self.make_setup_directive("pro", Stance.ORIGINALITY.value)
         )
         self._queues["con_in"].put(
             self.make_setup_directive("con", Stance.REMIX_ONLY.value)
         )
+        self.shutdown_gracefully()
         transcript.finished_at = datetime.now(tz=UTC).isoformat()
-        return transcript
+        transcript.outcome = DebateOutcome.PRO_WINS
+        transcript.verdict = {"winner": "pro", "note": "real-process path stub"}
