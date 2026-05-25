@@ -42,6 +42,10 @@ IDEA-raw.txt
 .DS_Store
 Thumbs.db
 
+# Submission artifacts (regenerated from template at submission time)
+uoh-sqak-ex02.docx
+uoh-sqak-ex02.pdf
+
 # IDE
 .vscode/
 .idea/

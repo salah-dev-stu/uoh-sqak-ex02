@@ -341,6 +341,42 @@ While Phase 0 was running, the orchestrator session injected six additional file
 
 ---
 
+---
+
+## Prompt #19: Phase 12 audit + submission-PDF resolution
+
+**Context**: Phase 12 automatable subagent ran final audit verification. Wrote `docs/AUDIT.md` covering all 13 R-gates + 25 H-gates with PASS/FAIL/PARTIAL annotations. Also rewrote the HW1-skinned `SUBMISSION_CHECKLIST.md` for HW2. Tested the pre-existing `scripts/fill_submission_pdf.py` (carryover from HW1) — failed with `ModuleNotFoundError: No module named 'docx'` (missing python-docx dep) and used the HW1 filename `uoh-sqak-ex01.pdf` instead of HW2's `uoh-sqak-ex02.pdf`.
+
+**Goal**: Close the script-blocker concern flagged by Phase 12 so the user can run the PDF generator on submission day without manual fixes.
+
+**Prompt text**: Internal — fix the two script issues uncovered by the audit.
+
+**Example output received**:
+1. `uv add --dev python-docx` → installed python-docx 1.2.0 (updates pyproject.toml + uv.lock).
+2. `sed`-replace in `scripts/fill_submission_pdf.py` swapping every `ex01` → `ex02` (2 occurrences, both filename refs).
+3. `rm uoh-sqak-ex01.* && uv run python scripts/fill_submission_pdf.py` → produces `uoh-sqak-ex02.pdf` (26 KB) at repo root, ready for Moodle upload.
+4. Added `uoh-sqak-ex02.docx` and `uoh-sqak-ex02.pdf` to `.gitignore` — they're build artifacts, regenerated from the template at submission time.
+
+**Iterative improvements**: The audit's BLOCKED report was correct to flag this even though it offered 3 manual workarounds — adding the dep + fixing the filename is a 30-second fix that turns submission-day risk into a non-event. Trust the script; gitignore the output.
+
+**Best practice extracted**: When a carryover script has a known-trivial blocker (missing dep, hardcoded prior assignment number), fix it in the same session that flags it — don't defer to submission day. The cost to fix now is seconds; the cost of debugging the blocker on Friday at 23:00 with the deadline looming is hours.
+
+---
+
+## Prompt #20: Lifecycle closure — Phase 11.1 README + handoff to user
+
+**Context**: Phase 11.1 wrote the full 869-line README (target ≥200). All sections delivered: 16× thesis + Context Engineering quotes verbatim Hebrew/English; quick-start; installation; usage; architecture (3 Mermaid diagrams embedded); config guide; full session-1 dialogue from `transcripts/sample-session-1.json` (22-message dry-run); manual Phase 1 placeholder; cost analysis table (login=$0 / API=$0.36); behavior notes (N5 non-reproducibility); 8 lifecycle hooks + plugin pattern; testing & quality; AI Usage Disclosure verbatim; project structure; authors + MIT license; grader recipe.
+
+**Goal**: Per Dr. Segal's lec01 L1247 ("you must create a readme file — this is the most important thing"), close out the docs-side of the lifecycle. Hand off remaining user-only Phase 12 actions cleanly: manual screenshots (12.1), real Claude debate run + verdict screenshot (12.2), `gh repo create --public` push (12.4), Moodle upload (12.5).
+
+**Prompt text**: Internal — close the lifecycle and document the handoff.
+
+**Example output received**: Single Phase 11.1 commit `b62ab52` containing README.md (869 lines) + transcripts/sample-session-1.json + 37 Phase 11.1 TODO items flipped to `[x]`. Followed by Phase 12 automatable commits closing the audit + checklist.
+
+**Best practice extracted**: The README is the "single shippable artifact" that the grader will read FIRST. It must stand alone — assume the grader hasn't read PRD.md or PLAN.md (those are for code-review depth, not first-touch). Embed diagrams, paste the session-1 dialogue inline, quote ethics policy verbatim. The README is also where the lecturer-bonus signals (16× thesis quote, N5 non-reproducibility note, AI Usage Disclosure) become visible.
+
+---
+
 ## Decisions locked (updated running list)
 
 | # | Decision | Locked at | Source |

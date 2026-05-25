@@ -25,6 +25,7 @@ dev = [
     "pytest-timeout>=2.3",
     "ruff>=0.6",
     "pre-commit>=3.7",
+    "python-docx>=1.2.0",
 ]
 
 [build-system]

@@ -55,7 +55,7 @@ def main() -> int:
     if not TEMPLATE.exists():
         print(f"FAIL: template not found at {TEMPLATE}", file=sys.stderr)
         return 1
-    intermediate = REPO / f"{GROUP_CODE}-ex01.docx"
+    intermediate = REPO / f"{GROUP_CODE}-ex02.docx"
     shutil.copy(TEMPLATE, intermediate)
 
     d = Document(intermediate)
@@ -80,7 +80,7 @@ def main() -> int:
     d.save(intermediate)
     print(f"  filled docx: {intermediate}")
 
-    pdf = REPO / f"{GROUP_CODE}-ex01.pdf"
+    pdf = REPO / f"{GROUP_CODE}-ex02.pdf"
     # Arial Unicode MS preserves ASCII hyphen (U+002D) in URLs and group code,
     # which Lucida Grande silently rewrites to U+2011 (non-breaking hyphen) —
     # that breaks regex-based URL extraction by an automated grader. Arial
