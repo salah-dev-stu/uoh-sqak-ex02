@@ -2,23 +2,19 @@
 import * as React from "react";
 import { useSyncExternalStore } from "react";
 import { getState, subscribe, setState } from "@/lib/state";
-import { useLenis } from "./lenis-provider";
 
 function useStoreState() { return useSyncExternalStore(subscribe, getState, getState); }
 
 export function BottomStrip(): React.JSX.Element {
   const s = useStoreState();
-  const lenis = useLenis();
   if (s.slides.length === 0) return <></>;
 
   function jumpToLive(): void {
-    if (!lenis) return;
-    lenis.scrollTo((s.slides.length - 1) * window.innerHeight, { duration: 0.6 });
+    window.scrollTo({ top: (s.slides.length - 1) * window.innerHeight, behavior: "smooth" });
     setState({ followLive: true });
   }
   function jumpTo(i: number): void {
-    if (!lenis) return;
-    lenis.scrollTo(i * window.innerHeight, { duration: 0.6 });
+    window.scrollTo({ top: i * window.innerHeight, behavior: "smooth" });
     setState({ followLive: false });
   }
 

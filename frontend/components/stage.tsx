@@ -1,11 +1,9 @@
 "use client";
 import * as React from "react";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
-import type Lenis from "lenis";
 import { Slide } from "./slide";
 import { getState, subscribe, setState } from "@/lib/state";
-import { useLenis } from "./lenis-provider";
 import type { Slide as SlideT } from "@/lib/types";
 
 function useStoreState() {
@@ -34,11 +32,13 @@ function ScrollSlide({
     scrollYProgress,
     [startProgress, startProgress + fadeBand, endProgress - fadeBand, endProgress],
     [0, 1, 1, 0],
+    { clamp: true },
   );
   const y = useTransform(
     scrollYProgress,
     [startProgress, startProgress + fadeBand, endProgress - fadeBand, endProgress],
     [24, 0, 0, -24],
+    { clamp: true },
   );
 
   return (
@@ -50,40 +50,73 @@ function ScrollSlide({
 
 export function Stage(): React.JSX.Element {
   const state = useStoreState();
-  const lenis = useLenis();
   const { scrollYProgress } = useScroll();
   const slidesCount = state.slides.length;
 
-  // Auto-follow: when a new slide arrives and followLive is on, smooth-scroll to it.
-  useEffect(() => {
-    if (slidesCount === 0 || !state.followLive || !lenis) return;
-    const target = (slidesCount - 1) * window.innerHeight;
-    lenis.scrollTo(target, { duration: 0.7 });
-  }, [slidesCount, state.followLive, lenis]);
+  const followLiveRef = useRef(state.followLive);
+  const currentIndexRef = useRef(state.currentIndex);
+  const slidesLenRef = useRef(slidesCount);
+  followLiveRef.current = state.followLive;
+  currentIndexRef.current = state.currentIndex;
+  slidesLenRef.current = slidesCount;
 
-  // Detect user scrolling up — pause auto-follow.
+  const debounceRef = useRef<number | null>(null);
   useEffect(() => {
-    if (!lenis) return;
-    let lastY = 0;
-    // Lenis "scroll" callback signature is (lenis: Lenis) => void; read scroll
-    // position from the instance rather than the callback argument.
-    const onScroll = (instance: Lenis) => {
-      const scroll = instance.scroll;
-      const userScrolledUp = scroll < lastY - 4;
+    if (slidesCount === 0 || !state.followLive) return;
+    if (debounceRef.current !== null) window.clearTimeout(debounceRef.current);
+    debounceRef.current = window.setTimeout(() => {
+      const target = (slidesCount - 1) * window.innerHeight;
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }, 120);
+    return () => {
+      if (debounceRef.current !== null) window.clearTimeout(debounceRef.current);
+    };
+  }, [slidesCount, state.followLive]);
+
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = (): void => {
+      const scroll = window.scrollY;
+      const userScrolledUp = scroll < lastY - 24;
       lastY = scroll;
       const idx = Math.round(scroll / window.innerHeight);
-      const latest = state.slides.length - 1;
-      if (userScrolledUp && idx < latest && state.followLive) setState({ followLive: false });
-      if (state.currentIndex !== idx) setState({ currentIndex: idx });
+      const latest = slidesLenRef.current - 1;
+      if (userScrolledUp && idx < latest && followLiveRef.current) {
+        setState({ followLive: false });
+      }
+      if (currentIndexRef.current !== idx) setState({ currentIndex: idx });
     };
-    const off = lenis.on("scroll", onScroll);
-    return () => {
-      if (typeof off === "function") off();
-      else lenis.off("scroll", onScroll);
-    };
-  }, [lenis, state.followLive, state.currentIndex, state.slides.length]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-  if (slidesCount === 0) return <></>;
+  if (slidesCount === 0) {
+    return (
+      <div style={{
+        height: "100vh", display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: "1.5rem",
+      }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, ease: "linear", repeat: Infinity }}
+          style={{
+            width: 64, height: 64, borderRadius: "50%",
+            border: "2px solid var(--color-fg-dim)",
+            borderTopColor: "var(--color-judge-accent)",
+          }}
+        />
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "0.75rem",
+          color: "var(--color-fg-muted)", textTransform: "uppercase",
+          letterSpacing: "0.1em",
+        }}>
+          {state.status === "error"
+            ? `Error: ${state.error ?? "unknown"}`
+            : "Convening the debate — waiting for first response…"}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ height: `${slidesCount * 100}vh`, position: "relative" }}>
