@@ -967,6 +967,25 @@ Per lec01 L1199-1201, this pass typically adds ~200 missed tasks. The current ta
 - [ ] V14.2: Verify total debate runtime < 10 minutes (for 10 pings/side)
 - [ ] V14.3: Verify log files don't exceed `fifo_files × max_lines` storage
 
+### Phase 13: BONUS — Live-streaming web GUI (FastAPI + SSE)
+HW2 spec §8.6 marks GUI as optional ("evaluation runs via menu/SDK; screenshots welcomed"). Phase 13 is a bonus deliverable that does NOT touch the terminal menu or core orchestrator (those remain primary).
+
+- [x] 13.1: Add `fastapi`, `uvicorn[standard]`, `sse-starlette` deps via `uv add`
+- [x] 13.2: Create `src/agent_debate/web/` package (`__init__.py`)
+- [x] 13.3: Implement `web/sse_broker.py` — `DebateSession` (queue.Queue + emit/stream/emit_done/request_stop), `SessionRegistry` (create/get/list_ids/remove). ≤80 logical lines.
+- [x] 13.4: Implement `web/debate_runner.py` — `_StreamingList` (list subclass that streams append → SSE), `_wire_lifecycle` (4 hooks → SSE), `_run_dry` (in-process synchronous debate), `run_debate_in_thread` (daemon thread)
+- [x] 13.5: Implement `web/api.py` — FastAPI app with `/`, `/api/health`, `/api/debate/start`, `/api/debate/{id}/stream`, `/api/debate/{id}/stop`, mounted `/static`. ≤150 logical lines.
+- [x] 13.6: Register `agent-debate-web = "agent_debate.web.api:run"` in `[project.scripts]`
+- [x] 13.7: Use `StreamingResponse` (not `EventSourceResponse`) since broker emits pre-framed `data: ...\n\n` strings — avoids double-wrapping
+- [x] 13.8: Static frontend — `web/static/index.html` (cyberpunk Pro/Con/Judge layout, Tailwind via CDN, JetBrains Mono + Inter fonts)
+- [x] 13.9: Static frontend — `web/static/style.css` (neon palette: --pro magenta, --con cyan, --judge lime, glassmorphism backdrop-filter, card-in/pulse/shimmer animations, axis bars)
+- [x] 13.10: Static frontend — `web/static/app.js` (vanilla JS EventSource client, message-card renderer, judge-axes 5-bar render, verdict banner, speaking-dot animation)
+- [x] 13.11: Tests `tests/unit/test_sse_broker.py` — 9 tests (emit, stream framing, done close, keepalive, registry uniqueness, registry.get(None), remove, request_stop, multi-event sequence)
+- [x] 13.12: Tests `tests/unit/test_web_api.py` — 10 tests (root HTML, health 200, start returns UUID, start with live/n_pings, stream 404, stop 404, invalid-id 400, stop 200, static app.js served, static style.css served)
+- [x] 13.13: Coverage stays ≥85% (achieved 86.90%); web/api.py + web/sse_broker.py covered by unit tests
+- [x] 13.14: Verify terminal menu (`uv run agent-debate`) still launches unchanged
+- [x] 13.15: Live smoke test — `uv run agent-debate-web` + `curl -s http://127.0.0.1:8765/api/health` returns `{"status":"ok"...}` + SSE stream produces correctly-framed `data: ...\n\n` events
+
 ### V15: README inspection final pass
 - [ ] V15.1: Read README top-to-bottom. Verify every section in PRD §11 acceptance criteria is present.
 - [ ] V15.2: Verify the README's first sentence quotes either the 16× thesis or the Context Engineering thesis.

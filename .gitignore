@@ -51,3 +51,12 @@ uoh-sqak-ex02.pdf
 .idea/
 *.swp
 *~
+
+# Pre-Phase-13 Node/npm experimental artifacts (Phase 13 uses pure-Python FastAPI
+# served via `uv run agent-debate-web`; node_modules/frontend/ are NOT part of the
+# deliverable). The web GUI is served from src/agent_debate/web/static/.
+node_modules/
+frontend/
+package.json
+package-lock.json
+.mcp.json
