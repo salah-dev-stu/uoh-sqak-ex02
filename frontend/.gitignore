@@ -4,3 +4,4 @@ node_modules/
 *.log
 .vitest-cache/
 *.tsbuildinfo
+next-env.d.ts
