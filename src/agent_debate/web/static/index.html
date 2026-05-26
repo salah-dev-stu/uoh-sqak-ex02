@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HW2 — Agent Debate</title>
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="bg-bg text-fg font-sans">
+  <div id="app" class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="glass border-b border-line px-6 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">
+          <span class="text-pro">PRO</span>
+          <span class="text-fg-dim mx-2">vs</span>
+          <span class="text-con">CON</span>
+        </h1>
+        <p class="text-sm text-fg-dim mt-1" id="topic">Can AI agents create genuinely original art, or only remix human work?</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <label class="text-xs text-fg-dim flex items-center gap-2 cursor-pointer">
+          <input id="live-toggle" type="checkbox" class="accent-pink-500" />
+          <span class="uppercase tracking-wider">live (real Claude)</span>
+        </label>
+        <div class="text-right">
+          <div class="text-xs text-fg-dim uppercase tracking-wider">spend</div>
+          <div class="font-mono text-sm"><span id="spend">0</span> / 200,000</div>
+        </div>
+        <button id="start-btn" class="btn-primary">▶ Start debate</button>
+        <button id="stop-btn" class="btn-secondary hidden">■ Stop</button>
+      </div>
+    </header>
+
+    <!-- Judge panel -->
+    <section id="judge-panel" class="glass-panel mx-6 mt-6 p-4 hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-judge font-mono text-sm tracking-wider uppercase">⚖ Judge</h2>
+        <span id="ping-counter" class="text-xs text-fg-dim font-mono">ping 0 / 20</span>
+      </div>
+      <div class="grid grid-cols-5 gap-3 font-mono text-xs" id="judge-axes">
+        <!-- 5 axes injected here -->
+      </div>
+      <div id="verdict" class="mt-4 hidden"></div>
+    </section>
+
+    <!-- Two debate columns -->
+    <main class="flex-1 grid grid-cols-2 gap-4 p-6">
+      <div id="pro-col" class="space-y-4">
+        <div class="col-header pro-header">
+          <span class="font-mono text-xs uppercase tracking-wider">PRO</span>
+          <span class="text-xs text-fg-dim ml-2">AI = ORIGINALITY</span>
+          <span id="pro-status" class="speaking-dot ml-auto hidden"></span>
+        </div>
+        <div id="pro-messages" class="space-y-3"></div>
+      </div>
+      <div id="con-col" class="space-y-4">
+        <div class="col-header con-header">
+          <span class="font-mono text-xs uppercase tracking-wider">CON</span>
+          <span class="text-xs text-fg-dim ml-2">AI = REMIX_ONLY</span>
+          <span id="con-status" class="speaking-dot ml-auto hidden"></span>
+        </div>
+        <div id="con-messages" class="space-y-3"></div>
+      </div>
+    </main>
+
+    <footer class="glass border-t border-line px-6 py-2 font-mono text-xs text-fg-dim">
+      HW2 Multi-Agent Debate System · course 203.3763 · pair uoh-sqak · <span id="conn-status">disconnected</span>
+    </footer>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
