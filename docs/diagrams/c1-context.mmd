@@ -1,0 +1,17 @@
+C4Context
+    title C1 — Context diagram (HW2 Multi-Agent Debate System)
+    Person(user, "Salah / Andalus", "Pair members running the debate via terminal menu")
+    Person(grader, "Grader Agent", "Auto-grading LLM. Clones repo, runs tests, reads transcripts")
+    Person(lecturer, "Dr. Yoram Segal", "Reads sample transcripts; judges form of debate")
+
+    System(debate, "Agent Debate System", "Three-process Python debate orchestrator")
+
+    System_Ext(claude, "Claude CLI", "Anthropic LLM via login bundle (zero spend)")
+    System_Ext(ddg, "DuckDuckGo", "Web search engine (no API key)")
+    System_Ext(github, "GitHub", "Public repo + grading access")
+
+    Rel(user, debate, "uv run agent-debate; letter menu")
+    Rel(debate, claude, "claude -p shell-out")
+    Rel(debate, ddg, "ddgs.text() queries")
+    Rel(grader, github, "git clone + uv sync + pytest")
+    Rel(lecturer, github, "Reads README + transcripts")

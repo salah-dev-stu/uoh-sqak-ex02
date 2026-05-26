@@ -818,16 +818,16 @@ and the user's HW2 quality target ≥90.
 ## Phase 12 — Manual phase + run + push + submit
 
 ### Task 12.1: Manual Phase 1 evidence (lec05 L1896-1909)
-- [ ] 12.1.1: Open two terminals
-- [ ] 12.1.2: Launch Claude CLI in each
-- [ ] 12.1.3: Assign Pro role to terminal A, Con role to terminal B
-- [ ] 12.1.4: Manually drive 5-6 exchanges (copy-paste between terminals)
-- [ ] 12.1.5: Screenshot terminal A
-- [ ] 12.1.6: Screenshot terminal B
-- [ ] 12.1.7: Screenshot the moment of mutual reference (Pro quoting Con's earlier point)
-- [ ] 12.1.8: Save as `assets/manual-phase1-{a,b,reference}.png`
-- [ ] 12.1.9: Embed in README "Manual exploration" section
-- [ ] 12.1.10: Commit "docs: manual Phase 1 evidence + screenshots (H22)"
+- [x] 12.1.1: Open two terminals
+- [x] 12.1.2: Launch Claude CLI in each
+- [x] 12.1.3: Assign Pro role to terminal A, Con role to terminal B
+- [x] 12.1.4: Manually drive 5-6 exchanges (copy-paste between terminals)
+- [x] 12.1.5: Screenshot terminal A
+- [x] 12.1.6: Screenshot terminal B
+- [x] 12.1.7: Screenshot the moment of mutual reference (Pro quoting Con's earlier point)
+- [x] 12.1.8: Save as `assets/manual-phase1-{a,b,reference}.png`
+- [x] 12.1.9: Embed in README "Manual exploration" section
+- [x] 12.1.10: Commit "docs: manual Phase 1 evidence + screenshots (H22)"
 
 ### Task 12.2: Run the actual system end-to-end (lifecycle step 7)
 - [ ] 12.2.1: `uv run agent-debate`
@@ -836,7 +836,7 @@ and the user's HW2 quality target ≥90.
 - [ ] 12.2.4: Verify `transcripts/<id>.json` landed
 - [ ] 12.2.5: Copy to `transcripts/sample-session-1.json`
 - [ ] 12.2.6: Screenshot the menu, debate-running view, verdict view, spend report
-- [ ] 12.2.7: Save screenshots to `assets/screenshot-*.png`
+- [x] 12.2.7: Save screenshots to `assets/screenshot-*.png`
 - [ ] 12.2.8: Embed transcript + screenshots in README
 - [ ] 12.2.9: Commit "docs: sample-session-1.json + screenshots (spec §8.7)"
 

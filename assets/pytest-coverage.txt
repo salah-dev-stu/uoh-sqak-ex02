@@ -1,0 +1,25 @@
+src/agent_debate/orchestration/process_verdict.py           14      0   100%
+src/agent_debate/orchestration/transcript.py                14      0   100%
+src/agent_debate/orchestration/watchdog.py                  65      1    98%   66
+src/agent_debate/sdk/__init__.py                             0      0   100%
+src/agent_debate/sdk/debate_sdk.py                          55     16    71%   42-46, 51-54, 60, 62-63, 98, 100-101, 103, 105, 107
+src/agent_debate/sdk/dtos.py                                29      0   100%
+src/agent_debate/shared/__init__.py                          0      0   100%
+src/agent_debate/shared/config.py                           21      0   100%
+src/agent_debate/shared/gatekeeper.py                       72      2    97%   82, 122
+src/agent_debate/shared/message_schema.py                   41      5    88%   70, 72, 74, 76, 78
+src/agent_debate/shared/structured_logger.py                31      0   100%
+src/agent_debate/shared/version.py                           5      0   100%
+src/agent_debate/tools/__init__.py                           0      0   100%
+src/agent_debate/tools/claude_login_provider.py             13      0   100%
+src/agent_debate/tools/duckduckgo_provider.py               14      1    93%   28
+src/agent_debate/tools/llm_provider.py                      12      0   100%
+src/agent_debate/tools/mock_llm_provider.py                 13      0   100%
+src/agent_debate/tools/mock_search_provider.py               7      0   100%
+src/agent_debate/tools/registry.py                          12      0   100%
+src/agent_debate/tools/search_provider.py                    9      0   100%
+src/agent_debate/tools/web_search.py                        24      0   100%
+--------------------------------------------------------------------------------------
+TOTAL                                                     1027     72    93%
+Required test coverage of 85.0% reached. Total coverage: 92.99%
+====================== 145 passed, 42 warnings in 15.37s =======================

@@ -1,0 +1,31 @@
+fa14017 build: close Phase 12 submission-PDF blocker + audit-trail polish
+2414aac docs: rewrite SUBMISSION_CHECKLIST.md for HW2 (HW1-skinned version replaced)
+f813aa0 docs(audit): Phase 12.3 final audit-gate verification report
+b62ab52 docs: README.md (full user manual + session-1 dialogue + cost analysis)
+c0f237a test(e2e): 3 real-Claude scenarios (gated by RUN_E2E=1)
+97cd841 test(integration): 5 chaos + drift + PC + budget scenarios
+b93ea16 test(integration): 4 multi-process scenarios — debate flow + setup + shutdown + no-tie
+ea5e2e7 feat(orchestration): harden _run_with_processes with real IPC + Judge-in-main
+82f676a feat: main.py CLI entry point — uv run agent-debate launches menu
+b599295 feat(menu): letter-keyed terminal UI (H11 + N8 self-test)
+b17832a feat(sdk): DebateSDK sole entry point (R1 + N8 self-test surface)
+b47a9c6 feat(sdk): SpendReport + HealthStatus + MenuResponse + DebateMetadata DTOs
+56c93a9 feat(orchestration): complete run_debate loop with two-phase boot + transcript
+652e90a feat(orchestration): finish DebateOrchestrator runtime — spawn + child loop + run_debate
+fe7c53a feat(watchdog): Watchdog with 2-signal detection + restart-with-backoff + fail-fast (H21)
+9bda74e feat(orchestration): DebateOrchestrator with spawn + boot + transcript + shutdown
+2c2ebcb feat(orchestration): LifecycleRegistry with 8 named hooks (rubric §A9)
+75b5b83 feat(agents): JudgeAgent — topic-blind moderator with routing, drift, PC, scoring
+de4762f feat(agents): ScoringEngine 5-axis + no-tie enforcer with tiebreak chain
+f0b784a feat(agents): PCFilter for H16 vulgar-language gate
+706d802 feat(agents): DriftDetector stance-keyword regex (no extra LLM call)
+31c4b08 feat(agents): ConAgent — AI=REMIX_ONLY stance
+ef885aa feat(agents): ProAgent — AI=ORIGINALITY stance
+2c581eb feat(agents): PartisanAgent — skill loader + opponent-reference + citation extractor
+ef2fcb7 feat(agents): BaseAgent abstract with step() test seam + SIGTERM handler
+3703041 feat(skills): pre-flight script builds Judge criteria from web (N7)
+80b34b1 test(fixtures): canned LLM responses for integration tests
+7d482b1 feat(skills): judge_skill SKILL.md (topic-blind, 5-axis scoring)
+891d1c6 feat(skills): con_skill SKILL.md + pre-seeded citation fallback
+0b03436 feat(skills): pro_skill SKILL.md + pre-seeded citation fallback
+Total commits: 69

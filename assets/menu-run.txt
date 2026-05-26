@@ -1,0 +1,9 @@
+=== HW2 Multi-Agent Debate System ===
+  [A] Start new debate
+  [B] View last transcript
+  [C] View spend report
+  [D] Show health status
+  [E] Manual Phase-1 mode (see README)
+  [X] Exit
+
+Press a letter: [exit]

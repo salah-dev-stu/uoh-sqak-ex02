@@ -1,0 +1,36 @@
+sequenceDiagram
+    autonumber
+    participant Pro as ProProc
+    participant Judge as JudgeAgent (in main)
+    participant Drift as DriftDetector
+    participant PC as PCFilter
+    participant Log as StructuredLogger
+    participant Con as ConProc
+
+    Note over Pro,Con: Phase B — debate loop, ping N
+
+    Pro->>Judge: argument(ping=N, text, citations, references_opponent=true)
+    Judge->>Drift: is_drift(text)
+    Drift-->>Judge: false
+    Judge->>PC: check(text)
+    PC-->>Judge: (ok, sanitized=None)
+    Judge->>Log: log(event=forwarded, from=pro, ping=N)
+    Judge->>Con: argument(ping=N) — routed (H4)
+
+    Con->>Con: generate counter (LLM via Gatekeeper)
+    Con->>Judge: counter(ping=N, text, citations)
+    Judge->>Drift: is_drift(text)
+
+    alt drift detected
+        Drift-->>Judge: true
+        Judge->>Con: correction_request
+        Con->>Con: regenerate
+        Con->>Judge: counter(ping=N, retry=1)
+    else clean
+        Drift-->>Judge: false
+        Judge->>PC: check(text)
+        PC-->>Judge: (ok, None)
+        Judge->>Pro: counter(ping=N) — routed (H4)
+    end
+
+    Note over Pro,Con: Heartbeat fires every 2s in parallel

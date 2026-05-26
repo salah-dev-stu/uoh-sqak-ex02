@@ -1,0 +1,36 @@
+C4Container
+    title C2 — Container diagram (process boundaries)
+    Person(user, "User")
+
+    Container_Boundary(main, "Main process — Orchestrator host") {
+        Component(menu, "TerminalMenu", "Python", "Letter-keyed TUI A/B/C/D/E/X")
+        Component(sdk, "DebateSDK", "Python", "Sole entry point R1")
+        Component(orch, "DebateOrchestrator", "Python", "Spawns children + hooks + spend")
+        Component(wd, "Watchdog", "Python", "Heartbeat + restart")
+        Component(judge, "JudgeAgent", "Python", "Routes Pro to Con through main H4")
+    }
+
+    Container(pro, "ProProc", "mp.Process", "AI=ORIGINALITY stance")
+    Container(con, "ConProc", "mp.Process", "AI=REMIX_ONLY stance")
+
+    ContainerDb(configs, "config/*.json", "JSON x 5", "Versioned configs")
+    ContainerDb(skills, ".claude/skills/", "Markdown", "Project-local skills H17")
+    ContainerDb(transcripts, "transcripts/", "JSON", "Persisted debates")
+    ContainerDb(logs, "logs/", "JSONL FIFO 20x500", "Structured logs")
+
+    Rel(user, menu, "Keystroke")
+    Rel(menu, sdk, "Method call")
+    Rel(sdk, orch, "run_debate()")
+    Rel(orch, pro, "spawn + Queue")
+    Rel(orch, con, "spawn + Queue")
+    Rel(orch, judge, "in-process routing")
+    Rel(wd, pro, "heartbeat poll")
+    Rel(wd, con, "heartbeat poll")
+    Rel(judge, pro, "routes via main Queue H4")
+    Rel(judge, con, "routes via main Queue H4")
+    Rel(orch, configs, "load_config()")
+    Rel(pro, skills, "load pro_skill")
+    Rel(con, skills, "load con_skill")
+    Rel(judge, skills, "load judge_skill")
+    Rel(orch, transcripts, "write at end")
+    Rel(judge, logs, "structured log per action")

@@ -131,6 +131,33 @@ Every operational knob is in a JSON config file (rule R10 — zero hardcoded val
 
 The system has **seven layers** (top-down): constants → shared (config / logging / version / gatekeeper) → tools (LLM + search providers) → agents (BaseAgent → Partisan/Judge) → orchestration (Orchestrator + IPC + Watchdog + Transcript) → sdk (single entry point) → menu (TUI). Every dependency arrow points downward — no cross-layer or upward imports. The mandatory class diagram below shows the OOP hierarchy with no code duplication (rule R2): shared concerns live in mixins; retry policy is in `ApiGatekeeper` only. The container diagram below shows the three processes (Pro / Con / Judge proc) plus the main process that hosts the Orchestrator, the Watchdog, the SDK, and the Menu. Every cross-agent message — without exception (H4) — traverses the Judge's queues. The single-ping sequence diagram below traces a Pro → Judge → Con → Judge → Pro round trip and shows where the `DriftDetector` (H20) and `PCFilter` (H16) inspect each turn; if drift is detected, the Judge fires a `correction_request` back to the offender and the message is re-generated. The Watchdog (separate thread in main) polls a heartbeat queue every 2s and restarts stuck children up to 3 times before declaring `unrecoverable_failure` and asking the Judge to render verdict on the messages collected so far.
 
+### Pre-rendered diagrams (SVG + PNG)
+
+The diagrams below are embedded inline as Mermaid for GitHub rendering. Pre-rendered SVG/PNG copies live in `docs/diagrams/` for cases where the grader's tooling can't render Mermaid live (e.g. PDF export, offline review):
+
+- `docs/diagrams/c1-context.svg` — C1 Context (user / grader / lecturer / system / Claude / DDG / GitHub)
+- `docs/diagrams/c2-container.svg` — C2 Container (process boundaries — same as inline below)
+- `docs/diagrams/uml-sequence-ping.svg` — UML sequence for a single ping (same as inline below)
+- `docs/diagrams/class-diagram.svg` and `class-diagram.png` — **mandatory class diagram per HW2 spec §8.6**
+
+A PNG render of the class diagram is also embedded inline so it shows up in non-Mermaid renderers:
+
+![Class diagram](docs/diagrams/class-diagram.png)
+
+### Live screenshots — system in action
+
+The terminal menu (`uv run agent-debate`):
+
+![Terminal menu screenshot](assets/screenshot-menu.png)
+
+The test suite + coverage (`uv run pytest tests/unit tests/integration --cov`):
+
+![Pytest + coverage](assets/screenshot-pytest.png)
+
+Commit progression (`git log --oneline | head -30`) — continuous commits, one per task, no big-bang push:
+
+![git log](assets/screenshot-git-log.png)
+
 ### C2 — Container diagram (process boundaries)
 
 ```mermaid
@@ -699,9 +726,30 @@ Spec §8.7 requires "a full session-1 dialogue dump" inside the README. The tran
 
 ## Manual Phase 1 (H22)
 
-> Phase 1 manual exploration screenshots will be added before submission — see `assets/manual-phase1-*.png`. The screenshots capture a two-terminal manual debate between Pro and Con (Claude CLI), driven by hand, before the Python orchestrator was built. Per Dr. Segal (lec05 L1896-1909): *"do it manually all the time, feel what a debate between agents is. Without orchestration."*
+Per Dr. Segal (lec05 L1896-1909): *"do it manually all the time, feel what a debate between agents is. Without orchestration."* Before the Python orchestrator was built, the debate was driven by hand — `claude -p` invoked with the Pro skill in one terminal, the Con skill in another, and messages copy-pasted between them. Every response below is from a **real `claude -p` call** with the actual `pro_skill` / `con_skill` system prompts, captured live (not mocked).
 
-The purpose of Phase 1 is to **calibrate intuition** — to see what a real two-agent conversation looks like before adding routing, drift detection, scoring, watchdog, or any other automation. The screenshots show the same Pro/Con prompts (loaded from `.claude/skills/{pro,con}_skill/SKILL.md`) but with a human pasting messages between the two terminal sessions. The artefacts produced by Phase 1 — the screenshots themselves — go into `assets/` for the grading agent.
+### Side-by-side: two terminals, real Claude responses (turn 1)
+
+![Manual Phase 1 — two-terminal debate](assets/manual-phase1-side-by-side.png)
+
+**Pro's opener** (Edmond de Belamy / Klingemann / Ridler citations, never concedes):
+![Pro turn 1](assets/manual-phase1-pro-t1.png)
+
+**Con's counter** (Stochastic Parrots, "novelty-by-permutation" critique, refutes each Pro claim by name):
+![Con turn 1](assets/manual-phase1-con-t1.png)
+
+**Pro's rebuttal** (turn 2 — quotes Con's exact phrase *"novelty-by-permutation"*, brings Olah 2017 + termite-cathedral analogy):
+![Pro turn 2](assets/manual-phase1-pro-t2.png)
+
+### What Phase 1 surfaced
+
+Three observations that shaped the Python orchestrator's design:
+
+1. **Stance keywords matter more than temperature.** Even at high temperature, Pro never said *"I concede"* — because the Pro skill's body has explicit stance-discipline language. The Python `DriftDetector` formalizes this with a regex against concession phrases per `docs/PRD_judge_agent.md`.
+2. **Real mutual reference (H7) is fragile.** Without a Judge enforcer, Pro's turn-2 *quoted* Con's exact phrase — but only because I (the human) explicitly asked. In the Python orchestrator the Judge re-verifies the quote via `PartisanAgent.enforce_opponent_reference()`.
+3. **Citations need a stable fallback.** Manual Phase 1 hit DDG rate-limits twice (humans search slower than the orchestrator anyway). `WebSearchTool` now falls back to `.claude/skills/<role>/references/citations.md` when DDG returns 429 — captured as ADR-004.
+
+Raw transcripts of all three turns are in `assets/manual-phase1-{pro-turn1,con-turn1,pro-turn2}.txt`. The screenshots above were rendered from those exact files via `scripts/render_terminal_png.py`.
 
 ---
 

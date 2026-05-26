@@ -1,0 +1,116 @@
+classDiagram
+    class BaseAgent {
+        <<abstract>>
+        +str role
+        +Queue in_queue
+        +Queue out_queue
+        +Queue heartbeat_queue
+        +Synchronized shared_spend
+        +Lock lock
+        +str skill_dir
+        +LLMProvider llm_provider
+        +emit_heartbeat()
+        +step(msg) Optional~dict~
+        +handle_message(msg)* Optional~dict~
+    }
+    class PartisanAgent {
+        <<abstract>>
+        +Stance STANCE
+        +str SKILL_NAME
+        +WebSearchTool web_search
+        +load_skill_body() str
+        +enforce_opponent_reference(text, prev) bool
+        +extract_citations(text) list
+    }
+    class ProAgent {
+        +STANCE = ORIGINALITY
+        +SKILL_NAME = "pro_skill"
+    }
+    class ConAgent {
+        +STANCE = REMIX_ONLY
+        +SKILL_NAME = "con_skill"
+    }
+    class JudgeAgent {
+        +bool TOPIC_BLIND = true
+        +DriftDetector drift_detector
+        +PCFilter pc_filter
+        +ScoringEngine scoring_engine
+        +issue_setup_directive()
+        +route(msg)
+        +declare_winner(scorecards)
+    }
+    class DriftDetector {
+        +regex pattern
+        +is_drift(text) bool
+    }
+    class PCFilter {
+        +check(text) tuple
+    }
+    class ScoringEngine {
+        +score_axis_set(axes) Scorecard
+        +declare_winner(pro, con) str
+    }
+    class ApiGatekeeper {
+        +execute(call, args)
+        +update_spend(tokens)
+        +get_spend_so_far() int
+        +get_queue_status()
+    }
+    class LLMProvider {
+        <<abstract>>
+        +complete(system, user, temp)
+    }
+    class ClaudeLoginProvider
+    class MockLLMProvider
+    class SearchProvider {
+        <<abstract>>
+        +search(query, k) list
+    }
+    class DuckDuckGoProvider
+    class WebSearchTool {
+        +search(query, k)
+    }
+    class DebateOrchestrator {
+        +spawn_children(topic)
+        +run_debate(topic, n_pings)
+        +shutdown_gracefully()
+    }
+    class Watchdog {
+        +monitor()
+        +is_stuck(role) bool
+        +restart(role)
+    }
+    class LifecycleRegistry {
+        +register(name, fn)
+        +fire(name, ctx)
+    }
+    class DebateSDK {
+        +run_debate(topic, n_pings)
+        +get_transcript(id)
+        +get_spend_report()
+        +simulate_keystroke(key)
+    }
+    class TerminalMenu {
+        +run() int
+        +dispatch(key)
+    }
+
+    BaseAgent <|-- PartisanAgent
+    BaseAgent <|-- JudgeAgent
+    PartisanAgent <|-- ProAgent
+    PartisanAgent <|-- ConAgent
+    JudgeAgent *-- DriftDetector
+    JudgeAgent *-- PCFilter
+    JudgeAgent *-- ScoringEngine
+    LLMProvider <|-- ClaudeLoginProvider
+    LLMProvider <|-- MockLLMProvider
+    SearchProvider <|-- DuckDuckGoProvider
+    WebSearchTool o-- SearchProvider
+    PartisanAgent o-- WebSearchTool
+    BaseAgent o-- ApiGatekeeper
+    ApiGatekeeper o-- LLMProvider
+    DebateOrchestrator *-- Watchdog
+    DebateOrchestrator *-- LifecycleRegistry
+    DebateOrchestrator o-- BaseAgent
+    DebateSDK o-- DebateOrchestrator
+    TerminalMenu o-- DebateSDK
