@@ -730,17 +730,29 @@ Per Dr. Segal (lec05 L1896-1909): *"do it manually all the time, feel what a deb
 
 ### Two real Terminal.app windows, side by side — turn 1
 
-This is a literal `screencapture` of two `Terminal.app` windows running the actual `claude -p ... --append-system-prompt "$(cat .claude/skills/{pro,con}_skill/SKILL.md)"` commands. Pro on the left (AI=ORIGINALITY stance), Con on the right (AI=REMIX_ONLY):
+Literal `screencapture` of two `Terminal.app` windows running the actual `claude -p ... --append-system-prompt "$(cat .claude/skills/{pro,con}_skill/SKILL.md)"` commands. Pro on the left (AI=ORIGINALITY stance), Con on the right (AI=REMIX_ONLY):
 
 ![Two-terminal manual Phase 1 — real Terminal.app screenshot](assets/real-terminal-side-by-side.png)
 
-The Pro response cites Edmond de Belamy ($432,500 Christie's auction), Klingemann's *Memories of Passersby*, and Ridler's *Mosaic Virus*. The Con response refutes each by name and pivots to Stochastic Parrots (Bender et al., FAccT 2021).
+Each terminal shows the `$ claude -p` command, the first ~240 chars of the live response (`fold`-wrapped to 78 cols), a pointer to the full 9-line transcript in `assets/`, and a 2-line metadata summary (citations + drift-detector status).
 
-### Pro's rebuttal — turn 2, mutual reference (H7) is genuine, not regex-verified
+### Pro's rebuttal — turn 2, mutual reference (H7) is genuine
 
 ![Pro turn 2 rebuttal — quotes Con's "novelty-by-permutation" by name](assets/real-terminal-rebuttal.png)
 
-In turn 2, Pro **literally quotes** Con's phrase *"novelty-by-permutation"* and refutes it (latent manifold geometry, Olah et al. Distill 2017, termite-cathedral analogy). The Python orchestrator's `enforce_opponent_reference()` regex was designed *because* this kind of cross-reference happens naturally only when prompted — that observation drove the H7 enforcer's existence.
+In turn 2 (left terminal, replacing Pro's turn 1), Pro **literally quotes** Con's phrase *"novelty-by-permutation"* and refutes it via latent manifold geometry, Olah et al. *Distill* 2017, and the termite-cathedral analogy. The Python orchestrator's `PartisanAgent.enforce_opponent_reference()` regex was designed *because* this kind of cross-reference happens naturally only when prompted — that observation drove the H7 enforcer's existence.
+
+### Head-to-head comparison — what each side actually said about the same evidence
+
+The same six citations get framed in opposite directions. Below is the comparison the Judge sees (synthesized from the three turn transcripts), plus the `ScoringEngine` 5-axis verdict that the Python orchestrator computes after a full 10-ping debate (H5 differential scoring, no ties):
+
+![Pro vs Con comparison + Judge verdict](assets/manual-phase1-comparison.png)
+
+Two design observations the manual phase surfaced that drove the Python implementation:
+
+1. **Stance discipline survives high temperature.** Even at temperature 0.85, Pro never said *"I concede"* — because the Pro skill's body has explicit stance-discipline language and concession-phrase blocklist. The Python `DriftDetector` formalizes this with a regex against the same phrase list.
+2. **H7 mutual reference is fragile without enforcement.** Pro turn 2 quoted Con's exact phrase only because I (the human) explicitly asked. In the Python orchestrator, `PartisanAgent.enforce_opponent_reference()` re-verifies the quote on every `argument`/`counter` message; the Judge fires `correction_request` if it fails.
+3. **Citation fallback is required.** Manual Phase 1 hit DDG rate-limits twice across the three turns. `WebSearchTool` now falls back to `.claude/skills/<role>/references/citations.md` when DDG returns 429 — captured as ADR-004.
 
 ### Supporting artifacts (Pillow-rendered for high-contrast embedding)
 
