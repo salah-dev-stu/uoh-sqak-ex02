@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { LenisProvider } from "@/components/lenis-provider";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"], variable: "--font-space-grotesk", weight: ["400", "500", "600"],
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body>{children}</body>
+      <body><LenisProvider>{children}</LenisProvider></body>
     </html>
   );
 }
