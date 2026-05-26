@@ -1005,6 +1005,156 @@ HW2 spec §8.6 marks GUI as optional ("evaluation runs via menu/SDK; screenshots
 
 ---
 
+## Phase 13g — Scroll-driven debate presentation (rebuild after Phases 13a–13f rejected)
+
+**Context:** Phases 13a (vanilla HTML) and 13c–13f (seven Next.js iterations) were all rejected by the user — multi-panel layouts produced "absolute chaos" and broke responsiveness. Phases 13c–13f are wiped from disk (two hard resets). Phase 13g is a clean restart: single-slide-at-a-time scroll-driven presentation per `docs/PRD_gui.md` + `docs/superpowers/specs/2026-05-26-hw2-gui-scroll-presentation.md`.
+
+**Plan reference:** `docs/superpowers/plans/2026-05-26-hw2-gui-scroll-presentation.md`
+
+### Phase 13g.A — Scaffold + foundations
+
+- [ ] 13g.A.1: Brainstorm presentation idea with user (✅ already done in conversation)
+- [ ] 13g.A.2: Write design spec → `docs/superpowers/specs/2026-05-26-hw2-gui-scroll-presentation.md` (✅ done)
+- [ ] 13g.A.3: Spec self-review pass (placeholder scan, consistency, scope) (✅ done)
+- [ ] 13g.A.4: User approval on spec (✅ done — "ok")
+- [ ] 13g.A.5: Write per-mechanism PRD → `docs/PRD_gui.md` (✅ done)
+- [ ] 13g.A.6: Write implementation plan → `docs/superpowers/plans/2026-05-26-hw2-gui-scroll-presentation.md` (✅ done)
+- [ ] 13g.A.7: Append this Phase 13g section to `docs/TODO.md` (✅ done by this commit)
+- [ ] 13g.A.8: 🛑 Approval gate — user approves Phase 13g PRD + plan + TODO before code
+
+### Phase 13g.B — Frontend scaffold (Plan Task 1)
+
+- [ ] 13g.B.1: Create `frontend/package.json` with Next 16 + React 19 + motion + lenis deps
+- [ ] 13g.B.2: Create `frontend/tsconfig.json` with strict mode + path aliases
+- [ ] 13g.B.3: Create `frontend/next.config.ts` + `frontend/tailwind.config.ts` + `frontend/postcss.config.mjs`
+- [ ] 13g.B.4: Create `frontend/.gitignore` (node_modules, .next, .env.local)
+- [ ] 13g.B.5: Create `frontend/.env.local` with `NEXT_PUBLIC_API_BASE=http://localhost:8000`
+- [ ] 13g.B.6: Run `cd frontend && npm install` — verify clean install
+- [ ] 13g.B.7: Commit scaffold
+
+### Phase 13g.C — Global styles + fonts (Plan Task 2)
+
+- [ ] 13g.C.1: Write `frontend/app/globals.css` with @theme tokens (colors, fonts, reduced-motion)
+- [ ] 13g.C.2: Write `frontend/app/layout.tsx` with Space Grotesk + Inter + JetBrains Mono via next/font/google
+- [ ] 13g.C.3: Wire LenisProvider into the root layout
+- [ ] 13g.C.4: Commit globals + layout
+
+### Phase 13g.D — Types + config (Plan Task 3)
+
+- [ ] 13g.D.1: Write `frontend/lib/types.ts` — Slide, SlideState, Speaker, SseEvent, DebateMessage, Verdict, StartDebateResponse
+- [ ] 13g.D.2: Write `frontend/lib/config.ts` — API_BASE, transition durations, defaults
+- [ ] 13g.D.3: `npx tsc --noEmit` — verify no TS errors
+- [ ] 13g.D.4: Commit types + config
+
+### Phase 13g.E — State store + Vitest (Plan Task 4)
+
+- [ ] 13g.E.1: Write `frontend/vitest.config.ts` with jsdom env + 85% coverage threshold
+- [ ] 13g.E.2: Write `frontend/lib/__tests__/state.test.ts` (failing test)
+- [ ] 13g.E.3: Verify state test fails — "Cannot find module"
+- [ ] 13g.E.4: Implement `frontend/lib/state.ts` — module-level pub-sub
+- [ ] 13g.E.5: Verify state tests pass
+- [ ] 13g.E.6: Commit state store
+
+### Phase 13g.F — API client + SSE consumer (Plan Task 5)
+
+- [ ] 13g.F.1: Write `frontend/lib/api.ts` — startDebate, stopDebate, streamUrl
+- [ ] 13g.F.2: Write `frontend/lib/__tests__/sse.test.ts` (failing dedup tests)
+- [ ] 13g.F.3: Verify sse tests fail
+- [ ] 13g.F.4: Implement `frontend/lib/sse.ts` — shouldSkip, openStream, handleEvent
+- [ ] 13g.F.5: Verify sse tests pass (4 cases: boot, dup, forwarded, valid)
+- [ ] 13g.F.6: Commit API + SSE
+
+### Phase 13g.G — LenisProvider (Plan Task 6)
+
+- [ ] 13g.G.1: Write `frontend/components/lenis-provider.tsx` with React context + RAF loop
+- [ ] 13g.G.2: `npx tsc --noEmit` — verify clean
+- [ ] 13g.G.3: Commit Lenis provider
+
+### Phase 13g.H — Avatar (Plan Task 7)
+
+- [ ] 13g.H.1: Write `frontend/components/__tests__/avatar.test.tsx` (P/C/⚖ glyph tests)
+- [ ] 13g.H.2: Implement `frontend/components/avatar.tsx` — 96px disc + color + glow + spring entry + optional pulse
+- [ ] 13g.H.3: Verify avatar tests pass (3 cases)
+- [ ] 13g.H.4: Commit Avatar
+
+### Phase 13g.I — WordReveal (Plan Task 8)
+
+- [ ] 13g.I.1: Implement `frontend/components/word-reveal.tsx` — per-word fade with config-driven stagger
+- [ ] 13g.I.2: Commit WordReveal
+
+### Phase 13g.J — Slide (Plan Task 9)
+
+- [ ] 13g.J.1: Write `frontend/components/__tests__/slide.test.tsx` (Pro left, Con right, Judge center, verdict tally)
+- [ ] 13g.J.2: Implement `frontend/components/slide.tsx` — variant routing + anchor classes + verdict branch
+- [ ] 13g.J.3: Verify slide tests pass (4 cases)
+- [ ] 13g.J.4: Commit Slide
+
+### Phase 13g.K — Stage (Plan Task 10)
+
+- [ ] 13g.K.1: Implement `frontend/components/stage.tsx` — sticky viewport + per-slide useTransform opacity/y
+- [ ] 13g.K.2: Add auto-follow effect (Lenis scrollTo on new slide when followLive)
+- [ ] 13g.K.3: Add user-scroll detector (set followLive=false when scrolling up away from latest)
+- [ ] 13g.K.4: Commit Stage
+
+### Phase 13g.L — StartScreen (Plan Task 11)
+
+- [ ] 13g.L.1: Implement `frontend/components/start-screen.tsx` — topic + pings + live toggle + START
+- [ ] 13g.L.2: Wire START button to `startDebate()` + `openStream()`
+- [ ] 13g.L.3: Add error surface inline
+- [ ] 13g.L.4: Commit StartScreen
+
+### Phase 13g.M — BottomStrip (Plan Task 12)
+
+- [ ] 13g.M.1: Write `frontend/components/__tests__/bottom-strip.test.tsx`
+- [ ] 13g.M.2: Implement `frontend/components/bottom-strip.tsx` — tally + dot scrubber + counter + LIVE/JUMP TO LIVE
+- [ ] 13g.M.3: Verify bottom-strip tests pass (3 cases)
+- [ ] 13g.M.4: Commit BottomStrip
+
+### Phase 13g.N — Main page composition (Plan Task 13)
+
+- [ ] 13g.N.1: Implement `frontend/app/page.tsx` — conditional StartScreen | Stage + persistent BottomStrip
+- [ ] 13g.N.2: `npm run build` — verify production build succeeds
+- [ ] 13g.N.3: `npm run dev` — verify dev server starts, landing visible at localhost:3000
+- [ ] 13g.N.4: Commit main page
+
+### Phase 13g.O — E2E visual verification (Plan Task 14)
+
+- [ ] 13g.O.1: Start backend (`uv run agent-debate-web`) + frontend (`npm run dev`)
+- [ ] 13g.O.2: Playwright: navigate to localhost:3000 → screenshot empty → `assets/13g-empty.png`
+- [ ] 13g.O.3: Click START with mock LLM (live=0)
+- [ ] 13g.O.4: Wait for first Pro slide → screenshot → `assets/13g-pro-turn.png`
+- [ ] 13g.O.5: Wait for first Con slide → screenshot → `assets/13g-con-turn.png`
+- [ ] 13g.O.6: Wait for verdict → screenshot → `assets/13g-verdict.png`
+- [ ] 13g.O.7: Manual scroll test — verify smooth crossfades, JUMP TO LIVE badge appears
+- [ ] 13g.O.8: Resize browser to 320 / 768 / 1280 / 1920 — verify no overflow or broken text
+- [ ] 13g.O.9: Manual reduced-motion test (System Pref → Reduce Motion)
+- [ ] 13g.O.10: Commit visual evidence
+
+### Phase 13g.P — Closure (Plan Task 15)
+
+- [ ] 13g.P.1: Full Python regression — `uv run pytest` — 164 tests pass
+- [ ] 13g.P.2: Full frontend test suite — `cd frontend && npx vitest run --coverage` — ≥85% lines
+- [ ] 13g.P.3: Update `README.md` Web GUI section with 13g screenshots + start commands
+- [ ] 13g.P.4: Append Phase 13g brainstorm dialogue + design rationale to `docs/PROMPTS.md`
+- [ ] 13g.P.5: Final closure commit
+
+### Phase 13g acceptance criteria (mirror of PRD §8)
+
+- [ ] 13g.AC.1: Dev server loads in <2s, landing visible
+- [ ] 13g.AC.2: Click START → Judge intro slide fades in within 1s
+- [ ] 13g.AC.3: Each SSE message produces a slide auto-scrolling into view (~700ms)
+- [ ] 13g.AC.4: Pro left, Con right, Judge center anchoring
+- [ ] 13g.AC.5: Scroll wheel scrubs timeline with smooth crossfades
+- [ ] 13g.AC.6: Mid-debate scroll-back shows JUMP TO LIVE badge, click resumes auto-follow
+- [ ] 13g.AC.7: After verdict + done, full timeline scrubbable indefinitely
+- [ ] 13g.AC.8: Dot scrubber: hover tooltip, click jumps
+- [ ] 13g.AC.9: Resize 320px–4K stays coherent
+- [ ] 13g.AC.10: prefers-reduced-motion: reduce → all transitions ≤80ms
+- [ ] 13g.AC.11: Lighthouse Performance ≥85 on production build
+- [ ] 13g.AC.12: Backend regression unaffected
+
+---
+
 ## Summary
 
 **Live counts** (run `grep -c '^- \[ \]' docs/TODO.md` and `grep -c '^- \[x\]' docs/TODO.md` to verify):
