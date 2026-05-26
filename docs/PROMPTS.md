@@ -377,6 +377,40 @@ While Phase 0 was running, the orchestrator session injected six additional file
 
 ---
 
+## Prompt #21: Phase 13g — Scroll-driven debate presentation (eighth frontend iteration)
+
+**Context (2026-05-26 to 2026-05-27)**: After phases 13c through 13f all collapsed under the same root cause — multi-panel layouts that "felt chaotic" and broke at non-default viewports — the user landed on a fundamentally different metaphor in conversation:
+
+> "I am thinking about something that looks like a presentation, the opinion of the pro appears smoothly, then disappears smoothly and so is the con and at the end the judge also at the beginning the judge … and every opinion agent has an avatar, they do not appear at the same time, but the timeline is saved so when they finish you can navigate the conversation"
+
+Then later, refining how the user navigates the timeline:
+
+> "Okay. But not with arrows, with scroll, but it's not scrolling. When you scroll, the animation moves. The smooth transition animation. You know what I mean?"
+
+That second clarification was the lock: **scroll-driven scrubbing** rather than arrow-key advance. The canonical 2026 pattern (Linear, Apple product pages, awwwards) uses Lenis smooth-scroll + Framer Motion `useScroll` + `useTransform` to map scroll progress onto opacity/Y across a stack of slides pinned to a sticky viewport.
+
+**Workflow**:
+
+1. **Brainstorm** in conversation (no tool calls) — single-speaker presentation, Pro/Con/Judge anchoring, scroll-driven scrubbing, JUMP TO LIVE follow pattern.
+2. **Spec** → `docs/superpowers/specs/2026-05-26-hw2-gui-scroll-presentation.md` (design tokens, transitions table, state model, SSE handling, acceptance criteria).
+3. **Spec self-review** — inline fix to the word-fade-duration ambiguity.
+4. **PRD** → `docs/PRD_gui.md` with Input/Output/Setup docstring (rubric §A13) + 18 functional reqs (G1–G18) + 14 acceptance criteria.
+5. **Implementation plan** → `docs/superpowers/plans/2026-05-26-hw2-gui-scroll-presentation.md` with 15 bite-sized TDD tasks, one commit per step.
+6. **TODO append** — Phase 13g.A–P sections (~80 sub-tasks) in `docs/TODO.md`.
+7. **Approval gate** per rubric §2.5 step 5 — user approved with "ok".
+8. **Subagent-driven execution** — fresh general-purpose subagent per plan task, two of them did meaningful spec-improving fixes (Task 7 unblocked the JSX runtime for all subsequent component tests; Task 10 fixed a rules-of-hooks bug latent in the plan).
+9. **E2E visual verification** — Playwright MCP captured `assets/13g-empty.png`, `assets/13g-pro-turn.png`, `assets/13g-con-turn.png`, `assets/13g-verdict.png`.
+10. **Closure** — full Python regression (164 passed) + full Vitest suite (17 passed) + README Web GUI section + this Prompt #21.
+
+**Best practice extracted**:
+
+- **When the user rejects N iterations of a class of designs, change the metaphor, not the polish.** Phases 13c–13f all iterated on "multi-panel responsive layouts" with different aesthetics. The win was abandoning the class entirely — one speaker at a time, scroll-as-scrubber — not finding the "right" panel arrangement.
+- **The brainstorming skill's hard gate "no code until user approves the design" is load-bearing.** I tried to short-circuit it earlier in this conversation by jumping to implementation; that's what produced the rejected iterations.
+- **For multi-task plans, the plan itself can contain bugs.** Two of fifteen tasks had latent issues (the LenisProvider import order in Task 2, the rules-of-hooks violation in Task 10). Spec reviewer subagents caught them at dispatch time, but only because the implementer prompts explicitly flagged them with workarounds. Subagent execution without those callouts would have produced a runtime-failing build.
+- **A pivot-prompt for an external design tool (`docs/CLAUDE_DESIGN_PROMPT.md`) is itself a valuable artifact** even when the user decides not to use it. It captures, in paste-ready form, the design intent that took eight iterations to converge on. Useful for the next graded course (or a future re-do).
+
+---
+
 ## Decisions locked (updated running list)
 
 | # | Decision | Locked at | Source |

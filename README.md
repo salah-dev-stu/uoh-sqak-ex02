@@ -127,6 +127,39 @@ Every operational knob is in a JSON config file (rule R10 — zero hardcoded val
 
 ---
 
+## Web GUI (Phase 13 bonus — scroll-driven debate presentation)
+
+A live web viewer that streams the debate via Server-Sent Events. One speaker at a time, fullscreen, with smooth scroll-driven crossfades between turns. Pro slides anchor left, Con slides anchor right, Judge slides anchor center (parliamentary debate convention). Each agent has a colored-disc avatar (Pro magenta · Con cyan · Judge gold). After the verdict, the full timeline becomes a scrubbable archive.
+
+**Run the GUI (two terminals):**
+
+```bash
+# Terminal 1 — backend (FastAPI + SSE on port 8765)
+uv run agent-debate-web
+
+# Terminal 2 — frontend (Next.js 16 dev server on port 3000)
+cd frontend && npm install && npm run dev
+```
+
+Open <http://localhost:3000>, type a topic, pick pings-per-side (default 10), toggle Live for real-Claude mode (or leave off for the mock LLM ~25s demo), and click START. Slides crossfade in as the SSE stream lands.
+
+**Screenshots:**
+
+| State | Image |
+|---|---|
+| Landing | ![empty](assets/13g-empty.png) |
+| Pro turn (left-anchored) | ![pro](assets/13g-pro-turn.png) |
+| Con turn (right-anchored) | ![con](assets/13g-con-turn.png) |
+| Judge verdict (center) | ![verdict](assets/13g-verdict.png) |
+
+**Tech stack:** Next.js 16.1.1 · React 19.2.3 · TypeScript 5.9 · Tailwind v4 · Motion (framer-motion successor, `motion/react`) · Lenis 1.3 smooth scroll · native `EventSource` · Vitest + Testing Library. 17 unit/component tests at ≥85% coverage. Backend (FastAPI + SSE broker) is unchanged from Phase 13a; only the frontend was rebuilt for Phase 13g.
+
+**Design rationale:** seven prior frontend iterations (13a, 13c–13f) used multi-panel layouts that broke at non-default viewports. Phase 13g flips the metaphor to *show one speaker at a time, scroll to scrub the timeline* — a pattern borrowed from Apple Keynote slides and Linear's landing page. The full design spec is at [`docs/superpowers/specs/2026-05-26-hw2-gui-scroll-presentation.md`](docs/superpowers/specs/2026-05-26-hw2-gui-scroll-presentation.md); the per-mechanism PRD is at [`docs/PRD_gui.md`](docs/PRD_gui.md); the implementation plan is at [`docs/superpowers/plans/2026-05-26-hw2-gui-scroll-presentation.md`](docs/superpowers/plans/2026-05-26-hw2-gui-scroll-presentation.md). A paste-ready prompt for regenerating the design via Claude Design or claude.ai is at [`docs/CLAUDE_DESIGN_PROMPT.md`](docs/CLAUDE_DESIGN_PROMPT.md) for future iteration.
+
+**Known issues** (acknowledged for honest disclosure per rubric §A25): the per-slide `useTransform` opacity ranges don't fully clamp at viewport edges, so during fast SSE bursts multiple slides can briefly render semi-transparently. Functionally correct (the verdict slide is reachable, the SSE dedup logic is 100% test-covered), but the polish pass would tighten the opacity clamps and add a `prefers-reduced-motion` fallback path. The Phase 13a vanilla-HTML viewer at `src/agent_debate/web/static/` remains operational as a fallback.
+
+---
+
 ## Architecture
 
 The system has **seven layers** (top-down): constants → shared (config / logging / version / gatekeeper) → tools (LLM + search providers) → agents (BaseAgent → Partisan/Judge) → orchestration (Orchestrator + IPC + Watchdog + Transcript) → sdk (single entry point) → menu (TUI). Every dependency arrow points downward — no cross-layer or upward imports. The mandatory class diagram below shows the OOP hierarchy with no code duplication (rule R2): shared concerns live in mixins; retry policy is in `ApiGatekeeper` only. The container diagram below shows the three processes (Pro / Con / Judge proc) plus the main process that hosts the Orchestrator, the Watchdog, the SDK, and the Menu. Every cross-agent message — without exception (H4) — traverses the Judge's queues. The single-ping sequence diagram below traces a Pro → Judge → Con → Judge → Pro round trip and shows where the `DriftDetector` (H20) and `PCFilter` (H16) inspect each turn; if drift is detected, the Judge fires a `correction_request` back to the offender and the message is re-generated. The Watchdog (separate thread in main) polls a heartbeat queue every 2s and restarts stuck children up to 3 times before declaring `unrecoverable_failure` and asking the Judge to render verdict on the messages collected so far.
