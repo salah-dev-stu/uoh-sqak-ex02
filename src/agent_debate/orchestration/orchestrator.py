@@ -37,15 +37,7 @@ __all__ = ["DebateOrchestrator", "Transcript"]
 
 
 class DebateOrchestrator:
-    """
-    Input:  llm_provider_factory (Callable[[], LLMProvider]),
-            lifecycle (LifecycleRegistry | None),
-            transcript_dir (Path | None),
-            gatekeeper_config (dict | None)
-    Output: Transcript (full debate record, via persist_transcript)
-    Setup:  shared multiprocessing primitives (spend Value, Lock),
-            child Process list, shutdown flag
-    """
+    """Input: llm_provider_factory, lifecycle, transcript_dir, gatekeeper_config. Output: Transcript via persist_transcript. Setup: shared multiprocessing primitives (spend Value, Lock), child Process list, shutdown flag."""
 
     def __init__(
         self,
@@ -113,13 +105,15 @@ class DebateOrchestrator:
     def run_debate(
         self, topic: str, n_pings: int = 10,
         skill_dir: str = "./.claude/skills", dry_run: bool = False,
+        transcript: Transcript | None = None,
     ) -> Transcript:
         """Full debate loop. `dry_run=True` drives synchronously for tests.
-        Phase 10 hardens the real-process branch with full IPC routing."""
-        transcript = Transcript(
-            debate_id=str(uuid.uuid4()), topic=topic,
-            started_at=datetime.now(tz=UTC).isoformat(),
-        )
+        Optional `transcript=` lets callers pre-wrap `.messages` (e.g. streaming list)."""
+        if transcript is None:
+            transcript = Transcript(
+                debate_id=str(uuid.uuid4()), topic=topic,
+                started_at=datetime.now(tz=UTC).isoformat(),
+            )
         if dry_run:
             run_debate_dry_run(
                 transcript=transcript,

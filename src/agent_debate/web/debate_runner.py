@@ -123,7 +123,13 @@ def run_debate_in_thread(
             if not live:
                 t = _run_dry(session, orch, topic, n_pings)
             else:
-                t = orch.run_debate(topic=topic, n_pings=n_pings, dry_run=False)
+                t = _build_streaming_transcript(topic, session)
+                session.emit("started", {
+                    "debate_id": t.debate_id, "topic": t.topic, "n_pings": n_pings,
+                })
+                orch.run_debate(
+                    topic=topic, n_pings=n_pings, dry_run=False, transcript=t,
+                )
             session.emit("verdict", {
                 "verdict": t.verdict,
                 "outcome": t.outcome.value if t.outcome else None,

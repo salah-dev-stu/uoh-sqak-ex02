@@ -24,7 +24,7 @@ class ClaudeLoginProvider(LLMProvider):
             "claude", "-p",
             "--append-system-prompt", system,
             "--output-format", "json",
-            "--max-turns", "1",
+            "--max-turns", "6",
             user,
         ]
         result = subprocess.run(
@@ -32,7 +32,8 @@ class ClaudeLoginProvider(LLMProvider):
         )
         if result.returncode != 0:
             raise RuntimeError(
-                f"claude CLI failed (exit {result.returncode}): {result.stderr[:500]}"
+                f"claude CLI failed (exit {result.returncode}) "
+                f"stderr={result.stderr[:500]!r} stdout={result.stdout[:500]!r}"
             )
         data = json.loads(result.stdout)
         usage = data.get("usage", {})
