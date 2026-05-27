@@ -34,7 +34,17 @@ export function openStream(debateId: string, topic?: string): () => void {
     const evt: SseEvent = JSON.parse(e.data);
     handleEvent(evt, seen);
   };
-  es.onerror = () => setState({ status: "error", error: "SSE connection lost" });
+  // EventSource.onerror fires on transient reconnects and on normal stream
+  // close, not only on permanent failures. Only flip to "error" if the
+  // connection is actually CLOSED *and* we haven't already finished the
+  // debate (status "done") — otherwise the title banner reads OFF AIR
+  // mid-debate during what's just a momentary reconnect.
+  es.onerror = () => {
+    if (es.readyState !== EventSource.CLOSED) return;
+    const cur = getState();
+    if (cur.status === "done") return;
+    setState({ status: "error", error: "SSE connection lost" });
+  };
 
   return () => es.close();
 }
