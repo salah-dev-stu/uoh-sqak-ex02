@@ -10,12 +10,10 @@ export function BottomStrip(): React.JSX.Element {
   if (s.slides.length === 0) return <></>;
 
   function jumpToLive(): void {
-    window.scrollTo({ top: (s.slides.length - 1) * window.innerHeight, behavior: "smooth" });
-    setState({ followLive: true });
+    setState({ currentIndex: s.slides.length - 1, followLive: true });
   }
   function jumpTo(i: number): void {
-    window.scrollTo({ top: i * window.innerHeight, behavior: "smooth" });
-    setState({ followLive: false });
+    setState({ currentIndex: i, followLive: false });
   }
 
   return (

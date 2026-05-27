@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
-import { useSyncExternalStore } from "react";
-import { getState, subscribe } from "@/lib/state";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import { getState, subscribe, setState } from "@/lib/state";
 import type { Slide } from "@/lib/types";
 import { R3FScene } from "./r3f-scene";
 
@@ -21,6 +21,36 @@ export function Stage14(): React.JSX.Element {
   const state = useStoreState();
   const slide = activeSlide(state.slides, state.currentIndex);
   const activeSpeaker = slide?.speaker ?? null;
+
+  // Auto-advance: when a new slide arrives and followLive is true, jump to it.
+  const lastCountRef = useRef(state.slides.length);
+  useEffect(() => {
+    if (state.slides.length > lastCountRef.current && state.followLive) {
+      setState({ currentIndex: state.slides.length - 1 });
+    }
+    lastCountRef.current = state.slides.length;
+  }, [state.slides.length, state.followLive]);
+
+  // Wheel scroll = step between slides.
+  const wheelLockRef = useRef(0);
+  useEffect(() => {
+    const onWheel = (e: WheelEvent): void => {
+      if (state.slides.length === 0) return;
+      const now = Date.now();
+      if (now - wheelLockRef.current < 220) return;
+      const dir = e.deltaY > 5 ? 1 : e.deltaY < -5 ? -1 : 0;
+      if (dir === 0) return;
+      e.preventDefault();
+      wheelLockRef.current = now;
+      const next = Math.min(state.slides.length - 1, Math.max(0, state.currentIndex + dir));
+      if (next !== state.currentIndex) {
+        const latest = state.slides.length - 1;
+        setState({ currentIndex: next, followLive: next === latest });
+      }
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, [state.slides.length, state.currentIndex]);
 
   return (
     <div style={{
