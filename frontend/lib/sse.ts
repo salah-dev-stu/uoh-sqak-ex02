@@ -70,12 +70,22 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
       break;
     }
     case "verdict": {
-      const p = evt.payload as { verdict: { pro_total: number; con_total: number; outcome: string } };
-      const v = p.verdict;
+      const p = evt.payload as {
+        verdict: { pro_total?: number; con_total?: number; reason?: string };
+        outcome?: string;
+      };
+      const v = p.verdict ?? {};
+      const aborted = v.reason === "setup_phase_timeout" || p.outcome === "debate_aborted";
       appendSlide({
         id: "verdict", speaker: "judge", variant: "verdict",
-        pingIndex: getState().slides.length, text: "", timestamp: new Date().toISOString(),
-        proScore: v.pro_total, conScore: v.con_total, outcome: v.outcome as never,
+        pingIndex: getState().slides.length,
+        text: aborted
+          ? "Debate aborted: setup phase timed out. The Pro/Con agents did not respond — Claude CLI may be busy with another session. Try refreshing in a moment."
+          : "",
+        timestamp: new Date().toISOString(),
+        proScore: v.pro_total ?? 0,
+        conScore: v.con_total ?? 0,
+        outcome: (aborted ? "debate_aborted" : p.outcome) as never,
       });
       break;
     }
