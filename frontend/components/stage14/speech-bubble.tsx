@@ -7,9 +7,9 @@ import { getState, subscribe } from "@/lib/state";
 import type { Slide, Speaker } from "@/lib/types";
 
 const POSITION: Record<Speaker, [number, number, number]> = {
-  pro:   [-3, 4.6, 0.2],
-  judge: [0,  4.6, 1.4],
-  con:   [3,  4.6, 0.2],
+  pro:   [-3, 4.0, 0.2],
+  judge: [0,  4.0, 1.4],
+  con:   [3,  4.0, 0.2],
 };
 
 function useStoreState() {

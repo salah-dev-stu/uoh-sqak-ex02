@@ -4,8 +4,7 @@ import { useEffect, useRef, useSyncExternalStore } from "react";
 import { getState, subscribe, setState } from "@/lib/state";
 import type { Slide } from "@/lib/types";
 import { R3FScene } from "./r3f-scene";
-
-const DEFAULT_TOPIC = "Can AI agents create genuinely original art, or only remix human work?";
+import { TitleBanner } from "./title-banner";
 
 function useStoreState() {
   return useSyncExternalStore(subscribe, getState, getState);
@@ -68,25 +67,7 @@ export function Stage14(): React.JSX.Element {
     }}>
       <R3FScene activeSpeaker={activeSpeaker} />
 
-      <div style={{
-        position: "absolute", top: "3vh", left: "50%",
-        transform: "translateX(-50%)",
-        textAlign: "center", maxWidth: "80vw",
-        pointerEvents: "none", zIndex: 5,
-      }}>
-        <div style={{
-          fontFamily: "var(--font-display)", letterSpacing: "0.22em", fontWeight: 600,
-          color: "var(--color-judge-accent)",
-          fontSize: "clamp(0.7rem, 0.4vw + 0.4rem, 0.95rem)",
-          textTransform: "uppercase", marginBottom: "0.6rem",
-          textShadow: "0 0 18px rgba(255,201,76,0.4)",
-        }}>AGENT DEBATE · 2026</div>
-        <div style={{
-          fontFamily: "var(--font-body)", color: "var(--color-fg-primary)",
-          fontWeight: 300, opacity: 0.75,
-          fontSize: "clamp(0.85rem, 0.6vw + 0.5rem, 1.1rem)", lineHeight: 1.4,
-        }}>{DEFAULT_TOPIC}</div>
-      </div>
+      <TitleBanner />
 
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
