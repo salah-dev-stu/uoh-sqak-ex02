@@ -78,16 +78,41 @@ export function TitleBanner(): React.JSX.Element {
             </span>
           </div>
           <div style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(0.7rem, 0.4vw + 0.45rem, 0.85rem)",
-            color: "var(--color-fg-primary)",
-            opacity: 0.85, fontStyle: "italic", fontWeight: 400,
-            marginTop: "0.35rem",
-            maxWidth: "640px", lineHeight: 1.25,
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            display: "flex", justifyContent: "center", marginTop: "0.55rem",
           }}>
-            <span style={{ color: "var(--color-fg-muted)", fontStyle: "normal" }}>Motion: </span>
-            &ldquo;{topic}&rdquo;
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: "0.65rem",
+              padding: "0.32rem 0.85rem 0.32rem 0.36rem",
+              border: "1px solid rgba(255, 201, 76, 0.38)",
+              borderRadius: "999px",
+              background: "linear-gradient(90deg, rgba(255,201,76,0.10), rgba(255,201,76,0.025) 60%, transparent)",
+              maxWidth: "min(740px, 80vw)", minWidth: 0,
+              boxShadow: "0 2px 16px rgba(255,201,76,0.10), inset 0 1px 0 rgba(255,201,76,0.06)",
+            }}>
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: "0.55rem",
+                letterSpacing: "0.28em", fontWeight: 700,
+                color: "var(--color-judge-accent)",
+                background: "rgba(255,201,76,0.16)",
+                padding: "0.24rem 0.6rem", borderRadius: "999px",
+                textTransform: "uppercase", flexShrink: 0,
+                textShadow: "0 0 8px rgba(255,201,76,0.4)",
+              }}>Motion</span>
+              <span style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(0.74rem, 0.4vw + 0.5rem, 0.92rem)",
+                color: "var(--color-fg-primary)",
+                fontStyle: "italic", fontWeight: 400,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                minWidth: 0,
+              }}>
+                <span style={{ color: "var(--color-judge-accent)", fontStyle: "normal",
+                  marginRight: "0.15rem", opacity: 0.7 }}>&ldquo;</span>
+                {topic}
+                <span style={{ color: "var(--color-judge-accent)", fontStyle: "normal",
+                  marginLeft: "0.15rem", opacity: 0.7 }}>&rdquo;</span>
+              </span>
+            </div>
           </div>
         </motion.div>
 
