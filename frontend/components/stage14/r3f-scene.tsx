@@ -15,8 +15,11 @@ const COLOR_HEX: Record<Speaker, string> = {
 };
 
 const CAMERA_TARGETS: Record<string, [number, number, number]> = {
-  pro:     [-3.6, 3.4, 8.6],   // shift left, look across stage toward Con
-  con:     [ 3.6, 3.4, 8.6],   // shift right, look across stage toward Pro
+  // Camera shifts to the OPPOSITE side of the speaker so the speaker
+  // appears on the near side of the frame (Pro turn → camera on the
+  // right looking left, Pro reads big in the left foreground).
+  pro:     [ 3.6, 3.4, 8.6],   // camera right, look across at Pro on left
+  con:     [-3.6, 3.4, 8.6],   // camera left, look across at Con on right
   judge:   [ 0,   3.6, 9.4],   // centred, a touch closer
   default: [ 0,   3.6, 10.0],
 };
