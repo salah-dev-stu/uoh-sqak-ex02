@@ -24,15 +24,21 @@ export function Stage14(): React.JSX.Element {
   const activeSpeaker = slide?.speaker ?? null;
 
   // Auto-advance: while followLive is on, hold each slide for a dwell time
-  // computed from its text length (see lib/dwell.ts — 130 wpm + 0.8 s
-  // reading-entry buffer, clamped to 3.5–14 s). Effect re-runs each time we
-  // advance, so the next slide gets its own length-appropriate dwell.
+  // computed from its text length (see lib/dwell.ts — chunks read faster than
+  // standalone slides). Effect deps are followLive + the CURRENT slide's id
+  // + a hasNext boolean — NOT state.slides itself. If we depended on the
+  // whole slides array, every new chunk append would clear the active timer
+  // and restart it from zero, so the timer would never actually fire when
+  // chunks arrive faster than the dwell duration. hasNext catches the
+  // "we were stalled at the end, a new slide just arrived" transition.
+  const currentSlide = state.slides[state.currentIndex];
+  const slideId = currentSlide?.id;
+  const slideText = currentSlide?.text ?? "";
+  const hasNext = state.currentIndex < state.slides.length - 1;
   useEffect(() => {
-    if (!state.followLive) return;
-    if (state.slides.length === 0) return;
-    if (state.currentIndex >= state.slides.length - 1) return;
-    const slide = state.slides[state.currentIndex];
-    const dwell = computeDwellMs(slide?.text ?? "");
+    if (!state.followLive || !hasNext) return;
+    const isChunk = /-c\d+$/.test(slideId ?? "");
+    const dwell = computeDwellMs(slideText, { isChunk });
     const t = window.setTimeout(() => {
       const s = getState();
       if (!s.followLive) return;
@@ -41,7 +47,7 @@ export function Stage14(): React.JSX.Element {
       }
     }, dwell);
     return () => window.clearTimeout(t);
-  }, [state.followLive, state.currentIndex, state.slides]);
+  }, [state.followLive, slideId, slideText, hasNext]);
 
   // Wheel scroll = step between slides.
   const wheelLockRef = useRef(0);

@@ -2,23 +2,30 @@
 //
 // Brysbaert 2019 meta-analysis (190 studies) puts adult silent reading at
 // ~238 wpm for non-fiction and notes "reading rates are lower for ... readers
-// with English as second language". BBC subtitle guideline is 160–180 wpm
-// for a general audience; non-native intermediate readers sit at 120–200 wpm.
+// with English as second language". BBC subtitle guideline is 160-180 wpm
+// for a general audience; non-native intermediate readers sit at 120-200 wpm.
 //
 // HW2 audience is non-native English readers (the lecturer + grading agent
-// reading the debate). We use 130 wpm + an 800 ms reading-entry buffer,
-// clamped to [3.5 s, 14 s] so a one-word slide doesn't blink past and a
-// long verdict block doesn't overstay.
+// reading the debate).
+//
+// Two tunings — a standalone slide gets a generous 130 wpm + 0.8 s entry
+// buffer + a 14 s cap, but a chunk (one sentence-bundle inside a multi-chunk
+// Pro/Con turn) reads at 170 wpm with only a 0.3 s entry buffer and a 7.5 s
+// cap. Without that separation, splitting one 80-word bubble into three
+// 28-word chunks would balloon the per-turn dwell from 14 s to ~41 s because
+// every chunk would near-saturate the 14 s cap.
 
-const WPM = 130;
-const READING_ENTRY_MS = 800;
-const MIN_DWELL_MS = 3500;
-const MAX_DWELL_MS = 14_000;
+const STANDALONE = { wpm: 130, entry: 800, min: 3500, max: 14_000 };
+const CHUNK      = { wpm: 170, entry: 300, min: 2500, max: 7_500 };
 
-export function computeDwellMs(text: string): number {
+export interface DwellOpts {
+  isChunk?: boolean;
+}
+
+export function computeDwellMs(text: string, opts?: DwellOpts): number {
+  const cfg = opts?.isChunk ? CHUNK : STANDALONE;
   const words = text.trim().split(/\s+/).filter(Boolean).length;
-  if (words === 0) return MIN_DWELL_MS;
-  const reading = (words / WPM) * 60_000;
-  const total = reading + READING_ENTRY_MS;
-  return Math.max(MIN_DWELL_MS, Math.min(MAX_DWELL_MS, total));
+  if (words === 0) return cfg.min;
+  const total = (words / cfg.wpm) * 60_000 + cfg.entry;
+  return Math.max(cfg.min, Math.min(cfg.max, total));
 }
