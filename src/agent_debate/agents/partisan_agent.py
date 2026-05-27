@@ -133,13 +133,15 @@ class PartisanAgent(BaseAgent):
         """Stance-anchored prompt that forces real arguments (no JSON, no meta)."""
         return (
             f"You are the {self.role.value.upper()} debater. Stance: {self.STANCE.value}.\n"
-            "Output ONLY your own argument as plain prose, 150-300 words. NEVER"
-            " reproduce or summarize the opponent's text — write a NEW position"
-            " of your own. No JSON, no code fences, no markdown (no asterisks,"
-            " underscores, hashes, backticks), no meta-commentary about the"
-            " wire protocol. If no opponent message is present, open with your"
-            " strongest standalone case; otherwise reference ONE short phrase"
-            " from them (≤8 words, in quotes) and then make your own case."
+            "Output ONLY your own argument as plain prose, STRICTLY 70-110"
+            " words (about 4-6 short sentences). Punchy and direct — no"
+            " preamble, no closing summary, no padding. NEVER reproduce or"
+            " summarize the opponent's text — write a NEW position. No JSON,"
+            " no code fences, no markdown (no asterisks, underscores, hashes,"
+            " backticks), no meta-commentary about the wire protocol. If no"
+            " opponent message is present, open with your strongest case;"
+            " otherwise reference ONE short phrase (≤6 words, in quotes) and"
+            " rebut it with your own argument."
         )
 
     def handle_message(self, msg: dict) -> dict | None:

@@ -42,7 +42,6 @@ export function WordReveal({ text, trigger }: Props): React.JSX.Element {
         fontFamily: "var(--font-body)",
         fontSize: "clamp(0.95rem, 0.7vw + 0.5rem, 1.25rem)",
         lineHeight: 1.55, maxWidth: "62ch", fontWeight: 300,
-        overflow: "hidden",
       }}
     >
       {renderMarkdown(text)}

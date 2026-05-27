@@ -27,6 +27,7 @@ export function Slide({ slide, isLatest }: Props): React.JSX.Element {
       <div className={`flex flex-col ${align}`} style={{
         maxWidth: "62ch", textAlign, gap: "0.9rem",
         maxHeight: "calc(100dvh - 8vh - 96px)",
+        overflowY: "auto", overflowX: "hidden",
       }}>
         <Avatar speaker={slide.speaker} pulse={isLatest} />
         <div style={{
