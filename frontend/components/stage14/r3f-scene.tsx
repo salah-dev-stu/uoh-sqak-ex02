@@ -14,7 +14,8 @@ const COLOR_HEX: Record<Speaker, string> = {
   pro: "#4ade80", con: "#3da8ff", judge: "#ffc94c",
 };
 
-function VolumetricBeam({ x, color, active }: { x: number; color: string; active: boolean }): React.JSX.Element {
+interface BeamProps { x: number; z?: number; color: string; active: boolean }
+function VolumetricBeam({ x, z = 0, color, active }: BeamProps): React.JSX.Element {
   const meshRef = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -23,7 +24,7 @@ function VolumetricBeam({ x, color, active }: { x: number; color: string; active
     mat.opacity = active ? 0.32 + Math.sin(t * 2) * 0.04 : 0.10;
   });
   return (
-    <mesh ref={meshRef} position={[x, 4, -0.5]} rotation={[0, 0, 0]}>
+    <mesh ref={meshRef} position={[x, 4, z]} rotation={[0, 0, 0]}>
       <coneGeometry args={[1.4, 6, 32, 1, true]} />
       <meshBasicMaterial color={color} transparent opacity={0.25}
         side={THREE.DoubleSide} blending={THREE.AdditiveBlending} depthWrite={false} />
@@ -76,9 +77,9 @@ export function R3FScene({ activeSpeaker }: Props): React.JSX.Element {
           <meshStandardMaterial color="#070b1e" metalness={0.1} roughness={0.9} />
         </Plane>
 
-        <VolumetricBeam x={-3} color={COLOR_HEX.pro} active={activeSpeaker === "pro"} />
-        <VolumetricBeam x={0} color={COLOR_HEX.judge} active={activeSpeaker === "judge"} />
-        <VolumetricBeam x={3} color={COLOR_HEX.con} active={activeSpeaker === "con"} />
+        <VolumetricBeam x={-3} z={0}   color={COLOR_HEX.pro}   active={activeSpeaker === "pro"} />
+        <VolumetricBeam x={0}  z={1.2} color={COLOR_HEX.judge} active={activeSpeaker === "judge"} />
+        <VolumetricBeam x={3}  z={0}   color={COLOR_HEX.con}   active={activeSpeaker === "con"} />
 
         <R3FPodium speaker="pro"   position={[-3, 0, 0]}   rotationY={0.22}  active={activeSpeaker === "pro"} />
         <R3FPodium speaker="judge" position={[0, 0, 1.2]}  rotationY={0}     active={activeSpeaker === "judge"} />
