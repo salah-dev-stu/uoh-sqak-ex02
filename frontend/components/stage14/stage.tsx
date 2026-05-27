@@ -4,6 +4,8 @@ import { useSyncExternalStore } from "react";
 import { getState, subscribe } from "@/lib/state";
 import type { Slide } from "@/lib/types";
 import { Backdrop } from "./backdrop";
+import { Floor } from "./floor";
+import { Lights } from "./lights";
 import { Podium } from "./podium";
 import { Audience } from "./audience";
 
@@ -29,21 +31,29 @@ export function Stage14(): React.JSX.Element {
       position: "fixed", inset: 0,
       width: "100vw", height: "100dvh",
       overflow: "hidden",
+      background: "#050818",
     }}>
       <Backdrop topic={DEFAULT_TOPIC} />
+      <Floor />
+      <Audience />
+      <Lights active={activeSpeaker} />
 
       <div style={{
         position: "absolute", inset: 0,
         display: "grid",
         gridTemplateColumns: "1fr 1fr 1fr",
         alignItems: "end",
-        padding: "0 4vw 18% 4vw",
+        padding: "0 3vw 10vh 3vw",
         gap: "2vw",
       }}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
           <Podium speaker="pro" active={activeSpeaker === "pro"} />
         </div>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", transform: "translateY(-2vh)" }}>
+        <div style={{
+          display: "flex", justifyContent: "center", alignItems: "flex-end",
+          transform: "translateY(-3vh) scale(0.92)",
+          transformOrigin: "bottom center",
+        }}>
           <Podium speaker="judge" active={activeSpeaker === "judge"} />
         </div>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
@@ -51,7 +61,10 @@ export function Stage14(): React.JSX.Element {
         </div>
       </div>
 
-      <Audience />
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "radial-gradient(ellipse at center 60%, transparent 40%, rgba(0,0,0,0.55) 100%)",
+      }} />
     </div>
   );
 }
