@@ -23,9 +23,9 @@ export function TitleBanner(): React.JSX.Element {
   return (
     <div style={{
       position: "fixed", top: 0, left: 0, right: 0,
-      zIndex: 25, padding: "1.1rem 2rem 0.95rem",
+      zIndex: 25, padding: "0.7rem 2rem 0.6rem",
       pointerEvents: "none",
-      background: "linear-gradient(180deg, rgba(7,11,26,0.88) 0%, rgba(7,11,26,0.55) 60%, transparent 100%)",
+      background: "linear-gradient(180deg, rgba(7,11,26,0.9) 0%, rgba(7,11,26,0.55) 70%, transparent 100%)",
     }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
@@ -43,16 +43,17 @@ export function TitleBanner(): React.JSX.Element {
           style={{ textAlign: "center", minWidth: "16rem", flexShrink: 1 }}>
           <div style={{
             fontFamily: "var(--font-display)",
-            fontSize: "clamp(0.95rem, 0.75vw + 0.4rem, 1.4rem)",
+            fontSize: "clamp(0.85rem, 0.6vw + 0.4rem, 1.2rem)",
             letterSpacing: "0.35em", fontWeight: 700,
             color: "var(--color-judge-accent)",
             textShadow: "0 0 22px rgba(255,201,76,0.45)",
+            lineHeight: 1.1,
           }}>AGENT DEBATE</div>
           <div style={{
-            display: "flex", justifyContent: "center", alignItems: "center", gap: "0.6rem",
-            fontFamily: "var(--font-mono)", fontSize: "0.6rem",
+            display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem",
+            fontFamily: "var(--font-mono)", fontSize: "0.55rem",
             letterSpacing: "0.45em", color: "var(--color-fg-muted)",
-            marginTop: "0.25rem", textTransform: "uppercase",
+            marginTop: "0.2rem", textTransform: "uppercase", lineHeight: 1,
           }}>
             <span>2026</span>
             <span style={{ opacity: 0.4 }}>·</span>
@@ -78,13 +79,14 @@ export function TitleBanner(): React.JSX.Element {
           </div>
           <div style={{
             fontFamily: "var(--font-display)",
-            fontSize: "clamp(0.85rem, 0.55vw + 0.5rem, 1.05rem)",
+            fontSize: "clamp(0.7rem, 0.4vw + 0.45rem, 0.85rem)",
             color: "var(--color-fg-primary)",
-            opacity: 0.92, fontStyle: "italic", fontWeight: 400,
-            marginTop: "0.55rem",
-            maxWidth: "720px", lineHeight: 1.35,
+            opacity: 0.85, fontStyle: "italic", fontWeight: 400,
+            marginTop: "0.35rem",
+            maxWidth: "640px", lineHeight: 1.25,
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
           }}>
-            <span style={{ color: "var(--color-fg-muted)", fontStyle: "normal" }}>Tonight&rsquo;s motion: </span>
+            <span style={{ color: "var(--color-fg-muted)", fontStyle: "normal" }}>Motion: </span>
             &ldquo;{topic}&rdquo;
           </div>
         </motion.div>

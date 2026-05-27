@@ -6,10 +6,15 @@ import { motion, AnimatePresence } from "motion/react";
 import { getState, subscribe } from "@/lib/state";
 import type { Slide, Speaker } from "@/lib/types";
 
+// Bubble anchor is the Html element's TOP-CENTER (see style transform
+// below), so the bubble grows downward from these 3D points and can't
+// crash up into the title banner. Y values sit just above each podium's
+// head — Pro/Con podiums are at z=0.2, Judge is at z=1.4 (closer to
+// camera, so the same screen height needs a slightly lower y).
 const POSITION: Record<Speaker, [number, number, number]> = {
-  pro:   [-3, 4.0, 0.2],
-  judge: [0,  4.0, 1.4],
-  con:   [3,  4.0, 0.2],
+  pro:   [-3, 3.4, 0.2],
+  judge: [0,  3.0, 1.4],
+  con:   [3,  3.4, 0.2],
 };
 
 function useStoreState() {
@@ -44,8 +49,14 @@ export function SpeechBubble(): React.JSX.Element | null {
     : "50%";
 
   return (
-    <Html position={POSITION[slide.speaker]} center distanceFactor={6}
-      style={{ pointerEvents: "none", width: "400px" }}>
+    <Html position={POSITION[slide.speaker]} distanceFactor={6}
+      style={{
+        pointerEvents: "none", width: "400px",
+        // Anchor the bubble's top-center to the 3D point: shift left by half
+        // its width so it's horizontally centered, but do NOT shift up — the
+        // bubble extends downward only, so it can't collide with the title.
+        transform: "translate(-50%, 0)",
+      }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.id}
