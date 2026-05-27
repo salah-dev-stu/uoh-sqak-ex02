@@ -20,13 +20,17 @@ export function Slide({ slide, isLatest }: Props): React.JSX.Element {
 
   return (
     <div data-anchor={anchor} style={{
-      width: "100%", height: "100vh", display: "flex",
-      justifyContent: justify, alignItems: "center", padding: "5vh 6vw",
+      width: "100%", height: "100dvh", display: "flex",
+      justifyContent: justify, alignItems: "center",
+      padding: "4vh 6vw 96px", overflow: "hidden",
     }}>
-      <div className={`flex flex-col gap-6 ${align}`} style={{ maxWidth: "60ch", textAlign }}>
+      <div className={`flex flex-col ${align}`} style={{
+        maxWidth: "62ch", textAlign, gap: "0.9rem",
+        maxHeight: "calc(100dvh - 8vh - 96px)",
+      }}>
         <Avatar speaker={slide.speaker} pulse={isLatest} />
         <div style={{
-          fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem, 2vw + 0.5rem, 2.5rem)",
+          fontFamily: "var(--font-display)", fontSize: "clamp(1.25rem, 1.4vw + 0.5rem, 1.75rem)",
           letterSpacing: "0.08em", fontWeight: 500,
           color: `var(--color-${slide.speaker}-accent)`,
         }}>{NAME[slide.speaker]}</div>

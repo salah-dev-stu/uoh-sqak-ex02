@@ -9,6 +9,7 @@ Shared logic:
 """
 from __future__ import annotations
 
+import json
 import re
 import uuid
 from datetime import UTC, datetime
@@ -25,16 +26,32 @@ _SNIPPET_RADIUS = 40
 _SNIPPET_MAX = 500
 _MIN_WORD_LEN = 4
 _MIN_OVERLAP = 2
+_FENCED_JSON_RE = re.compile(r"```(?:json)?\s*(\{.*?\})\s*```", re.DOTALL)
+
+
+def _unwrap_text(raw: str) -> str:
+    """Extract `text` field if Claude wrapped its reply in JSON; else return as-is."""
+    raw = (raw or "").strip()
+    if not raw:
+        return raw
+    m = _FENCED_JSON_RE.search(raw)
+    candidate = m.group(1) if m else (raw if raw.startswith("{") else None)
+    if candidate is not None:
+        try:
+            obj = json.loads(candidate)
+            if isinstance(obj, dict) and isinstance(obj.get("text"), str):
+                return obj["text"].strip()
+        except json.JSONDecodeError:
+            pass
+    return raw
 
 
 class PartisanAgent(BaseAgent):
-    """Abstract Pro/Con parent. Concrete subclasses set STANCE + SKILL_NAME class vars.
+    """Abstract Pro/Con parent. Subclasses set STANCE + SKILL_NAME class vars.
 
     Input:  msg (dict from in_queue)
-    Output: argument/counter dict (subclass-defined)
-    Setup:  STANCE (Stance), SKILL_NAME (str) — class-level overrides
-            web_search (WebSearchTool | None) — optional injected tool
-            temperature (float, default 0.85)
+    Output: argument/counter dict
+    Setup:  STANCE, SKILL_NAME, optional web_search, temperature=0.85
     """
 
     STANCE: Stance
@@ -102,12 +119,24 @@ class PartisanAgent(BaseAgent):
 
     def _llm_text(self, msg: dict) -> str:
         """Drive one LLM call shaped by this agent's stance + the inbound cue."""
-        system = f"{self.SKILL_NAME} stance={self.STANCE.value}"
+        system = self._build_system_prompt()
         user = msg.get("text", "")
         response = self.llm_provider.complete(
             system=system, user=user, temperature=self.temperature, max_tokens=400,
         )
-        return response.text
+        return _unwrap_text(response.text)
+
+    def _build_system_prompt(self) -> str:
+        """Stance-anchored prompt that forces real arguments (no JSON, no meta)."""
+        return (
+            f"You are the {self.role.value.upper()} debater. Stance: {self.STANCE.value}.\n"
+            "Output ONLY your argument as plain prose, 150-300 words. No JSON,"
+            " no code fences, no meta-commentary about the wire protocol, no"
+            " 'holding the floor' or 'awaiting opponent.' Just argue your"
+            " position with concrete examples and citations. If no opponent"
+            " message is present, open with your strongest standalone case;"
+            " otherwise quote one specific claim of theirs and rebut it."
+        )
 
     def handle_message(self, msg: dict) -> dict | None:
         """Produce ack on setup_directive; argument/counter for cues from Judge."""
