@@ -5,25 +5,22 @@ inside the 150-line limit.
 """
 from __future__ import annotations
 
+from agent_debate.agents.content_scorer import score_transcript
 from agent_debate.agents.judge_agent import JudgeAgent
 from agent_debate.agents.scoring_engine import Scorecard
 from agent_debate.constants import DebateOutcome
 
 
 def synth_scorecards(transcript) -> tuple[Scorecard, Scorecard]:
-    """Phase-10 placeholder scorecards keyed on per-side message counts.
+    """Score Pro and Con from the actual transcript content.
 
-    Real scoring will be wired in Phase 11; for Phase 10 the integration
-    tests need *some* differential signal to verify the no-tie path.
+    Delegates to agent_debate.agents.content_scorer.score_transcript,
+    which derives all 5 axes from text features so different debates
+    produce different scores. Kept under this name for back-compat
+    with the orchestrator import; new callers should import
+    score_transcript directly.
     """
-    pro = sum(1 for m in transcript.messages if m.get("from") == "pro")
-    con = sum(1 for m in transcript.messages if m.get("from") == "con")
-    return (
-        Scorecard(clarity=15, evidence=14, rebuttal=13, novelty=14,
-                  role_fidelity=min(20, 10 + pro // 2)),
-        Scorecard(clarity=15, evidence=14, rebuttal=12, novelty=13,
-                  role_fidelity=min(20, 10 + con // 2)),
-    )
+    return score_transcript(transcript)
 
 
 def finalize_verdict(judge: JudgeAgent, transcript) -> DebateOutcome:

@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from multiprocessing import Lock, Queue, Value
 
 from agent_debate.agents.con_agent import ConAgent
+from agent_debate.agents.content_scorer import score_transcript
 from agent_debate.agents.judge_agent import JudgeAgent
 from agent_debate.agents.pro_agent import ProAgent
 from agent_debate.agents.scoring_engine import Scorecard
@@ -99,17 +100,9 @@ def _judge_route(judge: JudgeAgent, msg: dict, replays: int) -> tuple[dict, int]
     return routed, replays
 
 
-def _synth_scorecards(pro_msgs: int, con_msgs: int) -> tuple[Scorecard, Scorecard]:
-    """Placeholder scoring — final scoring engine wires in Phase 10."""
-    pro = Scorecard(
-        clarity=15, evidence=14, rebuttal=13, novelty=14,
-        role_fidelity=min(20, 10 + pro_msgs // 2),
-    )
-    con = Scorecard(
-        clarity=15, evidence=14, rebuttal=12, novelty=13,
-        role_fidelity=min(20, 10 + con_msgs // 2),
-    )
-    return pro, con
+def _synth_scorecards(transcript) -> tuple[Scorecard, Scorecard]:
+    """Real content-derived scoring (see agents/content_scorer.py)."""
+    return score_transcript(transcript)
 
 
 def run_debate_dry_run(
@@ -144,9 +137,7 @@ def run_debate_dry_run(
         last_msg = routed
     lifecycle.fire("after_round", {"transcript": transcript})
     lifecycle.fire("before_verdict", {"transcript": transcript})
-    pro_msgs = sum(1 for m in transcript.messages if m.get("from") == "pro")
-    con_msgs = sum(1 for m in transcript.messages if m.get("from") == "con")
-    pro_card, con_card = _synth_scorecards(pro_msgs, con_msgs)
+    pro_card, con_card = _synth_scorecards(transcript)
     outcome = judge.declare_winner(pro_card, con_card)
     transcript.outcome = outcome
     winner = "pro" if outcome == DebateOutcome.PRO_WINS else "con"
