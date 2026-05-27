@@ -4,33 +4,31 @@ import { useSyncExternalStore } from "react";
 import { Html } from "@react-three/drei";
 import { motion, AnimatePresence } from "motion/react";
 import { getState, subscribe } from "@/lib/state";
-import type { Slide, Speaker } from "@/lib/types";
+import type { Slide } from "@/lib/types";
 
-// Bubble anchor offsets from each speaker's head position. The bubble's
-// CSS transform shifts the box so Pro's bubble grows to the LEFT of the
-// Pro podium (right edge of bubble at the anchor), Con's grows to the
-// RIGHT (left edge at the anchor), Judge stays centered above.
-const POSITION: Record<Speaker, [number, number, number]> = {
-  pro:   [-3, 3.4, 0.2],
-  judge: [0,  3.0, 1.4],
-  con:   [3,  3.4, 0.2],
+// SpeechBubble is for Pro and Con only — Judge text goes through the
+// bottom-screen JudgeChyron component. Anchor X values are pushed
+// outward from each podium's X (±3) so the bubble sits well off to
+// the side rather than crowding the centre stage. The tail bridges
+// the gap back to the speaker.
+type SideSpeaker = "pro" | "con";
+
+const POSITION: Record<SideSpeaker, [number, number, number]> = {
+  pro: [-3.8, 3.4, 0.2],
+  con: [ 3.8, 3.4, 0.2],
 };
 
-const BUBBLE_TRANSFORM: Record<Speaker, string> = {
-  pro:   "translate(-100%, 0)",  // bubble extends left of Pro podium
-  judge: "translate(-50%, 0)",   // centered above Judge
-  con:   "translate(0, 0)",      // bubble extends right of Con podium
+const BUBBLE_TRANSFORM: Record<SideSpeaker, string> = {
+  pro: "translate(-100%, 0)",  // right edge of bubble at anchor → extends LEFT
+  con: "translate(0, 0)",      // left  edge of bubble at anchor → extends RIGHT
 };
 
 interface TailStyle { left?: string; right?: string; top: string; transform: string }
-const TAIL: Record<Speaker, TailStyle> = {
-  // Pro bubble sits to the LEFT of Pro — tail on the bubble's right edge
-  // points RIGHT toward Pro (SVG rotated -90deg around centre).
-  pro:   { right: "-14px", top: "42%",  transform: "translateY(-50%) rotate(-90deg)" },
-  // Judge bubble centered above Judge — tail at bottom-centre pointing DOWN.
-  judge: { left:  "50%",   top: "100%", transform: "translate(-50%, -2px)" },
-  // Con bubble sits to the RIGHT of Con — tail on left edge points LEFT.
-  con:   { left:  "-14px", top: "42%",  transform: "translateY(-50%) rotate(90deg)"  },
+const TAIL: Record<SideSpeaker, TailStyle> = {
+  // Pro bubble on the left — tail on bubble's right edge points right at Pro.
+  pro: { right: "-14px", top: "42%", transform: "translateY(-50%) rotate(-90deg)" },
+  // Con bubble on the right — tail on left edge points left at Con.
+  con: { left:  "-14px", top: "42%", transform: "translateY(-50%) rotate(90deg)"  },
 };
 
 function useStoreState() {
@@ -55,18 +53,21 @@ export function SpeechBubble(): React.JSX.Element | null {
   const idx = Math.min(s.slides.length - 1, Math.max(0, s.currentIndex));
   const slide: Slide | undefined = s.slides[idx];
   if (!slide) return null;
+  // Judge text is rendered by <JudgeChyron /> at the bottom of the screen.
+  if (slide.speaker !== "pro" && slide.speaker !== "con") return null;
+  const side: SideSpeaker = slide.speaker;
   const body = stripMarkdown(slide.text);
-  if (!body && slide.variant !== "verdict") return null;
+  if (!body) return null;
 
-  const colour = `var(--color-${slide.speaker}-accent)`;
-  const glow = `var(--color-${slide.speaker}-glow)`;
-  const tail = TAIL[slide.speaker];
+  const colour = `var(--color-${side}-accent)`;
+  const glow = `var(--color-${side}-glow)`;
+  const tail = TAIL[side];
 
   return (
-    <Html position={POSITION[slide.speaker]} distanceFactor={6}
+    <Html position={POSITION[side]} distanceFactor={6}
       style={{
         pointerEvents: "none", width: "400px",
-        transform: BUBBLE_TRANSFORM[slide.speaker],
+        transform: BUBBLE_TRANSFORM[side],
       }}>
       <AnimatePresence mode="wait">
         <motion.div
@@ -94,25 +95,11 @@ export function SpeechBubble(): React.JSX.Element | null {
           }}>
             {slide.variant} · ping {slide.pingIndex}
           </div>
-          {slide.variant === "verdict" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.3rem", fontWeight: 600 }}>
-                <span style={{ color: "var(--color-pro-accent)" }}>{slide.proScore ?? 0}</span>
-                <span style={{ color: "var(--color-fg-muted)" }}> · </span>
-                <span style={{ color: "var(--color-con-accent)" }}>{slide.conScore ?? 0}</span>
-              </div>
-              <div style={{
-                fontFamily: "var(--font-display)", fontSize: "1.4rem",
-                letterSpacing: "0.08em", fontWeight: 600,
-              }}>{(slide.outcome ?? "").replace(/_/g, " ").toUpperCase()}</div>
-            </div>
-          ) : (
-            <div style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "0.95rem", lineHeight: 1.55, fontWeight: 400,
-              letterSpacing: "0.005em",
-            }}>{body}</div>
-          )}
+          <div style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "0.95rem", lineHeight: 1.55, fontWeight: 400,
+            letterSpacing: "0.005em",
+          }}>{body}</div>
 
           <svg width="36" height="22" viewBox="0 0 36 22"
             style={{

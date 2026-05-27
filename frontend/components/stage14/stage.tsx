@@ -6,6 +6,7 @@ import type { Slide } from "@/lib/types";
 import { computeDwellMs } from "@/lib/dwell";
 import { R3FScene } from "./r3f-scene";
 import { TitleBanner } from "./title-banner";
+import { JudgeChyron } from "./judge-chyron";
 
 function useStoreState() {
   return useSyncExternalStore(subscribe, getState, getState);
@@ -73,6 +74,7 @@ export function Stage14(): React.JSX.Element {
       <R3FScene activeSpeaker={activeSpeaker} />
 
       <TitleBanner />
+      <JudgeChyron />
 
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
