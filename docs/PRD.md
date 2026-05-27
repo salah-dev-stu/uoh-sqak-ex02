@@ -333,3 +333,77 @@ After approval, the next phase begins:
 - Phase E → 9 per-mechanism PRDs
 - Approval gate #2 closes the docs phase
 - Then code execution begins
+
+---
+
+## 15. Phase 14 (Bonus) — Presidential Debate Stage
+
+> Cinematic 3D presentation layer over the existing Phase 13g viewer.
+> Lives on branch `phase14-presidential-stage`; main keeps Phase 13g as
+> the primary HW2 submission. Phase 14 is a separately-graded bonus
+> exhibit, not a replacement for Phases 0-13.
+
+### 15.1 Problem statement
+
+Phase 13g proves the SSE wire works but reads as a list of slides on a flat
+background. After seeing it, the user said: *"It's good, but not wow."*
+Phase 14 turns that into a presidential-style broadcast — three illuminated
+podiums (Pro / Judge / Con), per-speaker volumetric spotlights, cinematic
+camera that swings to the active speaker, speech bubbles + Judge chyron,
+fireworks behind the winner.
+
+Real LLM calls are preserved (H1). The backend wire protocol is unchanged.
+
+### 15.2 Functional requirements (numbered for traceability)
+
+| #     | Requirement                                                                                              | User-quote source                              |
+|-------|----------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| F14-1 | Page auto-starts a fresh live debate on mount, no Start button                                           | "AI grader will see it run without clicking"   |
+| F14-2 | Backend uses Claude CLI (`claude /login`), never an API key                                              | Locked: "Do not use API keys"                  |
+| F14-3 | Pro/Con responses are split into ~28-word sentence-bundled chunks; each chunk is its own bubble          | "Divide opinions into chunks, not one big bubble" |
+| F14-4 | Judge intro slide opens debate; Judge verdict closes; both render in the bottom chyron                   | "At the beginning also the judge should have a turn" |
+| F14-5 | Auto-advance dwell scales with text length, tuned for non-native English readers (130 wpm)               | "Time is not sufficient to read each chunk"    |
+| F14-6 | Auto-advance does NOT reset when new chunks arrive mid-dwell                                             | "Auto move between chunks not working"         |
+| F14-7 | When next slide arrives after current dwell already elapsed, advance immediately                         | Same                                           |
+| F14-8 | Title banner shows "ON AIR" while live, "Recorded" after verdict, "Standby" before, "Off Air" on error  | "Where is the debate title?"                   |
+| F14-9 | Title banner has a designed Motion pill below the title showing the topic                                | "Title that says motion should have a design"  |
+| F14-10| Camera lerps to a per-speaker target on every speaker change                                             | "When it's Pro turn make camera like screenshot 2" |
+| F14-11| Bottom strip pill colours match speaker accent; consecutive same-speaker chunks group into ONE pill      | "Points colors same as speaker's turn"         |
+| F14-12| Bottom strip only renders past + active turns; future buffered chunks are hidden                          | "Make dashes according to the current turn"    |
+| F14-13| Verdict slide shows OUTCOME caps line + Judge's 1-2 sentence rationale                                    | "At evaluation make the judge tell the reasoning" |
+| F14-14| Fireworks particle bursts behind the winning podium during the verdict slide                             | "Add fireworks behind the winner at the end"   |
+| F14-15| Decimal points inside numbers (`0.002%`, `3.14`) survive through chunking                                 | Regression: "0002%?... I do not see the dot"   |
+| F14-16| "OFF AIR" only fires on permanent stream closure, not on transient EventSource reconnects                | "On air turned into off air while still debating" |
+| F14-17| Setup-phase timeout renders a clear "Debate Aborted" chyron, not a 0 · 0 verdict                          | "Why sometimes on refresh this happens?"       |
+
+### 15.3 In / out scope
+
+**In:** 3D scene + camera + bubbles + chyron + title + chunking + dwell +
+scoring + rationale + fireworks (all backed by tests).
+
+**Out:** mobile / responsive; multi-debate history; audio; replacing the
+Phase 13g viewer on `main`; changes to the wire protocol or agent skills.
+
+### 15.4 Acceptance criteria
+
+| #    | Criterion                                                            | How verified                          |
+|------|----------------------------------------------------------------------|---------------------------------------|
+| 14-A1| Page loads, debate auto-starts within 5 s, no click required         | Manual / screenshot                   |
+| 14-A2| First Pro response visible within 30 s of page load                  | Manual / SSE log timing               |
+| 14-A3| Camera visibly swings between Pro / Judge / Con podiums              | Manual                                |
+| 14-A4| Fireworks visible during verdict slide                               | Manual / screenshot                   |
+| 14-A5| Verdict chyron shows score + outcome + rationale                     | Manual                                |
+| 14-A6| Different debates produce different scores                          | Run two debates, compare totals       |
+| 14-A7| All files ≤150 lines                                                 | Pre-commit hook                       |
+| 14-A8| `npx tsc --noEmit` clean; `npx vitest run` green (34 tests)         | CI / manual                           |
+| 14-A9| `uv run pytest tests/unit` green (151 tests)                         | CI / manual                           |
+| 14-A10| Decimal preservation regression (`0.002%`) passes                   | `lib/__tests__/chunks.test.ts`        |
+| 14-A11| Setup-timeout shows "Debate Aborted" cleanly                        | Manual (refresh until it fires)       |
+
+### 15.5 Submission impact
+
+`main` still ships Phase 13g for the HW2 deadline. The `phase14-presidential-stage`
+branch is documented in the README's Bonus section with screenshots; if the
+user decides Phase 14 is more representative, it can be merged into `main`
+before the deadline. **Whichever ships, the other remains accessible by
+branch name.**
