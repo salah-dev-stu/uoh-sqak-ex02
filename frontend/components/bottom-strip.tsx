@@ -50,27 +50,25 @@ export function BottomStrip(): React.JSX.Element {
         <span style={{ color: "var(--color-con-accent)" }}>Con {s.conTotal}</span>
       </div>
       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-        {groups.map((g, gi) => {
+        {groups.slice(0, Math.max(0, activeGroupIdx + 1)).map((g, gi) => {
           const color = `var(--color-${g.speaker}-accent)`;
           const glow = `var(--color-${g.speaker}-glow)`;
           const active = gi === activeGroupIdx;
-          // Visual distinction: PAST = full opacity, ACTIVE = glow + bigger,
-          // FUTURE = dim + smaller so the buffered chunks read as 'not seen yet'
-          // and the user doesn't think the playhead is broken.
-          const future = gi > activeGroupIdx;
-          const dotH = active ? 11 : future ? 7 : 9;
+          // Only render past + active turns. Future (already-received but
+          // not-yet-displayed) chunks are intentionally hidden from the
+          // strip so the dot count matches what the viewer has actually
+          // seen on-stage — the LLM may be 1-2 turns ahead of the dwell.
+          const dotH = active ? 11 : 9;
           const dotW = g.count === 1 ? dotH : dotH + (g.count - 1) * 7;
-          const opacity = active ? 1 : future ? 0.32 : 0.85;
-          const label = future ? "(upcoming)" : active ? "(now)" : "(seen)";
           return (
             <button
               key={`${g.startIdx}-${g.speaker}`}
               onClick={() => jumpTo(g.startIdx)}
-              title={`${g.speaker} · ${g.count} ${g.count === 1 ? "bubble" : "bubbles"} · slides ${g.startIdx + 1}${g.count > 1 ? `–${g.endIdx + 1}` : ""} ${label}`}
+              title={`${g.speaker} · ${g.count} ${g.count === 1 ? "bubble" : "bubbles"} · slides ${g.startIdx + 1}${g.count > 1 ? `–${g.endIdx + 1}` : ""} ${active ? "(now)" : "(seen)"}`}
               style={{
                 width: dotW, height: dotH, borderRadius: dotH / 2,
                 background: color, border: "none", padding: 0, cursor: "pointer",
-                opacity, transition: "all 0.25s ease",
+                opacity: active ? 1 : 0.85, transition: "all 0.25s ease",
                 boxShadow: active ? `0 0 10px ${glow}` : "none",
               }} />
           );
