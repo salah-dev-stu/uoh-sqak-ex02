@@ -8,6 +8,7 @@ import {
 import * as THREE from "three";
 import type { Speaker } from "@/lib/types";
 import { R3FPodium } from "./r3f-podium";
+import { SpeechBubble } from "./speech-bubble";
 
 const COLOR_HEX: Record<Speaker, string> = {
   pro: "#4ade80", con: "#3da8ff", judge: "#ffc94c",
@@ -82,6 +83,8 @@ export function R3FScene({ activeSpeaker }: Props): React.JSX.Element {
         <R3FPodium speaker="pro"   position={[-3, 0, 0]}   rotationY={0.22}  active={activeSpeaker === "pro"} />
         <R3FPodium speaker="judge" position={[0, 0, 1.2]}  rotationY={0}     active={activeSpeaker === "judge"} />
         <R3FPodium speaker="con"   position={[3, 0, 0]}    rotationY={-0.22} active={activeSpeaker === "con"} />
+
+        <SpeechBubble />
       </PresentationControls>
 
       <Environment preset="night" />
