@@ -45,7 +45,7 @@ export function SpeechBubble(): React.JSX.Element | null {
 
   return (
     <Html position={POSITION[slide.speaker]} center distanceFactor={6}
-      style={{ pointerEvents: "none", width: "320px" }}>
+      style={{ pointerEvents: "none", width: "400px" }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.id}
@@ -55,41 +55,40 @@ export function SpeechBubble(): React.JSX.Element | null {
           transition={{ duration: 0.4, ease: "easeOut" }}
           style={{
             position: "relative",
-            background: "linear-gradient(180deg, rgba(10,14,30,0.92) 0%, rgba(10,14,30,0.96) 100%)",
+            background: "linear-gradient(180deg, rgba(10,14,30,0.93) 0%, rgba(10,14,30,0.97) 100%)",
             border: `1.5px solid ${colour}`,
-            borderRadius: "18px",
-            padding: "0.9rem 1.05rem",
-            boxShadow: `0 0 36px ${glow}, 0 12px 28px rgba(0,0,0,0.55)`,
+            borderRadius: "20px",
+            padding: "1rem 1.15rem 1.05rem",
+            boxShadow: `0 0 38px ${glow}, 0 14px 32px rgba(0,0,0,0.6)`,
             backdropFilter: "blur(6px)",
-            fontFamily: "var(--font-body)",
+            fontFamily: "var(--font-display)",
             color: "var(--color-fg-primary)",
-            maxHeight: "260px",
-            overflow: "hidden",
           }}
         >
           <div style={{
             fontFamily: "var(--font-mono)", fontSize: "9px",
             color: colour, letterSpacing: "0.18em", fontWeight: 700,
-            textTransform: "uppercase", marginBottom: "0.45rem",
+            textTransform: "uppercase", marginBottom: "0.55rem",
           }}>
             {slide.variant} · ping {slide.pingIndex}
           </div>
           {slide.variant === "verdict" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.2rem", fontWeight: 600 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.3rem", fontWeight: 600 }}>
                 <span style={{ color: "var(--color-pro-accent)" }}>{slide.proScore ?? 0}</span>
                 <span style={{ color: "var(--color-fg-muted)" }}> · </span>
                 <span style={{ color: "var(--color-con-accent)" }}>{slide.conScore ?? 0}</span>
               </div>
               <div style={{
-                fontFamily: "var(--font-display)", fontSize: "1.3rem",
+                fontFamily: "var(--font-display)", fontSize: "1.4rem",
                 letterSpacing: "0.08em", fontWeight: 600,
               }}>{(slide.outcome ?? "").replace(/_/g, " ").toUpperCase()}</div>
             </div>
           ) : (
             <div style={{
-              fontSize: "0.78rem", lineHeight: 1.5, fontWeight: 300,
-              maxHeight: "200px", overflowY: "auto", pointerEvents: "auto",
+              fontFamily: "var(--font-display)",
+              fontSize: "0.95rem", lineHeight: 1.55, fontWeight: 400,
+              letterSpacing: "0.005em",
             }}>{body}</div>
           )}
 
