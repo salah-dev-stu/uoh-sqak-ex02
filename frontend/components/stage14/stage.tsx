@@ -22,14 +22,21 @@ export function Stage14(): React.JSX.Element {
   const slide = activeSlide(state.slides, state.currentIndex);
   const activeSpeaker = slide?.speaker ?? null;
 
-  // Auto-advance: when a new slide arrives and followLive is true, jump to it.
-  const lastCountRef = useRef(state.slides.length);
+  // Auto-advance: while followLive is on, step forward one slide every 3.5s
+  // until the display index catches up with the latest received slide. This
+  // paces both mock mode (slides arrive in a burst) and live mode (slides
+  // arrive seconds apart) so each slide gets visible time.
   useEffect(() => {
-    if (state.slides.length > lastCountRef.current && state.followLive) {
-      setState({ currentIndex: state.slides.length - 1 });
-    }
-    lastCountRef.current = state.slides.length;
-  }, [state.slides.length, state.followLive]);
+    if (!state.followLive) return;
+    const tick = window.setInterval(() => {
+      const s = getState();
+      if (!s.followLive) return;
+      if (s.currentIndex < s.slides.length - 1) {
+        setState({ currentIndex: s.currentIndex + 1 });
+      }
+    }, 3500);
+    return () => window.clearInterval(tick);
+  }, [state.followLive]);
 
   // Wheel scroll = step between slides.
   const wheelLockRef = useRef(0);
