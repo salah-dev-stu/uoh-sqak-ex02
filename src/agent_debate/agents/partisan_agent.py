@@ -116,13 +116,13 @@ class PartisanAgent(BaseAgent):
 
     def _llm_text(self, msg: dict) -> str:
         """Drive one LLM call shaped by this agent's stance + the inbound cue."""
-        raw = msg.get("text", "") or ""
-        is_opponent = (
-            msg.get("from") in ("pro", "con") and msg.get("from") != self.role.value
-        )
+        raw = _unwrap_text(msg.get("text", "") or "")
+        is_opponent_relay = msg.get("role") == MessageRole.COUNTER.value
         user = (
-            f"The OPPONENT just said:\n\n{raw}\n\nNow write YOUR OWN argument."
-        ) if is_opponent else raw
+            f"The OPPONENT just said:\n\n{raw}\n\n"
+            f"Now write YOUR OWN counter as the {self.role.value.upper()}"
+            " debater. Do NOT repeat their text."
+        ) if is_opponent_relay else raw
         response = self.llm_provider.complete(
             system=self._build_system_prompt(), user=user,
             temperature=self.temperature, max_tokens=400,
