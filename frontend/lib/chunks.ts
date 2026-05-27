@@ -5,7 +5,11 @@
 // sentences become their own chunk. Returns the original text as a single
 // chunk when no sentence boundaries are found.
 
-const SENT_RE = /[^.!?]+[.!?]+(?=\s|$)/g;
+// Sentence terminator must NOT sit between two digits, otherwise the
+// decimal point in numbers like "0.002%" or "3.14" gets treated as the
+// end of a sentence and the digits around it are dropped from the
+// matched substrings (everything between matches is discarded).
+const SENT_RE = /[\s\S]+?(?<!\d)[.!?]+(?!\d)(?=\s|$)/g;
 
 export function splitIntoChunks(text: string, maxWords = 28): string[] {
   const trimmed = text.trim();

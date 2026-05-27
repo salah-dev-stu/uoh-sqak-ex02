@@ -50,4 +50,18 @@ describe("splitIntoChunks", () => {
     const chunks = splitIntoChunks(text, 28);
     for (const c of chunks) expect(c.trim()).toMatch(/[.!?]$/);
   });
+
+  it("preserves decimal points inside numbers (regression: '0.002%' -> '0002%')", () => {
+    const text = "0.002% measures verbatim pixel matches, not stylistic borrowing.";
+    const chunks = splitIntoChunks(text, 50);
+    expect(chunks.join(" ")).toContain("0.002%");
+  });
+
+  it("preserves decimals across multiple sentences", () => {
+    const text = "Somepalli 2023 found 0.002% verbatim matches. But 3.14 is pi.";
+    const chunks = splitIntoChunks(text, 50);
+    const joined = chunks.join(" ");
+    expect(joined).toContain("0.002%");
+    expect(joined).toContain("3.14");
+  });
 });
