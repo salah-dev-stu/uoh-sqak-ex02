@@ -14,6 +14,25 @@ const COLOR_HEX: Record<Speaker, string> = {
   pro: "#4ade80", con: "#3da8ff", judge: "#ffc94c",
 };
 
+const CAMERA_TARGETS: Record<string, [number, number, number]> = {
+  pro:     [-3.6, 3.4, 8.6],   // shift left, look across stage toward Con
+  con:     [ 3.6, 3.4, 8.6],   // shift right, look across stage toward Pro
+  judge:   [ 0,   3.6, 9.4],   // centred, a touch closer
+  default: [ 0,   3.6, 10.0],
+};
+const LOOK_AT: [number, number, number] = [0, 2.0, 0];
+
+function CameraDirector({ activeSpeaker }: { activeSpeaker: Speaker | null }): null {
+  const targetPos = useRef(new THREE.Vector3(...CAMERA_TARGETS.default));
+  useFrame(({ camera }) => {
+    const key = activeSpeaker ?? "default";
+    targetPos.current.set(...(CAMERA_TARGETS[key] ?? CAMERA_TARGETS.default));
+    camera.position.lerp(targetPos.current, 0.035);
+    camera.lookAt(LOOK_AT[0], LOOK_AT[1], LOOK_AT[2]);
+  });
+  return null;
+}
+
 interface BeamProps { x: number; z?: number; color: string; active: boolean }
 function VolumetricBeam({ x, z = 0, color, active }: BeamProps): React.JSX.Element {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -49,6 +68,8 @@ export function R3FScene({ activeSpeaker }: Props): React.JSX.Element {
         camera.lookAt(0, 2.0, 0);
       }}
     >
+      <CameraDirector activeSpeaker={activeSpeaker} />
+
       <ambientLight intensity={0.18} color="#3a4470" />
       <directionalLight position={[0, 8, 4]} intensity={0.35} color="#7080a0" />
 

@@ -54,17 +54,23 @@ export function BottomStrip(): React.JSX.Element {
           const color = `var(--color-${g.speaker}-accent)`;
           const glow = `var(--color-${g.speaker}-glow)`;
           const active = gi === activeGroupIdx;
-          const dotH = active ? 11 : 9;
+          // Visual distinction: PAST = full opacity, ACTIVE = glow + bigger,
+          // FUTURE = dim + smaller so the buffered chunks read as 'not seen yet'
+          // and the user doesn't think the playhead is broken.
+          const future = gi > activeGroupIdx;
+          const dotH = active ? 11 : future ? 7 : 9;
           const dotW = g.count === 1 ? dotH : dotH + (g.count - 1) * 7;
+          const opacity = active ? 1 : future ? 0.32 : 0.85;
+          const label = future ? "(upcoming)" : active ? "(now)" : "(seen)";
           return (
             <button
               key={`${g.startIdx}-${g.speaker}`}
               onClick={() => jumpTo(g.startIdx)}
-              title={`${g.speaker} · ${g.count} ${g.count === 1 ? "bubble" : "bubbles"} · slides ${g.startIdx + 1}${g.count > 1 ? `–${g.endIdx + 1}` : ""}`}
+              title={`${g.speaker} · ${g.count} ${g.count === 1 ? "bubble" : "bubbles"} · slides ${g.startIdx + 1}${g.count > 1 ? `–${g.endIdx + 1}` : ""} ${label}`}
               style={{
                 width: dotW, height: dotH, borderRadius: dotH / 2,
                 background: color, border: "none", padding: 0, cursor: "pointer",
-                opacity: active ? 1 : 0.7, transition: "all 0.2s ease",
+                opacity, transition: "all 0.25s ease",
                 boxShadow: active ? `0 0 10px ${glow}` : "none",
               }} />
           );
