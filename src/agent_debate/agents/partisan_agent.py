@@ -91,10 +91,7 @@ class PartisanAgent(BaseAgent):
 
     @staticmethod
     def extract_citations(text: str) -> list[dict]:
-        """Find every URL in `text`; return list of {url, snippet} dicts.
-
-        Snippet is ≤500 chars of surrounding context with newlines collapsed.
-        """
+        """Find every URL in `text`; return list of {url, snippet} dicts (≤500 chars)."""
         out: list[dict] = []
         for match in _URL_RE.finditer(text):
             raw_url = match.group(0).rstrip(_TRAILING_PUNCT)
@@ -119,10 +116,16 @@ class PartisanAgent(BaseAgent):
 
     def _llm_text(self, msg: dict) -> str:
         """Drive one LLM call shaped by this agent's stance + the inbound cue."""
-        system = self._build_system_prompt()
-        user = msg.get("text", "")
+        raw = msg.get("text", "") or ""
+        is_opponent = (
+            msg.get("from") in ("pro", "con") and msg.get("from") != self.role.value
+        )
+        user = (
+            f"The OPPONENT just said:\n\n{raw}\n\nNow write YOUR OWN argument."
+        ) if is_opponent else raw
         response = self.llm_provider.complete(
-            system=system, user=user, temperature=self.temperature, max_tokens=400,
+            system=self._build_system_prompt(), user=user,
+            temperature=self.temperature, max_tokens=400,
         )
         return _unwrap_text(response.text)
 
@@ -130,12 +133,13 @@ class PartisanAgent(BaseAgent):
         """Stance-anchored prompt that forces real arguments (no JSON, no meta)."""
         return (
             f"You are the {self.role.value.upper()} debater. Stance: {self.STANCE.value}.\n"
-            "Output ONLY your argument as plain prose, 150-300 words. No JSON,"
-            " no code fences, no meta-commentary about the wire protocol, no"
-            " 'holding the floor' or 'awaiting opponent.' Just argue your"
-            " position with concrete examples and citations. If no opponent"
-            " message is present, open with your strongest standalone case;"
-            " otherwise quote one specific claim of theirs and rebut it."
+            "Output ONLY your own argument as plain prose, 150-300 words. NEVER"
+            " reproduce or summarize the opponent's text — write a NEW position"
+            " of your own. No JSON, no code fences, no markdown (no asterisks,"
+            " underscores, hashes, backticks), no meta-commentary about the"
+            " wire protocol. If no opponent message is present, open with your"
+            " strongest standalone case; otherwise reference ONE short phrase"
+            " from them (≤8 words, in quotes) and then make your own case."
         )
 
     def handle_message(self, msg: dict) -> dict | None:
@@ -149,17 +153,11 @@ class PartisanAgent(BaseAgent):
                 text=f"{self.STANCE.value} ready.",
                 ping_index=ping_index,
             )
-        if role_in in (
-            MessageRole.ARGUMENT.value,
-            MessageRole.COUNTER.value,
-            MessageRole.CORRECTION_REQUEST.value,
-            MessageRole.INTERVENTION.value,
-        ):
+        if role_in in (MessageRole.ARGUMENT.value, MessageRole.COUNTER.value,
+                       MessageRole.CORRECTION_REQUEST.value, MessageRole.INTERVENTION.value):
             text = self._llm_text(msg)
-            out_role = (
-                MessageRole.ARGUMENT.value if ping_index <= 1
-                else MessageRole.COUNTER.value
-            )
+            out_role = (MessageRole.ARGUMENT.value if ping_index <= 1
+                        else MessageRole.COUNTER.value)
             return self._envelope(
                 to_role=AgentRole.JUDGE.value,
                 role=out_role,
