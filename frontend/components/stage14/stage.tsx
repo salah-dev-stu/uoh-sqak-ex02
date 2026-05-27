@@ -23,29 +23,39 @@ export function Stage14(): React.JSX.Element {
   const slide = activeSlide(state.slides, state.currentIndex);
   const activeSpeaker = slide?.speaker ?? null;
 
-  // Auto-advance: while followLive is on, hold each slide for a dwell time
-  // computed from its text length (see lib/dwell.ts — chunks read faster than
-  // standalone slides). Effect deps are followLive + the CURRENT slide's id
-  // + a hasNext boolean — NOT state.slides itself. If we depended on the
-  // whole slides array, every new chunk append would clear the active timer
-  // and restart it from zero, so the timer would never actually fire when
-  // chunks arrive faster than the dwell duration. hasNext catches the
-  // "we were stalled at the end, a new slide just arrived" transition.
+  // Auto-advance. Deps are followLive + the CURRENT slide's id/text +
+  // hasNext — NOT state.slides itself, so a mid-stream append doesn't
+  // reset the active timer. hasNext catches the "stalled at end → new
+  // slide just landed" transition.
+  //
+  // slideStartRef tracks when the current slide first became visible.
+  // The timeout uses (totalDwell - elapsed) so a slide we've already
+  // been staring at past its dwell advances immediately when the next
+  // one finally arrives — this is what was making live mode feel
+  // stuck (gap between Pro's last chunk and Con's first chunk could
+  // be 15-20 s while the LLM thinks, after which the old code would
+  // wait ANOTHER full dwell before moving on).
   const currentSlide = state.slides[state.currentIndex];
   const slideId = currentSlide?.id;
   const slideText = currentSlide?.text ?? "";
   const hasNext = state.currentIndex < state.slides.length - 1;
+  const slideStartRef = useRef<number>(Date.now());
+  useEffect(() => {
+    slideStartRef.current = Date.now();
+  }, [slideId]);
   useEffect(() => {
     if (!state.followLive || !hasNext) return;
     const isChunk = /-c\d+$/.test(slideId ?? "");
     const dwell = computeDwellMs(slideText, { isChunk });
+    const elapsed = Date.now() - slideStartRef.current;
+    const remaining = Math.max(0, dwell - elapsed);
     const t = window.setTimeout(() => {
       const s = getState();
       if (!s.followLive) return;
       if (s.currentIndex < s.slides.length - 1) {
         setState({ currentIndex: s.currentIndex + 1 });
       }
-    }, dwell);
+    }, remaining);
     return () => window.clearTimeout(t);
   }, [state.followLive, slideId, slideText, hasNext]);
 
