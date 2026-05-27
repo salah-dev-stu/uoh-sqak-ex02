@@ -1,6 +1,7 @@
 import type { SseEvent, DebateMessage } from "./types";
 import { appendSlide, resetState, setState, getState } from "./state";
 import { streamUrl } from "./api";
+import { splitIntoChunks } from "./chunks";
 
 export function shouldSkip(payload: unknown, seen: Set<string>): boolean {
   if (!payload || typeof payload !== "object") return true;
@@ -48,10 +49,18 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
       if (m.role === "setup_directive" || m.role === "ack") return;
       // Skip judge re-broadcasts of the other side's text (forwarding plumbing).
       if (m.from === "judge" && (m.role === "counter" || m.role === "rebuttal")) return;
-      appendSlide({
-        id: m.msg_id, speaker: m.from === "main" ? "judge" : m.from,
-        variant: variantFromRole(m.role), pingIndex: m.ping_index,
-        text: m.text, timestamp: m.timestamp,
+      const speaker = m.from === "main" ? "judge" : m.from;
+      const variant = variantFromRole(m.role);
+      // Split Pro/Con responses into sentence-bundled chunks so the stage
+      // cycles through smaller bubbles instead of one wall of text. Judge
+      // text goes straight to the chyron as a single slide.
+      const chunks = speaker === "judge" ? [m.text] : splitIntoChunks(m.text);
+      chunks.forEach((chunk, i) => {
+        appendSlide({
+          id: chunks.length === 1 ? m.msg_id : `${m.msg_id}-c${i}`,
+          speaker, variant, pingIndex: m.ping_index,
+          text: chunk, timestamp: m.timestamp,
+        });
       });
       break;
     }
