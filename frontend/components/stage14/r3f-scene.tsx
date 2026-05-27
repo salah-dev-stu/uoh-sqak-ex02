@@ -39,10 +39,13 @@ export function R3FScene({ activeSpeaker }: Props): React.JSX.Element {
     <Canvas
       shadows
       dpr={[1, 2]}
-      camera={{ position: [0, 2.7, 6.5], fov: 50 }}
+      camera={{ position: [0, 3.6, 10], fov: 38 }}
       style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
       gl={{ antialias: true, alpha: false }}
-      onCreated={({ scene }) => { scene.background = new THREE.Color("#050818"); }}
+      onCreated={({ scene, camera }) => {
+        scene.background = new THREE.Color("#050818");
+        camera.lookAt(0, 2.0, 0);
+      }}
     >
       <ambientLight intensity={0.18} color="#3a4470" />
       <directionalLight position={[0, 8, 4]} intensity={0.35} color="#7080a0" />
