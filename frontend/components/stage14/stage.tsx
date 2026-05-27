@@ -4,6 +4,7 @@ import { useEffect, useRef, useSyncExternalStore } from "react";
 import { getState, subscribe, setState } from "@/lib/state";
 import type { Slide } from "@/lib/types";
 import { R3FScene } from "./r3f-scene";
+import { Chyron } from "./chyron";
 
 const DEFAULT_TOPIC = "Can AI agents create genuinely original art, or only remix human work?";
 
@@ -93,6 +94,8 @@ export function Stage14(): React.JSX.Element {
         background: "radial-gradient(ellipse at center 55%, transparent 35%, rgba(0,0,0,0.6) 100%)",
         zIndex: 4,
       }} />
+
+      <Chyron />
     </div>
   );
 }
