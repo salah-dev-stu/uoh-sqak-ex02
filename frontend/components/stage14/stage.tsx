@@ -22,6 +22,12 @@ export function Stage14(): React.JSX.Element {
   const state = useStoreState();
   const slide = activeSlide(state.slides, state.currentIndex);
   const activeSpeaker = slide?.speaker ?? null;
+  // Fireworks only when the viewer is on the verdict slide AND a decisive
+  // winner exists (no fireworks for aborted debates or ties).
+  const winner: "pro" | "con" | null =
+    slide?.variant === "verdict" && slide.outcome === "pro_wins" ? "pro"
+    : slide?.variant === "verdict" && slide.outcome === "con_wins" ? "con"
+    : null;
 
   // Auto-advance. Deps are followLive + the CURRENT slide's id/text +
   // hasNext — NOT state.slides itself, so a mid-stream append doesn't
@@ -87,7 +93,7 @@ export function Stage14(): React.JSX.Element {
       overflow: "hidden",
       background: "#050818",
     }}>
-      <R3FScene activeSpeaker={activeSpeaker} />
+      <R3FScene activeSpeaker={activeSpeaker} winner={winner} />
 
       <TitleBanner />
       <JudgeChyron />

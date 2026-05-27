@@ -9,6 +9,7 @@ import * as THREE from "three";
 import type { Speaker } from "@/lib/types";
 import { R3FPodium } from "./r3f-podium";
 import { SpeechBubble } from "./speech-bubble";
+import { Fireworks } from "./fireworks";
 
 const COLOR_HEX: Record<Speaker, string> = {
   pro: "#4ade80", con: "#3da8ff", judge: "#ffc94c",
@@ -56,9 +57,10 @@ function VolumetricBeam({ x, z = 0, color, active }: BeamProps): React.JSX.Eleme
 
 interface Props {
   activeSpeaker: Speaker | null;
+  winner: "pro" | "con" | null;
 }
 
-export function R3FScene({ activeSpeaker }: Props): React.JSX.Element {
+export function R3FScene({ activeSpeaker, winner }: Props): React.JSX.Element {
   return (
     <Canvas
       shadows
@@ -110,6 +112,7 @@ export function R3FScene({ activeSpeaker }: Props): React.JSX.Element {
         <R3FPodium speaker="con"   position={[3, 0, 0]}    rotationY={-0.22} active={activeSpeaker === "con"} />
 
         <SpeechBubble />
+        <Fireworks winner={winner} />
       </PresentationControls>
 
       <Environment preset="night" />
