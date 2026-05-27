@@ -31,31 +31,33 @@ describe("computeDwellMs", () => {
   });
 
   describe("chunk mode", () => {
-    it("returns the chunk minimum (2500ms) for empty input", () => {
-      expect(computeDwellMs("", { isChunk: true })).toBe(2500);
+    it("returns the chunk minimum (4500ms) for empty input", () => {
+      expect(computeDwellMs("", { isChunk: true })).toBe(4500);
     });
 
-    it("caps at the chunk maximum (7500ms) for long chunks", () => {
+    it("caps at the chunk maximum (11000ms) for long chunks", () => {
       const text = Array.from({ length: 200 }, () => "word").join(" ");
-      expect(computeDwellMs(text, { isChunk: true })).toBe(7500);
+      expect(computeDwellMs(text, { isChunk: true })).toBe(11_000);
     });
 
-    it("scales faster than standalone (170 wpm vs 130)", () => {
-      const text = Array.from({ length: 25 }, () => "word").join(" ");
-      const chunk = computeDwellMs(text, { isChunk: true });
-      const standalone = computeDwellMs(text);
-      expect(chunk).toBeLessThan(standalone);
+    it("scales at the same wpm as standalone but with a tighter cap", () => {
+      // Same wpm (130), so a small chunk reads at roughly the same speed
+      // as a standalone slide. The chunk cap (11s) is lower than the
+      // standalone cap (14s) so very long chunks don't overstay.
+      const long = Array.from({ length: 80 }, () => "word").join(" ");
+      const chunkCap = computeDwellMs(long, { isChunk: true });
+      const standaloneCap = computeDwellMs(long);
+      expect(chunkCap).toBeLessThanOrEqual(standaloneCap);
     });
 
-    it("a typical 28-word chunk takes ~7s, not 14s", () => {
-      // 28 words @ 170 wpm = ~9882 ms + 300 ms = ~10182 → clamped to 7500.
+    it("a typical 28-word chunk takes ~11s so the reader has time to absorb it", () => {
+      // 28 words @ 130 wpm = ~12923 ms + 700 ms = ~13623 → clamped to 11000.
       const text = Array.from({ length: 28 }, () => "word").join(" ");
       const ms = computeDwellMs(text, { isChunk: true });
-      expect(ms).toBeGreaterThanOrEqual(2500);
-      expect(ms).toBeLessThanOrEqual(7500);
-      // 3 such chunks in a turn ≈ ≤ 22.5s; standalone would be 14s × 1 = 14s
-      // so the chunked total stays roughly in the same order of magnitude.
-      expect(ms * 3).toBeLessThan(25_000);
+      expect(ms).toBeGreaterThanOrEqual(4500);
+      expect(ms).toBeLessThanOrEqual(11_000);
+      // 3 such chunks in a turn ≈ ≤ 33s — slow but comfortable for
+      // non-native readers, which was the explicit user requirement.
     });
   });
 });

@@ -76,13 +76,22 @@ export function JudgeChyron(): React.JSX.Element | null {
             )}
           </div>
           {isVerdict ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem",
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem",
               textAlign: "center", paddingTop: "0.3rem" }}>
               <div style={{
                 fontFamily: "var(--font-display)", fontSize: "1.5rem",
                 letterSpacing: "0.08em", fontWeight: 600,
                 color: slide.outcome === "debate_aborted" ? "#ff8a5c" : "inherit",
               }}>{(slide.outcome ?? "").replace(/_/g, " ").toUpperCase()}</div>
+              {slide.rationale && (
+                <div style={{
+                  fontFamily: "var(--font-display)", fontSize: "0.92rem",
+                  lineHeight: 1.55, fontWeight: 400, opacity: 0.92,
+                  textAlign: "center", fontStyle: "italic",
+                  borderTop: "1px solid rgba(255,201,76,0.18)",
+                  paddingTop: "0.5rem", marginTop: "0.15rem",
+                }}>&ldquo;{slide.rationale}&rdquo;</div>
+              )}
               {slide.text && (
                 <div style={{
                   fontFamily: "var(--font-display)", fontSize: "0.85rem",

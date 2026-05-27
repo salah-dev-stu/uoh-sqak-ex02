@@ -20,10 +20,10 @@ from agent_debate.agents.scoring_engine import Scorecard
 from agent_debate.constants import (
     SCHEMA_VERSION,
     AgentRole,
-    DebateOutcome,
     MessageRole,
     Stance,
 )
+from agent_debate.orchestration.process_verdict import finalize_verdict
 
 _MAX_REPLAY_PER_TURN = 1
 
@@ -137,14 +137,6 @@ def run_debate_dry_run(
         last_msg = routed
     lifecycle.fire("after_round", {"transcript": transcript})
     lifecycle.fire("before_verdict", {"transcript": transcript})
-    pro_card, con_card = _synth_scorecards(transcript)
-    outcome = judge.declare_winner(pro_card, con_card)
-    transcript.outcome = outcome
-    winner = "pro" if outcome == DebateOutcome.PRO_WINS else "con"
-    transcript.verdict = {
-        "winner": winner,
-        "pro_total": pro_card.total,
-        "con_total": con_card.total,
-    }
+    finalize_verdict(judge, transcript)
     lifecycle.fire("after_verdict", {"transcript": transcript})
     transcript.finished_at = datetime.now(tz=UTC).isoformat()

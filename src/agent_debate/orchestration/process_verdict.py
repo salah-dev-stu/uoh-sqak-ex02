@@ -8,6 +8,7 @@ from __future__ import annotations
 from agent_debate.agents.content_scorer import score_transcript
 from agent_debate.agents.judge_agent import JudgeAgent
 from agent_debate.agents.scoring_engine import Scorecard
+from agent_debate.agents.verdict_rationale import build_rationale
 from agent_debate.constants import DebateOutcome
 
 
@@ -28,9 +29,11 @@ def finalize_verdict(judge: JudgeAgent, transcript) -> DebateOutcome:
     pro_card, con_card = synth_scorecards(transcript)
     outcome = judge.declare_winner(pro_card, con_card)
     transcript.outcome = outcome
+    winner = "pro" if outcome == DebateOutcome.PRO_WINS else "con"
     transcript.verdict = {
-        "winner": "pro" if outcome == DebateOutcome.PRO_WINS else "con",
+        "winner": winner,
         "pro_total": pro_card.total,
         "con_total": con_card.total,
+        "rationale": build_rationale(pro_card, con_card, winner),
     }
     return outcome

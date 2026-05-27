@@ -71,7 +71,10 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
     }
     case "verdict": {
       const p = evt.payload as {
-        verdict: { pro_total?: number; con_total?: number; reason?: string };
+        verdict: {
+          pro_total?: number; con_total?: number;
+          rationale?: string; reason?: string;
+        };
         outcome?: string;
       };
       const v = p.verdict ?? {};
@@ -86,6 +89,7 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
         proScore: v.pro_total ?? 0,
         conScore: v.con_total ?? 0,
         outcome: (aborted ? "debate_aborted" : p.outcome) as never,
+        rationale: v.rationale,
       });
       break;
     }

@@ -12,6 +12,7 @@ export interface Slide {
   proScore?: number;
   conScore?: number;
   outcome?: Outcome;
+  rationale?: string;
 }
 
 export interface SlideState {

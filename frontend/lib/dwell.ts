@@ -16,7 +16,7 @@
 // every chunk would near-saturate the 14 s cap.
 
 const STANDALONE = { wpm: 130, entry: 800, min: 3500, max: 14_000 };
-const CHUNK      = { wpm: 170, entry: 300, min: 2500, max: 7_500 };
+const CHUNK      = { wpm: 130, entry: 700, min: 4500, max: 11_000 };
 
 export interface DwellOpts {
   isChunk?: boolean;
