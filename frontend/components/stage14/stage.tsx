@@ -3,6 +3,7 @@ import * as React from "react";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { getState, subscribe, setState } from "@/lib/state";
 import type { Slide } from "@/lib/types";
+import { computeDwellMs } from "@/lib/dwell";
 import { R3FScene } from "./r3f-scene";
 import { TitleBanner } from "./title-banner";
 
@@ -21,21 +22,25 @@ export function Stage14(): React.JSX.Element {
   const slide = activeSlide(state.slides, state.currentIndex);
   const activeSpeaker = slide?.speaker ?? null;
 
-  // Auto-advance: while followLive is on, step forward one slide every 3.5s
-  // until the display index catches up with the latest received slide. This
-  // paces both mock mode (slides arrive in a burst) and live mode (slides
-  // arrive seconds apart) so each slide gets visible time.
+  // Auto-advance: while followLive is on, hold each slide for a dwell time
+  // computed from its text length (see lib/dwell.ts — 130 wpm + 0.8 s
+  // reading-entry buffer, clamped to 3.5–14 s). Effect re-runs each time we
+  // advance, so the next slide gets its own length-appropriate dwell.
   useEffect(() => {
     if (!state.followLive) return;
-    const tick = window.setInterval(() => {
+    if (state.slides.length === 0) return;
+    if (state.currentIndex >= state.slides.length - 1) return;
+    const slide = state.slides[state.currentIndex];
+    const dwell = computeDwellMs(slide?.text ?? "");
+    const t = window.setTimeout(() => {
       const s = getState();
       if (!s.followLive) return;
       if (s.currentIndex < s.slides.length - 1) {
         setState({ currentIndex: s.currentIndex + 1 });
       }
-    }, 3500);
-    return () => window.clearInterval(tick);
-  }, [state.followLive]);
+    }, dwell);
+    return () => window.clearTimeout(t);
+  }, [state.followLive, state.currentIndex, state.slides]);
 
   // Wheel scroll = step between slides.
   const wheelLockRef = useRef(0);
