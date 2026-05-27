@@ -1,5 +1,5 @@
 import type { SseEvent, DebateMessage } from "./types";
-import { appendSlide, setState, getState } from "./state";
+import { appendSlide, resetState, setState, getState } from "./state";
 import { streamUrl } from "./api";
 
 export function shouldSkip(payload: unknown, seen: Set<string>): boolean {
@@ -11,10 +11,23 @@ export function shouldSkip(payload: unknown, seen: Set<string>): boolean {
   return false;
 }
 
-export function openStream(debateId: string): () => void {
+export function openStream(debateId: string, topic?: string): () => void {
+  resetState();
   const es = new EventSource(streamUrl(debateId));
   const seen = new Set<string>();
-  setState({ status: "live" });
+  setState({ status: "live", currentIndex: 0, followLive: true });
+
+  appendSlide({
+    id: "synthetic-judge-intro",
+    speaker: "judge",
+    variant: "intro",
+    pingIndex: 0,
+    text:
+      `Welcome to today's debate. Tonight's motion: "${topic ?? "Can AI agents create genuinely original art?"}". ` +
+      "Pro will argue the affirmative; Con will argue the negative. Each side has ten pings. " +
+      "I will moderate and score. Let the debate begin.",
+    timestamp: new Date().toISOString(),
+  });
 
   es.onmessage = (e) => {
     const evt: SseEvent = JSON.parse(e.data);
