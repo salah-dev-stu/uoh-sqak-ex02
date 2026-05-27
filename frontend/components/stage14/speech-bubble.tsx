@@ -6,15 +6,31 @@ import { motion, AnimatePresence } from "motion/react";
 import { getState, subscribe } from "@/lib/state";
 import type { Slide, Speaker } from "@/lib/types";
 
-// Bubble anchor is the Html element's TOP-CENTER (see style transform
-// below), so the bubble grows downward from these 3D points and can't
-// crash up into the title banner. Y values sit just above each podium's
-// head — Pro/Con podiums are at z=0.2, Judge is at z=1.4 (closer to
-// camera, so the same screen height needs a slightly lower y).
+// Bubble anchor offsets from each speaker's head position. The bubble's
+// CSS transform shifts the box so Pro's bubble grows to the LEFT of the
+// Pro podium (right edge of bubble at the anchor), Con's grows to the
+// RIGHT (left edge at the anchor), Judge stays centered above.
 const POSITION: Record<Speaker, [number, number, number]> = {
   pro:   [-3, 3.4, 0.2],
   judge: [0,  3.0, 1.4],
   con:   [3,  3.4, 0.2],
+};
+
+const BUBBLE_TRANSFORM: Record<Speaker, string> = {
+  pro:   "translate(-100%, 0)",  // bubble extends left of Pro podium
+  judge: "translate(-50%, 0)",   // centered above Judge
+  con:   "translate(0, 0)",      // bubble extends right of Con podium
+};
+
+interface TailStyle { left?: string; right?: string; top: string; transform: string }
+const TAIL: Record<Speaker, TailStyle> = {
+  // Pro bubble sits to the LEFT of Pro — tail on the bubble's right edge
+  // points RIGHT toward Pro (SVG rotated -90deg around centre).
+  pro:   { right: "-14px", top: "42%",  transform: "translateY(-50%) rotate(-90deg)" },
+  // Judge bubble centered above Judge — tail at bottom-centre pointing DOWN.
+  judge: { left:  "50%",   top: "100%", transform: "translate(-50%, -2px)" },
+  // Con bubble sits to the RIGHT of Con — tail on left edge points LEFT.
+  con:   { left:  "-14px", top: "42%",  transform: "translateY(-50%) rotate(90deg)"  },
 };
 
 function useStoreState() {
@@ -44,18 +60,13 @@ export function SpeechBubble(): React.JSX.Element | null {
 
   const colour = `var(--color-${slide.speaker}-accent)`;
   const glow = `var(--color-${slide.speaker}-glow)`;
-  const tailLeft = slide.speaker === "pro" ? "30%"
-    : slide.speaker === "con" ? "70%"
-    : "50%";
+  const tail = TAIL[slide.speaker];
 
   return (
     <Html position={POSITION[slide.speaker]} distanceFactor={6}
       style={{
         pointerEvents: "none", width: "400px",
-        // Anchor the bubble's top-center to the 3D point: shift left by half
-        // its width so it's horizontally centered, but do NOT shift up — the
-        // bubble extends downward only, so it can't collide with the title.
-        transform: "translate(-50%, 0)",
+        transform: BUBBLE_TRANSFORM[slide.speaker],
       }}>
       <AnimatePresence mode="wait">
         <motion.div
@@ -105,8 +116,10 @@ export function SpeechBubble(): React.JSX.Element | null {
 
           <svg width="36" height="22" viewBox="0 0 36 22"
             style={{
-              position: "absolute", left: tailLeft, top: "100%",
-              transform: "translateX(-50%) translateY(-2px)",
+              position: "absolute",
+              left: tail.left, right: tail.right, top: tail.top,
+              transform: tail.transform,
+              transformOrigin: "center",
               filter: `drop-shadow(0 4px 8px ${glow})`,
             }}>
             <path d="M 0 0 L 36 0 L 18 22 Z"
