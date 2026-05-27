@@ -8,7 +8,7 @@ import type { Speaker } from "@/lib/types";
 import { R3FPodium } from "./r3f-podium";
 
 const COLOR_HEX: Record<Speaker, string> = {
-  pro: "#ff3da8", con: "#3da8ff", judge: "#ffc94c",
+  pro: "#4ade80", con: "#3da8ff", judge: "#ffc94c",
 };
 
 function CursorCamera({ active }: { active: Speaker | null }): null {

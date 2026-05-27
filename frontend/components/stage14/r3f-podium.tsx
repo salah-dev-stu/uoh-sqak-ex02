@@ -2,12 +2,12 @@
 import * as React from "react";
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RoundedBox, Capsule, Html } from "@react-three/drei";
+import { RoundedBox, Capsule, Html, Text } from "@react-three/drei";
 import * as THREE from "three";
 import type { Speaker } from "@/lib/types";
 
 const COLOR_HEX: Record<Speaker, string> = {
-  pro:   "#ff3da8",
+  pro:   "#4ade80",
   con:   "#3da8ff",
   judge: "#ffc94c",
 };
@@ -50,17 +50,16 @@ export function R3FPodium({ speaker, position, rotationY, active }: Props): Reac
           emissive={colour} emissiveIntensity={active ? 0.8 : 0.25} />
       </RoundedBox>
       <mesh position={[0, 1.1, 0.56]}>
-        <ringGeometry args={[0.22, 0.28, 48]} />
+        <ringGeometry args={[0.28, 0.36, 48]} />
         <meshStandardMaterial color={colour} emissive={colour}
           emissiveIntensity={active ? 1.4 : 0.6} side={THREE.DoubleSide} />
       </mesh>
-      <Html position={[0, 1.1, 0.57]} center transform occlude
-        style={{ pointerEvents: "none", fontFamily: "var(--font-display)",
-          fontSize: "36px", fontWeight: 700, color: colour,
-          textShadow: active ? `0 0 12px ${colour}` : "none",
-          opacity: active ? 1 : 0.7 }}>
+      <Text position={[0, 1.1, 0.58]} fontSize={0.32}
+        color={colour} anchorX="center" anchorY="middle"
+        outlineWidth={0.005} outlineColor={colour}
+        outlineOpacity={active ? 0.6 : 0.25}>
         {GLYPH[speaker]}
-      </Html>
+      </Text>
 
       <mesh position={[-0.3, 2.05, 0.3]} rotation={[0, 0, Math.PI / 4]}>
         <cylinderGeometry args={[0.012, 0.012, 0.5, 8]} />
