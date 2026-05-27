@@ -31,6 +31,10 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
       if (shouldSkip(evt.payload, seen)) return;
       const m = evt.payload as DebateMessage;
       seen.add(m.msg_id);
+      // Skip setup-phase plumbing (directives + acks) — show only real debate content.
+      if (m.role === "setup_directive" || m.role === "ack") return;
+      // Skip judge re-broadcasts of the other side's text (forwarding plumbing).
+      if (m.from === "judge" && (m.role === "counter" || m.role === "rebuttal")) return;
       appendSlide({
         id: m.msg_id, speaker: m.from === "main" ? "judge" : m.from,
         variant: variantFromRole(m.role), pingIndex: m.ping_index,
