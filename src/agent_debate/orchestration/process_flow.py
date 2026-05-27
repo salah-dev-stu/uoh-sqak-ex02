@@ -22,7 +22,7 @@ from agent_debate.constants import (
     Stance,
 )
 
-ACK_TIMEOUT_S = 30.0
+ACK_TIMEOUT_S = 60.0
 TURN_TIMEOUT_S = 90.0
 MAX_REPLAYS_PER_TURN = 1
 
