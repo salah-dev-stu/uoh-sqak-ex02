@@ -16,7 +16,8 @@ export function Slide({ slide, isLatest }: Props): React.JSX.Element {
   const anchor = ANCHOR[slide.speaker];
   const justify = anchor === "left" ? "flex-start" : anchor === "right" ? "flex-end" : "center";
   const align = anchor === "left" ? "items-start" : anchor === "right" ? "items-end" : "items-center";
-  const textAlign = anchor === "right" ? "right" : "left";
+  // Text always reads left-to-right; only the COLUMN is anchored to the side.
+  const textAlign = "left" as const;
 
   return (
     <div data-anchor={anchor} style={{
