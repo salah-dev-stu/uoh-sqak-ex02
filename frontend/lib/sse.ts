@@ -15,7 +15,7 @@ export function openStream(debateId: string, topic?: string): () => void {
   resetState();
   const es = new EventSource(streamUrl(debateId));
   const seen = new Set<string>();
-  setState({ status: "live", currentIndex: 0, followLive: true });
+  setState({ status: "live", currentIndex: 0, followLive: true, topic });
 
   appendSlide({
     id: "synthetic-judge-intro",

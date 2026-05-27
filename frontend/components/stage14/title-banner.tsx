@@ -4,6 +4,9 @@ import { useSyncExternalStore } from "react";
 import { motion } from "motion/react";
 import { getState, subscribe } from "@/lib/state";
 
+const FALLBACK_TOPIC =
+  "Can AI agents create genuinely original art, or only remix human work?";
+
 function useStoreState() {
   return useSyncExternalStore(subscribe, getState, getState);
 }
@@ -11,31 +14,36 @@ function useStoreState() {
 export function TitleBanner(): React.JSX.Element {
   const s = useStoreState();
   const isLive = s.status === "live";
+  const topic = s.topic ?? FALLBACK_TOPIC;
+  const statusLabel = isLive ? "On Air"
+    : s.status === "done" ? "Recorded"
+    : s.status === "error" ? "Off Air"
+    : "Standby";
 
   return (
     <div style={{
       position: "fixed", top: 0, left: 0, right: 0,
-      zIndex: 25, padding: "1.1rem 2rem 0.85rem",
+      zIndex: 25, padding: "1.1rem 2rem 0.95rem",
       pointerEvents: "none",
-      background: "linear-gradient(180deg, rgba(7,11,26,0.85) 0%, rgba(7,11,26,0.5) 60%, transparent 100%)",
+      background: "linear-gradient(180deg, rgba(7,11,26,0.88) 0%, rgba(7,11,26,0.55) 60%, transparent 100%)",
     }}>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: "1.5rem", maxWidth: "900px", margin: "0 auto",
+        gap: "1.5rem", maxWidth: "1100px", margin: "0 auto",
       }}>
         <div style={{
           flex: 1, height: "1px",
           background: "linear-gradient(90deg, transparent, var(--color-judge-accent) 75%)",
-          maxWidth: "260px", opacity: 0.7,
+          maxWidth: "220px", opacity: 0.7,
         }} />
 
         <motion.div
           initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ textAlign: "center", minWidth: "10rem" }}>
+          style={{ textAlign: "center", minWidth: "16rem", flexShrink: 1 }}>
           <div style={{
             fontFamily: "var(--font-display)",
-            fontSize: "clamp(0.95rem, 0.75vw + 0.4rem, 1.45rem)",
+            fontSize: "clamp(0.95rem, 0.75vw + 0.4rem, 1.4rem)",
             letterSpacing: "0.35em", fontWeight: 700,
             color: "var(--color-judge-accent)",
             textShadow: "0 0 22px rgba(255,201,76,0.45)",
@@ -44,13 +52,15 @@ export function TitleBanner(): React.JSX.Element {
             display: "flex", justifyContent: "center", alignItems: "center", gap: "0.6rem",
             fontFamily: "var(--font-mono)", fontSize: "0.6rem",
             letterSpacing: "0.45em", color: "var(--color-fg-muted)",
-            marginTop: "0.3rem", textTransform: "uppercase",
+            marginTop: "0.25rem", textTransform: "uppercase",
           }}>
             <span>2026</span>
             <span style={{ opacity: 0.4 }}>·</span>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: "0.3rem",
-              color: isLive ? "var(--color-pro-accent)" : "var(--color-fg-muted)",
+              color: isLive ? "var(--color-pro-accent)"
+                : s.status === "error" ? "#ff6b6b"
+                : "var(--color-fg-muted)",
             }}>
               {isLive && (
                 <motion.span
@@ -63,15 +73,26 @@ export function TitleBanner(): React.JSX.Element {
                   }}
                 />
               )}
-              {isLive ? "On Air" : s.status === "done" ? "Recorded" : "Standby"}
+              {statusLabel}
             </span>
+          </div>
+          <div style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(0.85rem, 0.55vw + 0.5rem, 1.05rem)",
+            color: "var(--color-fg-primary)",
+            opacity: 0.92, fontStyle: "italic", fontWeight: 400,
+            marginTop: "0.55rem",
+            maxWidth: "720px", lineHeight: 1.35,
+          }}>
+            <span style={{ color: "var(--color-fg-muted)", fontStyle: "normal" }}>Tonight&rsquo;s motion: </span>
+            &ldquo;{topic}&rdquo;
           </div>
         </motion.div>
 
         <div style={{
           flex: 1, height: "1px",
           background: "linear-gradient(90deg, var(--color-judge-accent) 25%, transparent)",
-          maxWidth: "260px", opacity: 0.7,
+          maxWidth: "220px", opacity: 0.7,
         }} />
       </div>
     </div>

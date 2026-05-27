@@ -23,6 +23,7 @@ export interface SlideState {
   conTotal: number;
   pingCounter: { current: number; total: number };
   error?: string;
+  topic?: string;
 }
 
 export interface DebateMessage {
