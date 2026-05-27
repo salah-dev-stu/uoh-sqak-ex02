@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useEffect, useRef, useSyncExternalStore } from "react";
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion } from "motion/react";
 import { Slide } from "./slide";
 import { getState, subscribe, setState } from "@/lib/state";
 import type { Slide as SlideT } from "@/lib/types";
@@ -13,36 +13,21 @@ function useStoreState() {
 interface ScrollSlideProps {
   slide: SlideT;
   index: number;
-  total: number;
-  scrollYProgress: MotionValue<number>;
+  currentIndex: number;
   isLatest: boolean;
 }
 
-function ScrollSlide({
-  slide,
-  index,
-  total,
-  scrollYProgress,
-  isLatest,
-}: ScrollSlideProps): React.JSX.Element {
-  const startProgress = index / total;
-  const endProgress = (index + 1) / total;
-  const fadeBand = 0.3 / total;
-  const opacity = useTransform(
-    scrollYProgress,
-    [startProgress, startProgress + fadeBand, endProgress - fadeBand, endProgress],
-    [0, 1, 1, 0],
-    { clamp: true },
-  );
-  const y = useTransform(
-    scrollYProgress,
-    [startProgress, startProgress + fadeBand, endProgress - fadeBand, endProgress],
-    [24, 0, 0, -24],
-    { clamp: true },
-  );
-
+function ScrollSlide({ slide, index, currentIndex, isLatest }: ScrollSlideProps): React.JSX.Element {
+  const active = index === currentIndex;
   return (
-    <motion.div style={{ position: "absolute", inset: 0, opacity, y }}>
+    <motion.div
+      animate={{ opacity: active ? 1 : 0, y: active ? 0 : 24 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      style={{
+        position: "absolute", inset: 0,
+        pointerEvents: active ? "auto" : "none",
+      }}
+    >
       <Slide slide={slide} index={index} isLatest={isLatest} />
     </motion.div>
   );
@@ -50,7 +35,6 @@ function ScrollSlide({
 
 export function Stage(): React.JSX.Element {
   const state = useStoreState();
-  const { scrollYProgress } = useScroll();
   const slidesCount = state.slides.length;
 
   const followLiveRef = useRef(state.followLive);
@@ -79,7 +63,10 @@ export function Stage(): React.JSX.Element {
       const scroll = window.scrollY;
       const userScrolledUp = scroll < lastY - 24;
       lastY = scroll;
-      const idx = Math.round(scroll / window.innerHeight);
+      const idx = Math.min(
+        slidesLenRef.current - 1,
+        Math.max(0, Math.round(scroll / window.innerHeight)),
+      );
       const latest = slidesLenRef.current - 1;
       if (userScrolledUp && idx < latest && followLiveRef.current) {
         setState({ followLive: false });
@@ -118,6 +105,9 @@ export function Stage(): React.JSX.Element {
     );
   }
 
+  // Clamp currentIndex (state may briefly lag behind slide arrival).
+  const displayIndex = Math.min(slidesCount - 1, Math.max(0, state.currentIndex));
+
   return (
     <div style={{ height: `${slidesCount * 100}vh`, position: "relative" }}>
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
@@ -126,8 +116,7 @@ export function Stage(): React.JSX.Element {
             key={s.id}
             slide={s}
             index={i}
-            total={slidesCount}
-            scrollYProgress={scrollYProgress}
+            currentIndex={displayIndex}
             isLatest={i === slidesCount - 1}
           />
         ))}
