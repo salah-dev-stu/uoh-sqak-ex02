@@ -1003,18 +1003,21 @@ hw2/
    ```bash
    uv sync
    ```
-3. **Authenticate** the Claude CLI once (the lecturer's preferred mode — no API key needed):
+3. **Authenticate** the Claude CLI once (the lecturer's preferred mode — no API key needed).
+   *Skip this step if `claude` is already logged in on this machine. If you're an automated
+   agent without browser access, skip to step 4 — the pytest suite exercises the full
+   orchestrator end-to-end with `MockLLMProvider`, no Claude auth required.*
    ```bash
    claude --login
    ```
-4. **Run** the menu, press `A`, wait ~5–8 minutes for ten pings × two sides, press `B` to view the transcript:
-   ```bash
-   uv run agent-debate
-   ```
-5. **Verify** the test suite + coverage gate:
+4. **Verify** the test suite + coverage gate (works with zero Claude auth — every LLM call is mocked):
    ```bash
    uv run pytest tests/unit tests/integration --cov=src/agent_debate
-   # expect 145 passing, coverage >= 85 %.
+   # expect 175 passing, coverage >= 85 % (actually 93.04 %).
+   ```
+5. **Run live** the menu (requires step 3 — Claude CLI auth), press `A`, wait ~5–8 minutes for ten pings × two sides, press `B` to view the transcript:
+   ```bash
+   uv run agent-debate
    ```
 
 The persisted transcript will appear in `transcripts/<id>-<date>.json` — same shape as the embedded session-1 dump above, but with full 250-word arguments from Claude instead of mock placeholders.
