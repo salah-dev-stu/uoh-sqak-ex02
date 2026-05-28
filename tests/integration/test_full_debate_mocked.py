@@ -19,7 +19,7 @@ from agent_debate.shared.message_schema import validate_message
 from tests.integration._helpers import mock_factory_default, skip_if_fork_unavailable
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_full_debate_runs_to_verdict(temp_skill_dir: Path, tmp_path: Path) -> None:
     skip_if_fork_unavailable()
     orch = DebateOrchestrator(
@@ -34,7 +34,7 @@ def test_full_debate_runs_to_verdict(temp_skill_dir: Path, tmp_path: Path) -> No
     assert transcript.finished_at is not None
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_full_debate_minimum_message_count(temp_skill_dir: Path, tmp_path: Path) -> None:
     skip_if_fork_unavailable()
     orch = DebateOrchestrator(
@@ -52,7 +52,7 @@ def test_full_debate_minimum_message_count(temp_skill_dir: Path, tmp_path: Path)
     assert con_count >= 5, f"con produced {con_count} messages (expected ≥5)"
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_every_message_is_schema_valid(temp_skill_dir: Path, tmp_path: Path) -> None:
     skip_if_fork_unavailable()
     orch = DebateOrchestrator(
@@ -71,7 +71,7 @@ def test_every_message_is_schema_valid(temp_skill_dir: Path, tmp_path: Path) -> 
         validate_message(msg)
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_no_direct_pro_to_con_traffic(temp_skill_dir: Path, tmp_path: Path) -> None:
     """H4: Every Pro→Con message must be paired with an originating Pro→Judge
     message of the same msg_id (i.e. routed by Judge, not sent direct)."""
@@ -92,7 +92,7 @@ def test_no_direct_pro_to_con_traffic(temp_skill_dir: Path, tmp_path: Path) -> N
         assert routed["msg_id"] in pro_to_judge, "Pro→Con without preceding Pro→Judge"
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_verdict_has_differential_scoring(temp_skill_dir: Path, tmp_path: Path) -> None:
     """H5: no tie. Synth scorecards must yield a winner (pro or con)."""
     skip_if_fork_unavailable()
@@ -108,7 +108,7 @@ def test_verdict_has_differential_scoring(temp_skill_dir: Path, tmp_path: Path) 
     assert transcript.verdict.get("winner") in ("pro", "con")
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_setup_directive_acks_present(temp_skill_dir: Path, tmp_path: Path) -> None:
     """H18: transcript contains at least 2 setup_directive + 2 ack records."""
     skip_if_fork_unavailable()

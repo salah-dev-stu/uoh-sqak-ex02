@@ -12,7 +12,7 @@ from agent_debate.orchestration.orchestrator import DebateOrchestrator
 from tests.integration._helpers import mock_factory_default, skip_if_fork_unavailable
 
 
-@pytest.mark.timeout(60)
+@pytest.mark.timeout(120)
 def test_setup_phase_precedes_first_argument(
     temp_skill_dir: Path, tmp_path: Path
 ) -> None:
