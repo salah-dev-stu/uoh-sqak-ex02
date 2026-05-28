@@ -1,0 +1,35 @@
+{
+  "debate_id": "766ba93b-2922-4705-bffe-5cdb92ab0c2c",
+  "topic": "Can AI agents create genuinely original art, or only remix human work?",
+  "started_at": "2026-05-27T21:35:46.866014+00:00",
+  "finished_at": "2026-05-27T21:36:18.172720+00:00",
+  "messages": [
+    {
+      "msg_id": "d439ca6d-a4d9-4197-af29-45283eaaeeff",
+      "schema_version": "1.00",
+      "from": "judge",
+      "to": "pro",
+      "role": "setup_directive",
+      "ping_index": 0,
+      "text": "Your stance: AI=ORIGINALITY. Open the debate when cued.",
+      "timestamp": "2026-05-27T21:35:46.887106+00:00"
+    },
+    {
+      "msg_id": "5cd5e647-00b5-4b04-a7f5-936d6d7af5fc",
+      "schema_version": "1.00",
+      "from": "judge",
+      "to": "con",
+      "role": "setup_directive",
+      "ping_index": 0,
+      "text": "Your stance: AI=REMIX_ONLY. Open the debate when cued.",
+      "timestamp": "2026-05-27T21:35:46.887214+00:00"
+    }
+  ],
+  "verdict": {
+    "winner": null,
+    "pro_total": 0,
+    "con_total": 0,
+    "reason": "setup_phase_timeout"
+  },
+  "outcome": "debate_aborted"
+}
