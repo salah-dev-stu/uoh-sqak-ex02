@@ -18,7 +18,7 @@ export function StartScreen(): React.JSX.Element {
     setBusy(true); setError(null);
     try {
       const r = await startDebate({ nPings, live });
-      openStream(r.debate_id);
+      openStream(r.debate_id, topic);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to start");
       setState({ status: "error" }); setBusy(false);

@@ -139,7 +139,12 @@ class DebateOrchestrator:
         judge = self._build_judge(skill_dir)
         if not run_setup_phase(self._queues, transcript):
             transcript.outcome = DebateOutcome.DEBATE_ABORTED
-            transcript.verdict = {"reason": "setup_phase_timeout"}
+            # Keep the same verdict shape as a normal finish so the frontend
+            # can render it without falling back to 0/0 with no explanation.
+            transcript.verdict = {
+                "winner": None, "pro_total": 0, "con_total": 0,
+                "reason": "setup_phase_timeout",
+            }
             self.shutdown_gracefully()
             transcript.finished_at = datetime.now(tz=UTC).isoformat()
             return

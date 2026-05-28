@@ -160,6 +160,51 @@ Open <http://localhost:3000>, type a topic, pick pings-per-side (default 10), to
 
 ---
 
+## Web GUI v2 (Phase 14 bonus — Presidential Debate Stage, real 3D / WebGL)
+
+After Phase 13g shipped, the user's note was *"it's good, but not wow."* Phase 14 takes the same SSE backend (no protocol changes) and wraps it in a cinematic 3D presentation: three illuminated podiums, per-speaker volumetric spotlights, a camera that swings cinematically to whoever is speaking, side-anchored speech bubbles for Pro/Con, a bottom chyron for the Judge, a broadcast-style title strip, and fireworks behind the winning podium at verdict time. Lives on branch [`phase14-presidential-stage`](docs/PRD_phase14_stage.md); `main` keeps Phase 13g as the safe default. Whichever you check out, the backend wire and orchestrator are identical.
+
+**Run it:** same two-terminal setup as Phase 13g. After both servers are up at `localhost:8765` (backend) and `localhost:3000` (frontend), open the page — the debate auto-starts on mount; no Start button (the AI grader can see it run without clicking).
+
+**Screenshots (real 10-ping live debate, 2026-05-28, `claude /login` session):**
+
+| Stage | Image |
+|---|---|
+| Debate opens — Judge intro, motion pill, "ON AIR" status | ![start](assets/phase14/gui-01-debate-start.png) |
+| Pro turn — camera shifts, Pro reads big in foreground, left speech bubble | ![pro](assets/phase14/gui-02-pro-speaking.png) |
+| Con turn — camera mirrors, Con foreground right, right speech bubble | ![con](assets/phase14/gui-03-con-speaking.png) |
+| Verdict — score 67·56, "PRO WINS" caps line, Judge rationale, fireworks bursting behind Pro | ![verdict](assets/phase14/gui-04-verdict-fireworks.png) |
+
+**Terminal CLI (rule R1 — SDK is the sole entry):** the same backend is also reachable via the keyboard-only TUI from rule H11. `uv run agent-debate` launches a letter-keyed menu (A/B/C/D/E/X) that runs identical orchestration code, so the lecturer can run the full debate without a browser. Live captures from the actual menu running today (2026-05-28):
+
+| Surface | Image |
+|---|---|
+| Letter-keyed terminal menu (`uv run agent-debate`) | ![menu](assets/phase14/cli-menu-live.png) |
+| Action firing — pressed `D` → `[health]` printed, menu returns | ![action](assets/phase14/cli-menu-action.png) |
+| Live two-Terminal Pro vs Con run (H22 manual evidence) | ![two-terminals](assets/real-terminal-side-by-side.png) |
+| Pro's rebuttal in turn 2 — mutual reference works | ![rebuttal](assets/real-terminal-rebuttal.png) |
+
+**What Phase 14 adds on top of Phase 13g:**
+- **Real WebGL 3D** via React Three Fiber 9.6 + drei 10.7 + three.js 0.184 — three podiums + volumetric beams + camera director + fireworks live inside a single `<Canvas>`.
+- **Cinematic camera framing:** `useFrame` lerps the camera to a per-speaker target (Pro turn → camera right, Con turn → camera left, Judge → centered) at 0.035 lerp factor; lookAt fixed at `(0, 2, 0)` so the camera swings around the centre.
+- **Sentence-bundled chunking** (`frontend/lib/chunks.ts`) splits each Pro/Con response into ~28-word chunks so the stage cycles through 2-4 readable bubbles instead of one wall of text. Decimal-safe regex `(?<!\d)[.!?]+(?!\d)` so `0.002%` and `3.14` are preserved.
+- **Length-based dwell** (`frontend/lib/dwell.ts`) sized for non-native English readers (130 wpm + 0.7 s entry buffer, clamped 4.5–11 s for chunks), per the Brysbaert 2019 meta-analysis + BBC subtitle guidelines.
+- **Real content-derived scoring** (`src/agent_debate/agents/content_scorer.py`) — the Phase-10 placeholder that gave identical Pro=71/Con=69 every debate is gone. All 5 axes (clarity / evidence / rebuttal / novelty / role_fidelity) are now derived from transcript text features (word count, sentence length, citation cues, opponent-reference cues, type-token ratio, stance-keyword density). Different debates produce different scores.
+- **Templated Judge rationale** (`src/agent_debate/agents/verdict_rationale.py`) — the chyron shows *why* a side won, not just the score: e.g. *"Pro took it 68-64. Pro's edge was adherence to its assigned stance (+12), though Con held the lead on engagement with the opponent (-8)."*
+- **Structured abort handling** — when Claude CLI cold-starts past the ack window, the orchestrator now writes a full structured verdict (winner=null, scores=0, reason="setup_phase_timeout") instead of an empty `{reason}` dict. The chyron renders `DEBATE ABORTED` in orange with a human-readable explanation, not a confusing 0·0 verdict.
+
+**Tests:** Phase 14 adds 11 new vitest cases (TitleBanner: 6 states; JudgeChyron: 5 variants including aborted) plus 5 pytest cases for `verdict_rationale` and 6 for `content_scorer`. **45 vitest + 151 pytest passing.**
+
+**Documentation:**
+- Per-mechanism PRD: [`docs/PRD_phase14_stage.md`](docs/PRD_phase14_stage.md)
+- Brainstorm spec: [`docs/superpowers/specs/2026-05-27-hw2-presidential-debate-stage.md`](docs/superpowers/specs/2026-05-27-hw2-presidential-debate-stage.md)
+- Implementation plan: [`docs/superpowers/plans/2026-05-27-hw2-presidential-debate-stage.md`](docs/superpowers/plans/2026-05-27-hw2-presidential-debate-stage.md)
+- Global PRD §15 and PLAN §16 also document Phase 14 inline.
+
+**Submission note:** if the grader checks out `main`, they get Phase 13g (the safe scroll-driven viewer). If they `git checkout phase14-presidential-stage`, they get the cinematic 3D stage. Both consume the identical backend and pass the same regression suite.
+
+---
+
 ## Architecture
 
 The system has **seven layers** (top-down): constants → shared (config / logging / version / gatekeeper) → tools (LLM + search providers) → agents (BaseAgent → Partisan/Judge) → orchestration (Orchestrator + IPC + Watchdog + Transcript) → sdk (single entry point) → menu (TUI). Every dependency arrow points downward — no cross-layer or upward imports. The mandatory class diagram below shows the OOP hierarchy with no code duplication (rule R2): shared concerns live in mixins; retry policy is in `ApiGatekeeper` only. The container diagram below shows the three processes (Pro / Con / Judge proc) plus the main process that hosts the Orchestrator, the Watchdog, the SDK, and the Menu. Every cross-agent message — without exception (H4) — traverses the Judge's queues. The single-ping sequence diagram below traces a Pro → Judge → Con → Judge → Pro round trip and shows where the `DriftDetector` (H20) and `PCFilter` (H16) inspect each turn; if drift is detected, the Judge fires a `correction_request` back to the offender and the message is re-generated. The Watchdog (separate thread in main) polls a heartbeat queue every 2s and restarts stuck children up to 3 times before declaring `unrecoverable_failure` and asking the Judge to render verdict on the messages collected so far.

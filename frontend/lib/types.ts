@@ -12,6 +12,7 @@ export interface Slide {
   proScore?: number;
   conScore?: number;
   outcome?: Outcome;
+  rationale?: string;
 }
 
 export interface SlideState {
@@ -23,6 +24,7 @@ export interface SlideState {
   conTotal: number;
   pingCounter: { current: number; total: number };
   error?: string;
+  topic?: string;
 }
 
 export interface DebateMessage {

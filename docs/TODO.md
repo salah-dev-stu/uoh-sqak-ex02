@@ -1178,3 +1178,300 @@ HW2 spec §8.6 marks GUI as optional ("evaluation runs via menu/SDK; screenshots
 
 **Phase ordering reminder (Dr. Segal's slide — overrides phase numbers):**
 1. PRD → 2. PLAN → 3. TODO → 4. verify pass → 5. Execute (Phases 0-10) → 6. README → 7. Run the project → 8. Push to GitHub PUBLIC
+
+---
+
+## Phase 14 (Bonus) — Presidential Debate Stage
+
+> Cinematic 3D presentation layer. Lives on branch `phase14-presidential-stage`.
+> See `docs/PRD.md` §15, `docs/PLAN.md` §16, and the brainstorm spec at
+> `docs/superpowers/specs/2026-05-27-hw2-presidential-debate-stage.md`.
+
+### Phase 14.A — Branch + foundation
+
+- [x] 14.A.1: Create branch `phase14-presidential-stage` off `main`
+- [x] 14.A.2: Confirm Next.js 16 + Turbopack still building on this branch
+- [x] 14.A.3: Confirm vitest + tsc still green at branch HEAD
+- [x] 14.A.4: Confirm backend uvicorn runs with `env -u ANTHROPIC_API_KEY`
+- [x] 14.A.5: Lock time-box (4 h initial, extend on iterative review)
+- [x] 14.A.6: Brainstorm spec under `docs/superpowers/specs/`
+
+### Phase 14.B — Dependencies
+
+- [x] 14.B.1: `npm install three @react-three/fiber @react-three/drei`
+- [x] 14.B.2: `npm install motion` (Framer Motion v11 via `motion/react`)
+- [x] 14.B.3: Verify Rolldown native binding installed on arm64
+- [x] 14.B.4: Pin three to 0.184 (matches drei 10.7)
+- [x] 14.B.5: `npm install --save-dev @types/three`
+- [x] 14.B.6: Bundle delta < 50 kB gzip via `npm run build`
+- [x] 14.B.7: `npm audit` post-install; no high-severity issues
+
+### Phase 14.C — Design tokens + globals
+
+- [x] 14.C.1: Confirm `--color-pro-accent` is emerald `#4ade80` (was magenta)
+- [x] 14.C.2: Confirm `--color-con-accent` is `#3da8ff`
+- [x] 14.C.3: Confirm `--color-judge-accent` is `#ffc94c`
+- [x] 14.C.4: Add `--color-{pro,con,judge}-glow` rgba tokens
+- [x] 14.C.5: Confirm Space Grotesk loaded in `app/layout.tsx`
+- [x] 14.C.6: Confirm Inter + JetBrains Mono loaded
+- [x] 14.C.7: Reset body bg to `#050818` deep navy
+
+### Phase 14.D — Scene scaffolding
+
+- [x] 14.D.1: Create `components/stage14/` directory
+- [x] 14.D.2: Stub `stage.tsx` rendering an empty `<Canvas>`
+- [x] 14.D.3: Stub `r3f-scene.tsx` with `[0, 3.6, 10]` camera
+- [x] 14.D.4: Add ambient + directional lights
+- [x] 14.D.5: Add fog `["#050818", 8, 22]`
+- [x] 14.D.6: Add 40×40 floor plane
+- [x] 14.D.7: Add subtle grid helper at `y=0.001`
+- [x] 14.D.8: Add `ContactShadows` under the podium row
+- [x] 14.D.9: Add `Stars` background
+- [x] 14.D.10: Add `Environment preset="night"` for IBL
+
+### Phase 14.E — Podiums
+
+- [x] 14.E.1: Create `r3f-podium.tsx`
+- [x] 14.E.2: RoundedBox lectern
+- [x] 14.E.3: Slanted top surface (rotation X 0.18 rad)
+- [x] 14.E.4: Capsule body for the speaker stand-in
+- [x] 14.E.5: Sphere head atop the capsule
+- [x] 14.E.6: Front emblem ring (P / C / scales)
+- [x] 14.E.7: Switch emblems from drei `<Html>` to drei `<Text>` for proper scaling
+- [x] 14.E.8: Adjust ring radius args to `[0.28, 0.36]`
+- [x] 14.E.9: Per-podium point light pulsing on active turn
+- [x] 14.E.10: Active pulse formula `8 + sin(t*3) * 0.6`
+- [x] 14.E.11: Place Pro at `(-3, 0, 0)` rotation Y `+0.22`
+- [x] 14.E.12: Place Con at `( 3, 0, 0)` rotation Y `-0.22`
+- [x] 14.E.13: Place Judge at `( 0, 0, 1.2)` rotation Y `0`
+- [x] 14.E.14: Visible lectern names `PRO` / `CON` / `JUDGE`
+
+### Phase 14.F — Volumetric beams
+
+- [x] 14.F.1: `<VolumetricBeam>` cone mesh
+- [x] 14.F.2: Radius 1.4, height 6, open top
+- [x] 14.F.3: MeshBasicMaterial + AdditiveBlending + DoubleSide
+- [x] 14.F.4: Active pulse `0.32 + sin(t*2)*0.04`
+- [x] 14.F.5: Inactive opacity 0.10
+- [x] 14.F.6: Parametrize beam `z` so Judge beam follows its podium (z=1.2)
+
+### Phase 14.G — Cursor parallax
+
+- [x] 14.G.1: Drop manual `CursorCamera`, replace with drei `<PresentationControls>`
+- [x] 14.G.2: Set `polar` clamp `[-π/28, π/28]`, `azimuth` `[-π/8, π/8]`
+- [x] 14.G.3: Set `global` + `cursor` + `snap` flags
+- [x] 14.G.4: Remove SpringConfig usage (incompatible with drei 10.7)
+- [x] 14.G.5: Verify cursor drag moves the scene group
+
+### Phase 14.H — Per-speaker camera framing
+
+- [x] 14.H.1: Create `<CameraDirector>` using `useFrame`
+- [x] 14.H.2: Define CAMERA_TARGETS for pro / con / judge / default
+- [x] 14.H.3: Apply lerp factor 0.035 (cinematic glide)
+- [x] 14.H.4: Fixed `lookAt(0, 2.0, 0)` so camera swings around centre
+- [x] 14.H.5: Compose with PresentationControls without fighting
+- [x] 14.H.6: Flip pro/con targets after user feedback ("you did reversed")
+
+### Phase 14.I — Speech bubbles (Pro/Con)
+
+- [x] 14.I.1: Create `speech-bubble.tsx`
+- [x] 14.I.2: drei `<Html>` anchored per speaker
+- [x] 14.I.3: Anchor `(-3.8, 3.4, 0.2)` for Pro, `(+3.8, 3.4, 0.2)` for Con
+- [x] 14.I.4: Top-anchor transform `translate(-100%, 0)` for Pro
+- [x] 14.I.5: Top-anchor transform `translate(0, 0)` for Con
+- [x] 14.I.6: Width 400 px; distanceFactor 6
+- [x] 14.I.7: Drop `maxHeight` clamp so text no longer clips
+- [x] 14.I.8: Body in Space Grotesk 0.95 rem (matched title family)
+- [x] 14.I.9: `stripMarkdown` for `**`, `*`, backticks, list bullets
+- [x] 14.I.10: SVG tail on right edge for Pro (rotate -90°)
+- [x] 14.I.11: SVG tail on left edge for Con (rotate +90°)
+- [x] 14.I.12: AnimatePresence cross-fade keyed on slide.id
+- [x] 14.I.13: Early-return when speaker is not pro/con
+
+### Phase 14.J — Judge chyron
+
+- [x] 14.J.1: Create `judge-chyron.tsx`
+- [x] 14.J.2: Position fixed `bottom: 4.5 rem` clearing bottom strip
+- [x] 14.J.3: 900 px max-width, gold border, glassy dark panel
+- [x] 14.J.4: Header row `JUDGE · variant · PING N` with score on verdict
+- [x] 14.J.5: Body: intro/abort plain; verdict shows OUTCOME + rationale
+- [x] 14.J.6: Aborted outcome rendered in orange #ff8a5c
+- [x] 14.J.7: Thin gold separator above rationale
+
+### Phase 14.K — Title banner
+
+- [x] 14.K.1: Create `title-banner.tsx`
+- [x] 14.K.2: Top strip with dark-fade gradient bg
+- [x] 14.K.3: "AGENT DEBATE" Space Grotesk +0.35em tracking, gold glow
+- [x] 14.K.4: Two horizontal gold accent rails flanking title
+- [x] 14.K.5: Status sub-line `2026 · ON AIR` (mono, +0.45em)
+- [x] 14.K.6: Pulsing red dot when status === "live"
+- [x] 14.K.7: Status labels On Air / Recorded / Standby / Off Air
+- [x] 14.K.8: "Off Air" rendered in red #ff6b6b
+- [x] 14.K.9: Designed Motion pill below status (gold capsule)
+- [x] 14.K.10: Inner "MOTION" mono tag inside its own darker capsule
+- [x] 14.K.11: Topic italic Space Grotesk, gold curly quotes, ellipsis
+- [x] 14.K.12: Single-line clamp at `max-width: min(740px, 80vw)`
+- [x] 14.K.13: `pointer-events: none` so banner doesn't block parallax
+
+### Phase 14.L — Topic plumbing
+
+- [x] 14.L.1: Add `topic` field to SlideState in `lib/types.ts`
+- [x] 14.L.2: `openStream(debate_id, topic)` sets `state.topic`
+- [x] 14.L.3: Banner reads `s.topic` with fallback constant
+- [x] 14.L.4: Same topic in synthetic Judge intro slide
+
+### Phase 14.M — Auto-start
+
+- [x] 14.M.1: `app/page.tsx` calls `startDebate` on mount
+- [x] 14.M.2: `firedRef` guard against Strict Mode + HMR double-mount
+- [x] 14.M.3: On 200, `openStream(debate_id, topic)`
+- [x] 14.M.4: On error, set status `error` with message
+- [x] 14.M.5: Remove old StartScreen / Start button
+
+### Phase 14.N — SSE consumer hardening
+
+- [x] 14.N.1: Verify existing dedup via `seen: Set<string>`
+- [x] 14.N.2: Skip `setup_directive` / `ack` events
+- [x] 14.N.3: Skip judge re-broadcasts (forwarding plumbing)
+- [x] 14.N.4: Prepend synthetic Judge intro slide on `openStream`
+- [x] 14.N.5: On `verdict` event, build synthetic verdict slide
+- [x] 14.N.6: Detect aborted via verdict.reason / outcome
+- [x] 14.N.7: Forward `verdict.rationale` onto slide
+- [x] 14.N.8: Tighten `onerror` to fire only on `readyState === CLOSED && status !== "done"`
+
+### Phase 14.O — Chunking
+
+- [x] 14.O.1: Create `lib/chunks.ts` exposing `splitIntoChunks`
+- [x] 14.O.2: Initial regex `/[^.!?]+[.!?]+(?=\s|$)/g`
+- [x] 14.O.3: Greedy bundler ≤ maxWords (default 28)
+- [x] 14.O.4: Fallback to whole text when no sentence match
+- [x] 14.O.5: Empty input returns `[]`
+- [x] 14.O.6: Wire into `sse.ts` — one Slide per chunk for Pro/Con
+- [x] 14.O.7: Chunk ids `msg_id-c<i>` for stable React keys + SSE dedup
+- [x] 14.O.8: Judge text bypasses chunker
+- [x] 14.O.9: Regression: fix decimal-point drop with `(?<!\d)[.!?]+(?!\d)`
+- [x] 14.O.10: Vitest cover empty, fallback, decimals, short bundles, long single sentence
+
+### Phase 14.P — Length-based dwell
+
+- [x] 14.P.1: Create `lib/dwell.ts` with `computeDwellMs(text, opts?)`
+- [x] 14.P.2: STANDALONE preset (130 wpm, 0.8 s entry, 3.5-14 s clamp)
+- [x] 14.P.3: Initial CHUNK preset (170 wpm, tighter cap) — user said too fast
+- [x] 14.P.4: Revised CHUNK preset (130 wpm, 0.7 s entry, 4.5-11 s)
+- [x] 14.P.5: Vitest cover both presets + edges (9 cases total)
+- [x] 14.P.6: Reading-speed citations in header (Brysbaert 2019 + BBC subtitles)
+
+### Phase 14.Q — Auto-advance
+
+- [x] 14.Q.1: Replace 3.5 s `setInterval` with per-slide `setTimeout`
+- [x] 14.Q.2: Effect deps `[followLive, slideId, slideText, hasNext]`
+- [x] 14.Q.3: Detect chunk via id regex `/-c\d+$/`
+- [x] 14.Q.4: Track `slideStartRef` of current-slide entry time
+- [x] 14.Q.5: Reset slideStartRef in own effect keyed on slideId
+- [x] 14.Q.6: Timeout uses `max(0, dwell - elapsed)` for late slides
+- [x] 14.Q.7: Bail when `followLive` is false (manual nav)
+- [x] 14.Q.8: Bail when at last slide (`hasNext === false`)
+
+### Phase 14.R — Bottom strip
+
+- [x] 14.R.1: Reduce `slides[]` to `groups[]` of consecutive same-speaker entries
+- [x] 14.R.2: Render one pill per group
+- [x] 14.R.3: Pill width scales with `count`
+- [x] 14.R.4: Tooltip shows speaker, count, slide-range
+- [x] 14.R.5: Pill colour = `var(--color-${speaker}-accent)`
+- [x] 14.R.6: Active pill bigger + glow
+- [x] 14.R.7: Hide future pills entirely (per user request)
+- [x] 14.R.8: Counter renders `turn N/total` of groups
+- [x] 14.R.9: LIVE / Jump-to-Live button when `followLive` is off
+
+### Phase 14.S — Backend scoring
+
+- [x] 14.S.1: Create `src/agent_debate/agents/content_scorer.py`
+- [x] 14.S.2: `_clarity` — avg words/sentence (14-word sweet spot)
+- [x] 14.S.3: `_evidence` — years + percentages + proper nouns + cite cues
+- [x] 14.S.4: `_rebuttal` — opponent-reference cue count
+- [x] 14.S.5: `_novelty` — type-token ratio × 28
+- [x] 14.S.6: `_role_fidelity` — own keywords - opponent + turn bonus
+- [x] 14.S.7: `score_transcript(transcript)` returns `(pro_card, con_card)`
+- [x] 14.S.8: Skip `ack` / `setup_directive` from the corpus
+- [x] 14.S.9: Wire into `process_verdict.synth_scorecards`
+- [x] 14.S.10: Wire into `debate_loop._synth_scorecards`
+- [x] 14.S.11: Pytest cover empty / weak-strong / per-axis / ack-leak (6 cases)
+
+### Phase 14.T — Verdict rationale
+
+- [x] 14.T.1: Create `src/agent_debate/agents/verdict_rationale.py`
+- [x] 14.T.2: `build_rationale(pro, con, winner)` returns 1-2 sentence string
+- [x] 14.T.3: Find largest positive axis gap for winner
+- [x] 14.T.4: Find largest negative gap (loser's strength)
+- [x] 14.T.5: Margin classifier: `by a hair` / default / `decisive showing`
+- [x] 14.T.6: Tiebreak case has its own sentence
+- [x] 14.T.7: Wire into `finalize_verdict` → `transcript.verdict.rationale`
+- [x] 14.T.8: `Slide.rationale` field added to `lib/types.ts`
+- [x] 14.T.9: `sse.ts` forwards `verdict.rationale` to slide
+- [x] 14.T.10: Chyron renders rationale below outcome
+- [x] 14.T.11: Pytest cover lopsided / hair / loser-strength / con-wins / length (5 cases)
+
+### Phase 14.U — Setup-phase timeout
+
+- [x] 14.U.1: Bump `ACK_TIMEOUT_S` 30 → 60 s in `process_flow.py`
+- [x] 14.U.2: Write structured verdict on setup failure in `orchestrator.py`
+- [x] 14.U.3: Verdict shape `{winner: None, pro_total: 0, con_total: 0, reason: 'setup_phase_timeout'}`
+- [x] 14.U.4: Frontend detects abort via reason / outcome
+- [x] 14.U.5: Chyron shows `DEBATE ABORTED` caps in orange + human message
+- [x] 14.U.6: Pytest still green after timeout bump
+
+### Phase 14.V — Fireworks
+
+- [x] 14.V.1: Create `components/stage14/fireworks.tsx`
+- [x] 14.V.2: `<FireworkBurst>` with 64-particle THREE.Points
+- [x] 14.V.3: Velocity seeding on unit sphere + small +y bias
+- [x] 14.V.4: Per-frame parabolic arc with gravity 1.8
+- [x] 14.V.5: Cycle 1.9 s with velocity re-seed on cycle start
+- [x] 14.V.6: Opacity fade 1 → 0 across cycle
+- [x] 14.V.7: PointsMaterial AdditiveBlending + sizeAttenuation
+- [x] 14.V.8: Four bursts offset `0 / 0.65 / 1.3 / 1.9 s`
+- [x] 14.V.9: Two bursts in winner accent + one gold + one white sparkle
+- [x] 14.V.10: Mount inside PresentationControls so cursor pans too
+- [x] 14.V.11: Stage derives `winner` only on verdict + decisive outcome
+- [x] 14.V.12: `args={[positions, 3]}` on bufferAttribute for R3F strict types
+
+### Phase 14.W — Manual visual passes
+
+- [x] 14.W.1: Refresh → debate auto-starts within 5 s
+- [x] 14.W.2: Judge intro slide visible before Pro's first turn
+- [x] 14.W.3: Pro turn: camera swings, Pro reads big-left
+- [x] 14.W.4: Con turn: camera swings, Con reads big-right
+- [x] 14.W.5: Strip grows one pill at a time as dwell advances
+- [x] 14.W.6: Active pill glows; past pills are slightly dimmer
+- [x] 14.W.7: Title shows ON AIR with pulsing dot while live
+- [x] 14.W.8: Motion pill clearly shows the topic
+- [x] 14.W.9: Verdict slide shows OUTCOME + score + rationale
+- [x] 14.W.10: Fireworks pop behind winning podium
+- [x] 14.W.11: Title flips to "Recorded" after verdict
+- [x] 14.W.12: Different debates produce different scores
+- [x] 14.W.13: Setup-timeout displays "Debate Aborted" cleanly
+- [x] 14.W.14: No console errors after a full run-through
+
+### Phase 14.X — Automated regression
+
+- [x] 14.X.1: `npx tsc --noEmit` clean
+- [x] 14.X.2: `npx vitest run` green (34 tests as of writing)
+- [x] 14.X.3: `uv run pytest tests/unit/` green (151 tests)
+- [x] 14.X.4: `uv run ruff check src/` clean
+- [x] 14.X.5: Pre-commit hook passes on every Phase 14 commit
+- [x] 14.X.6: 150-line cap respected by every file
+
+### Phase 14.Y — Closure docs
+
+- [x] 14.Y.1: Brainstorm spec at `docs/superpowers/specs/2026-05-27-hw2-presidential-debate-stage.md`
+- [x] 14.Y.2: Append Phase 14 section to `docs/PRD.md` (§15)
+- [x] 14.Y.3: Append Phase 14 section to `docs/PLAN.md` (§16)
+- [x] 14.Y.4: Append Phase 14 section to `docs/TODO.md` (this section)
+- [x] 14.Y.5: Mirror plan in `docs/superpowers/plans/2026-05-27-hw2-presidential-debate-stage.md`
+- [ ] 14.Y.6: Capture README screenshots (per-speaker camera, verdict + fireworks)
+- [ ] 14.Y.7: Update root README.md with Phase 14 Bonus section + branch note
+- [ ] 14.Y.8: Decide whether `main` ships Phase 13g or Phase 14
+- [ ] 14.Y.9: If Phase 14 ships, rebase / merge into `main`, tag `v1.00-phase14`
+- [ ] 14.Y.10: Push branch to GitHub public OR add `rmisegal@gmail.com` as collaborator

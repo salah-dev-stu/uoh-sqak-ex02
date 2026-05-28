@@ -654,3 +654,127 @@ The grading agent likely runs these verbatim. Answers:
 ## 15. Plan Sign-off
 
 This `docs/PLAN.md` is part of the docs bundle that goes to user-approval gate #2 (rubric §2.5 step 5). It pairs with `docs/PRD.md`, `docs/TODO.md`, and the 9 per-mechanism PRDs. Together those four artifacts (~3500 lines total) are reviewed as a single bundle before any production code is written.
+
+---
+
+## 16. Phase 14 (Bonus) — Presidential Debate Stage architecture
+
+> Companion plan for the cinematic 3D presentation layer described in
+> `docs/PRD.md` §15. Lives on branch `phase14-presidential-stage`.
+
+### 16.1 Component diagram
+
+```
+┌── Browser (Next.js 16 + Turbopack) ──────────────────────────────────┐
+│                                                                       │
+│  app/page.tsx → auto-fires startDebate() + openStream() on mount      │
+│                                                                       │
+│  components/stage14/                                                  │
+│    ├─ stage.tsx          orchestrates layout, auto-advance, wheel     │
+│    │   ├─ R3FScene       Canvas + CameraDirector + podiums + beams   │
+│    │   │   ├─ <CameraDirector>     useFrame lerps camera target       │
+│    │   │   ├─ <VolumetricBeam>     per-podium cone (3×)               │
+│    │   │   ├─ <R3FPodium>          lectern + body + emblem (3×)       │
+│    │   │   ├─ <SpeechBubble>       Pro/Con side bubble (drei <Html>)  │
+│    │   │   └─ <Fireworks>          THREE.Points bursts behind winner  │
+│    │   ├─ <TitleBanner>  top broadcast strip                          │
+│    │   └─ <JudgeChyron>  bottom strip for Judge text + verdict        │
+│    └─ bottom-strip.tsx   grouped pills + LIVE / Jump-to-Live          │
+│                                                                       │
+│  lib/                                                                 │
+│    ├─ state.ts           useSyncExternalStore module store            │
+│    ├─ sse.ts             EventSource → handleEvent → appendSlide      │
+│    ├─ chunks.ts          sentence-bundle splitter (~28 wpc)           │
+│    ├─ dwell.ts           length-based dwell (chunk vs standalone)     │
+│    └─ types.ts           Slide / SlideState / SseEvent                 │
+└───────────────────────────────────────────────────────────────────────┘
+                                  │  SSE / JSON
+                                  ▼
+┌── FastAPI backend (uvicorn :8765) ──────────────────────────────────┐
+│  api.py            POST /api/debate/start, GET /stream              │
+│  debate_runner.py  spawn thread → DebateOrchestrator.run_debate     │
+│  agents/                                                             │
+│    ├─ pro_agent / con_agent / judge_agent     unchanged              │
+│    ├─ content_scorer.py *NEW*                  5-axis text-feature   │
+│    └─ verdict_rationale.py *NEW*               templated explanation │
+│  orchestration/                                                      │
+│    ├─ orchestrator.py     ACK_TIMEOUT_S 60 s, structured abort       │
+│    ├─ process_flow.py     setup phase + ping loop                    │
+│    └─ process_verdict.py  finalize_verdict (scorer + rationale)      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### 16.2 Key technical decisions
+
+| ADR     | Decision                                                                 | Rationale                                                          |
+|---------|--------------------------------------------------------------------------|--------------------------------------------------------------------|
+| 14-ADR1 | React Three Fiber over raw three.js                                      | Declarative scene; drei helpers; each file stays ≤150 LOC          |
+| 14-ADR2 | drei `<Html>` for bubbles, drei `<Text>` for emblems                     | Html keeps DOM layout for markdown stripping; Text scales w/ camera |
+| 14-ADR3 | Camera lerp via `useFrame`, not CSS transitions                          | CSS can't move a perspective camera; lerp composes with cursor parallax |
+| 14-ADR4 | Sentence-bundle chunking on the FRONTEND, not in the prompt              | Backend response unchanged; transcript intact; no extra LLM latency |
+| 14-ADR5 | Two-mode dwell (STANDALONE 130 wpm / CHUNK 130 wpm + tighter cap)        | Same reading speed; tighter cap on chunks so a turn ≤ 33 s          |
+| 14-ADR6 | Content-derived 5-axis scorer (clarity/evidence/rebuttal/novelty/role)   | Phase-10 placeholder gave identical Pro=71/Con=69 every debate      |
+| 14-ADR7 | Templated rationale, NOT an extra LLM call                                | Deterministic, sub-300-char, no per-debate cost                     |
+| 14-ADR8 | Fireworks via `THREE.Points` (64 particles × 4 bursts)                    | ~3 kB VRAM; no third-party particle dependency                      |
+
+### 16.3 Data flow
+
+```
+1. page.tsx mounts → useEffect (firedRef guard) calls
+   startDebate({n_pings:10, live:true}) → backend returns {debate_id, topic}
+2. openStream(debate_id, topic):
+   - resetState(); state.topic = topic; status = "live"
+   - appendSlide(synthetic Judge intro) so stage opens with Judge moment
+   - new EventSource(streamUrl)
+3. SSE 'message':
+   - dedup by msg_id; skip setup_directive/ack/judge-rebroadcast
+   - splitIntoChunks(m.text) for Pro/Con → one Slide per chunk
+   - Judge text untouched (single slide, chyron renders it)
+4. SSE 'verdict':
+   - detect abort by verdict.reason or outcome === 'debate_aborted'
+   - appendSlide verdict with proScore/conScore/outcome/rationale
+5. Auto-advance: setTimeout(max(0, dwell - elapsed)) per slide
+6. Active slide drives CameraDirector target + Fireworks trigger
+```
+
+### 16.4 New / modified files (under 150-LOC cap)
+
+```
+Frontend (added):                  Backend (added):
+  components/stage14/                src/agent_debate/agents/
+    stage.tsx          (102)          content_scorer.py     (131)
+    r3f-scene.tsx      (115)          verdict_rationale.py   (59)
+    r3f-podium.tsx     ( ~)         tests/unit/
+    speech-bubble.tsx  (121)          test_content_scorer.py    (6 cases)
+    judge-chyron.tsx   (114)          test_verdict_rationale.py (5 cases)
+    title-banner.tsx   (127)
+    fireworks.tsx      ( 80)        Backend (modified):
+  lib/                                orchestration/orchestrator.py
+    chunks.ts          ( 32)          orchestration/process_flow.py (ACK 30→60)
+    dwell.ts           ( 32)          orchestration/process_verdict.py
+                                      orchestration/debate_loop.py
+Frontend (modified):
+  app/page.tsx, lib/sse.ts, lib/state.ts, lib/types.ts,
+  components/bottom-strip.tsx
+```
+
+### 16.5 Risk register
+
+| #     | Risk                                                              | Mitigation                                                           |
+|-------|-------------------------------------------------------------------|----------------------------------------------------------------------|
+| 14-R1 | Claude CLI cold-start exceeds ack window                           | ACK_TIMEOUT_S bumped 30 → 60 s; aborted state has structured verdict |
+| 14-R2 | EventSource reconnects flip title to OFF AIR                       | `onerror` only fires on `readyState === CLOSED` AND `status !== "done"` |
+| 14-R3 | Chunk splitter drops decimal points (`0.002%` → `0002%`)            | Regex `(?<!\d)[.!?]+(?!\d)` so digit-flanked periods aren't terminators |
+| 14-R4 | Auto-advance timer resets on every new chunk append                 | Effect deps scoped to current slide only; elapsed-time accounting    |
+| 14-R5 | 3D scene too dim to read text against                              | DOM overlays (title, chyron) live OUTSIDE Canvas; bubbles use drei `<Html>` |
+| 14-R6 | Camera lerp fights cursor parallax                                  | Camera position is animated; PresentationControls rotates the group  |
+| 14-R7 | New scorer changes test expectations elsewhere                     | Full pytest run after each scorer commit; placeholder kept as wrapper for back-compat |
+
+### 16.6 Submission impact
+
+Phase 14 lives on its own branch. The HW2 submission can ship either:
+- **`main`** (Phase 13g) — minimal scroll-driven viewer, the safe default
+- **`phase14-presidential-stage`** — cinematic R3F bonus exhibit
+
+Decision deferred until the README screenshots are captured; the pair
+decides which to feature.

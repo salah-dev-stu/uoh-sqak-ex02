@@ -1,6 +1,7 @@
 import type { SseEvent, DebateMessage } from "./types";
-import { appendSlide, setState, getState } from "./state";
+import { appendSlide, resetState, setState, getState } from "./state";
 import { streamUrl } from "./api";
+import { splitIntoChunks } from "./chunks";
 
 export function shouldSkip(payload: unknown, seen: Set<string>): boolean {
   if (!payload || typeof payload !== "object") return true;
@@ -11,16 +12,39 @@ export function shouldSkip(payload: unknown, seen: Set<string>): boolean {
   return false;
 }
 
-export function openStream(debateId: string): () => void {
+export function openStream(debateId: string, topic?: string): () => void {
+  resetState();
   const es = new EventSource(streamUrl(debateId));
   const seen = new Set<string>();
-  setState({ status: "live" });
+  setState({ status: "live", currentIndex: 0, followLive: true, topic });
+
+  appendSlide({
+    id: "synthetic-judge-intro",
+    speaker: "judge",
+    variant: "intro",
+    pingIndex: 0,
+    text:
+      `Welcome to today's debate. Tonight's motion: "${topic ?? "Can AI agents create genuinely original art?"}". ` +
+      "Pro will argue the affirmative; Con will argue the negative. Each side has ten pings. " +
+      "I will moderate and score. Let the debate begin.",
+    timestamp: new Date().toISOString(),
+  });
 
   es.onmessage = (e) => {
     const evt: SseEvent = JSON.parse(e.data);
     handleEvent(evt, seen);
   };
-  es.onerror = () => setState({ status: "error", error: "SSE connection lost" });
+  // EventSource.onerror fires on transient reconnects and on normal stream
+  // close, not only on permanent failures. Only flip to "error" if the
+  // connection is actually CLOSED *and* we haven't already finished the
+  // debate (status "done") — otherwise the title banner reads OFF AIR
+  // mid-debate during what's just a momentary reconnect.
+  es.onerror = () => {
+    if (es.readyState !== EventSource.CLOSED) return;
+    const cur = getState();
+    if (cur.status === "done") return;
+    setState({ status: "error", error: "SSE connection lost" });
+  };
 
   return () => es.close();
 }
@@ -35,10 +59,18 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
       if (m.role === "setup_directive" || m.role === "ack") return;
       // Skip judge re-broadcasts of the other side's text (forwarding plumbing).
       if (m.from === "judge" && (m.role === "counter" || m.role === "rebuttal")) return;
-      appendSlide({
-        id: m.msg_id, speaker: m.from === "main" ? "judge" : m.from,
-        variant: variantFromRole(m.role), pingIndex: m.ping_index,
-        text: m.text, timestamp: m.timestamp,
+      const speaker = m.from === "main" ? "judge" : m.from;
+      const variant = variantFromRole(m.role);
+      // Split Pro/Con responses into sentence-bundled chunks so the stage
+      // cycles through smaller bubbles instead of one wall of text. Judge
+      // text goes straight to the chyron as a single slide.
+      const chunks = speaker === "judge" ? [m.text] : splitIntoChunks(m.text);
+      chunks.forEach((chunk, i) => {
+        appendSlide({
+          id: chunks.length === 1 ? m.msg_id : `${m.msg_id}-c${i}`,
+          speaker, variant, pingIndex: m.ping_index,
+          text: chunk, timestamp: m.timestamp,
+        });
       });
       break;
     }
@@ -48,12 +80,26 @@ function handleEvent(evt: SseEvent, seen: Set<string>): void {
       break;
     }
     case "verdict": {
-      const p = evt.payload as { verdict: { pro_total: number; con_total: number; outcome: string } };
-      const v = p.verdict;
+      const p = evt.payload as {
+        verdict: {
+          pro_total?: number; con_total?: number;
+          rationale?: string; reason?: string;
+        };
+        outcome?: string;
+      };
+      const v = p.verdict ?? {};
+      const aborted = v.reason === "setup_phase_timeout" || p.outcome === "debate_aborted";
       appendSlide({
         id: "verdict", speaker: "judge", variant: "verdict",
-        pingIndex: getState().slides.length, text: "", timestamp: new Date().toISOString(),
-        proScore: v.pro_total, conScore: v.con_total, outcome: v.outcome as never,
+        pingIndex: getState().slides.length,
+        text: aborted
+          ? "Debate aborted: setup phase timed out. The Pro/Con agents did not respond — Claude CLI may be busy with another session. Try refreshing in a moment."
+          : "",
+        timestamp: new Date().toISOString(),
+        proScore: v.pro_total ?? 0,
+        conScore: v.con_total ?? 0,
+        outcome: (aborted ? "debate_aborted" : p.outcome) as never,
+        rationale: v.rationale,
       });
       break;
     }
