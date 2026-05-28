@@ -175,11 +175,12 @@ After Phase 13g shipped, the user's note was *"it's good, but not wow."* Phase 1
 | Con turn — camera mirrors, Con foreground right, right speech bubble | ![con](assets/phase14/gui-03-con-speaking.png) |
 | Verdict — score 67·56, "PRO WINS" caps line, Judge rationale, fireworks bursting behind Pro | ![verdict](assets/phase14/gui-04-verdict-fireworks.png) |
 
-**Terminal CLI (rule R1 — SDK is the sole entry):** the same backend is also reachable via the keyboard-only TUI from rule H11. `uv run agent-debate` launches a letter-keyed menu (A/B/C/D/E/X) that runs identical orchestration code, so the lecturer can run the full debate without a browser. The CLI menu and a two-Terminal live shot of Pro+Con debating side by side are also in `assets/`:
+**Terminal CLI (rule R1 — SDK is the sole entry):** the same backend is also reachable via the keyboard-only TUI from rule H11. `uv run agent-debate` launches a letter-keyed menu (A/B/C/D/E/X) that runs identical orchestration code, so the lecturer can run the full debate without a browser. Live captures from the actual menu running today (2026-05-28):
 
 | Surface | Image |
 |---|---|
-| Letter-keyed terminal menu (`uv run agent-debate`) | ![menu](assets/screenshot-menu.png) |
+| Letter-keyed terminal menu (`uv run agent-debate`) | ![menu](assets/phase14/cli-menu-live.png) |
+| Action firing — pressed `D` → `[health]` printed, menu returns | ![action](assets/phase14/cli-menu-action.png) |
 | Live two-Terminal Pro vs Con run (H22 manual evidence) | ![two-terminals](assets/real-terminal-side-by-side.png) |
 | Pro's rebuttal in turn 2 — mutual reference works | ![rebuttal](assets/real-terminal-rebuttal.png) |
 
