@@ -1020,13 +1020,25 @@ hw2/
    ```bash
    uv sync
    ```
-3. **Authenticate** the Claude CLI once (the lecturer's preferred mode — no API key needed).
-   *Skip this step if `claude` is already logged in on this machine. If you're an automated
-   agent without browser access, skip to step 4 — the pytest suite exercises the full
-   orchestrator end-to-end with `MockLLMProvider`, no Claude auth required.*
+3. **Authenticate Claude** — our code shells out to `claude -p`, which itself
+   picks up whichever auth path is on the machine. Three scenarios:
+
+   **A — Already logged into Claude CLI (the lecturer's preferred mode):**
+   Nothing to do. Skip to step 4 or 5. `uv run agent-debate` will use your existing session.
+
+   **B — Not logged in, but have a Claude subscription:**
    ```bash
-   claude --login
+   claude --login   # opens a browser; finish the consent flow once per machine
    ```
+
+   **C — Have an Anthropic API key instead of a subscription:**
+   ```bash
+   export ANTHROPIC_API_KEY=sk-ant-...   # claude -p picks this up automatically; no config change needed
+   ```
+
+   **D — Automated grader / no Claude access at all:**
+   Skip this step. Step 4 (pytest) exercises the full orchestrator end-to-end with
+   `MockLLMProvider` — proves the system works without any external service.
 4. **Verify** the test suite + coverage gate (works with zero Claude auth — every LLM call is mocked):
    ```bash
    uv run pytest tests/unit tests/integration --cov=src/agent_debate
