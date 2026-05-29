@@ -62,3 +62,4 @@ uoh-sqak-ex02.pdf
 # deliverable). The web GUI is served from src/agent_debate/web/static/.
 node_modules/
 .mcp.json
+docs/superpowers/
