@@ -280,6 +280,11 @@ C4Container
 
 ### Class diagram (mandatory per HW2 spec §8.6)
 
+The rendered PNG above is the canonical visible artefact per HW2 spec §8.6. The Mermaid source for live re-rendering is below.
+
+<details>
+<summary><strong>Class diagram — Mermaid source (~170 lines, click to expand)</strong></summary>
+
 ```mermaid
 classDiagram
     class BaseAgent {
@@ -452,7 +457,12 @@ classDiagram
     TerminalMenu o-- DebateSDK
 ```
 
+</details>
+
 ### UML — single-ping sequence
+
+<details>
+<summary><strong>UML sequence diagram — single Pro → Judge → Con → Judge → Pro round (Mermaid source, click to expand)</strong></summary>
 
 ```mermaid
 sequenceDiagram
@@ -492,6 +502,8 @@ sequenceDiagram
 
     Note over Pro,Con: Heartbeat emitted by all three every 2s in parallel
 ```
+
+</details>
 
 A deeper architectural narrative — including the C1 Context diagram, the C3 Component diagram for `JudgeProc`, the 7-ADR set, and the ISO/IEC 25010 paragraph covering all eight quality dimensions — lives in `docs/PLAN.md`. Per-mechanism PRDs (one per significant component: judge, pro, con, orchestrator, ipc-bus, gatekeeper, watchdog, skills, web-search) live alongside in `docs/PRD_*.md`.
 
@@ -563,7 +575,10 @@ Per-agent setup. Each role has its own `skill_name`, `temperature`, `llm_provide
 
 ## Sample debate — Session 1 (full dialogue dump)
 
-Spec §8.7 requires "a full session-1 dialogue dump" inside the README. The transcript below was produced by a **dry-run with `MockLLMProvider`** (the exact recipe is in this README's commit message). The structure is identical to a real Claude run; only the `text` fields are placeholders so the file is short enough to embed. A real Claude run produces a 250-word argument per turn instead of `(mocked response — see README)`. The complete JSON is also stored at `transcripts/sample-session-1.json` (the one path the `.gitignore` allow-lists explicitly).
+Spec §8.7 requires "a full session-1 dialogue dump" inside the README. The transcript below was produced by a **dry-run with `MockLLMProvider`** (the exact recipe is in this README's commit message). The structure is identical to a real Claude run; only the `text` fields are placeholders so the file is short enough to embed. A real Claude run produces a 250-word argument per turn instead of `(mocked response — see README)`. The complete JSON is also stored at `transcripts/sample-session-1.json` (the one path the `.gitignore` allow-lists explicitly) — that file now contains the **real** `claude /login` debate (Pro 68 / Con 64 with full rationale) per the post-Phase-14 swap on 2026-05-28.
+
+<details>
+<summary><strong>Full 64-message dialogue dump — mock dry-run (~232 lines, click to expand)</strong>. Text fields are mocked for embedded brevity; the real <code>claude /login</code> run is at <code>transcripts/sample-session-1.json</code>.</summary>
 
 ```json
 {
@@ -797,6 +812,8 @@ Spec §8.7 requires "a full session-1 dialogue dump" inside the README. The tran
   "outcome": "pro_wins"
 }
 ```
+
+</details>
 
 **How to read it.** The boot directive sets the stances. Each ping appears twice in the message stream — once `from: pro/con, to: judge` (the actual send) and once `from: pro/con, to: con/pro` (the Judge-mediated forward, demonstrating H4). Five Pro `argument`s alternate with five Con `counter`s for `pings_per_side = 5`. The Judge tallies five scoring axes × 20 points; here Pro scored 71/100 and Con 69/100 — a real differential, no tie (H5).
 
